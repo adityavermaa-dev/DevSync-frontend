@@ -18,11 +18,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v24.13.0/bin
-            export VITE_API_URL=${{ secrets.VITE_API_URL }}
+            export VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
             cd DevSync-frontend
             git pull origin main
             npm install
-  npm run build
-  rm -rf /var/www/html/*
-  cp -r dist/* /var/www/html/
+            npm run build
+            rm -rf /var/www/html/*
+            cp -r dist/* /var/www/html/
