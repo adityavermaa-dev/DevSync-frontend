@@ -10,6 +10,10 @@ import Connections from "./pages/connections"
 import UserProfile from "./pages/UserProfile"
 import Requests from "./pages/Requests"
 import { Toaster } from 'react-hot-toast'
+import PrivacyPolicy from "./pages/PrivacyPolicy"
+import TermsOfService from "./pages/TermsOfService"
+import RefundPolicy from "./pages/RefundPolicy"
+import ContactUs from "./pages/ContactUs"
 
 function App() {
 
@@ -25,6 +29,10 @@ function App() {
               <Route path="/connections" element={<Connections />} />
               <Route path="/user/:userId" element={<UserProfile />} />
               <Route path="/requests" element={<Requests />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/refund" element={<RefundPolicy />} />
+              <Route path="/contact" element={<ContactUs />} />
             </Route>
           </Routes>
         </BrowserRouter>

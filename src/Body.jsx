@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import { Outlet, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { BASE_URL } from './constants/commonData'
@@ -32,9 +33,12 @@ const Body = () => {
     }, [])
 
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <Navbar />
-            <Outlet />
+            <main className="flex-grow">
+                <Outlet />
+            </main>
+            <Footer />
         </div>
     )
 }
