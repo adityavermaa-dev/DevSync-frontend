@@ -14,6 +14,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy"
 import TermsOfService from "./pages/TermsOfService"
 import RefundPolicy from "./pages/RefundPolicy"
 import ContactUs from "./pages/ContactUs"
+import VideoUpload from "./components/VideoUpload"
+import VideoFeed from "./components/VideoFeed"
+
 
 function App() {
 
