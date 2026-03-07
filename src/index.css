@@ -112,3 +112,32 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--scrollbar-hover);
 }
+
+.video-feed {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+.video-item {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.video-upload {
+  padding: 20px;
+}

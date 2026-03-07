@@ -33,6 +33,8 @@ function App() {
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/refund" element={<RefundPolicy />} />
               <Route path="/contact" element={<ContactUs />} />
+              <Route path="/upload" element={<VideoUpload />} />
+              <Route path="/feed" element={<VideoFeed />} />
             </Route>
           </Routes>
         </BrowserRouter>
