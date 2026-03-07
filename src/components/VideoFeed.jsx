@@ -20,7 +20,7 @@ const VideoFeed = () => {
             return;
         }
         try {
-            const response = await fetch(`${BASE_URL}/videos/feed`, {
+            const response = await fetch(`${BASE_URL}/feed`, {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -34,7 +34,7 @@ const VideoFeed = () => {
 
     const handleLike = async (videoId) => {
         try {
-            const response = await fetch(`${BASE_URL}/videos/like`, {
+            const response = await fetch(`${BASE_URL}/like`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ videoId }),
@@ -57,7 +57,7 @@ const VideoFeed = () => {
     const handleComment = async (videoId, text) => {
         if (!text.trim()) return;
         try {
-            const response = await fetch(`${BASE_URL}/videos/comment`, {
+            const response = await fetch(`${BASE_URL}/comment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ videoId, text }),
@@ -72,7 +72,7 @@ const VideoFeed = () => {
 
     const handleView = async (videoId) => {
         try {
-            await fetch(`${BASE_URL}/videos/${videoId}/view`, { method: 'PATCH', credentials: 'include' });
+            await fetch(`${BASE_URL}/${videoId}/view`, { method: 'PATCH', credentials: 'include' });
         } catch (error) {
             console.error('View increment error:', error);
         }
