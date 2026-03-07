@@ -85,16 +85,28 @@ const VideoFeed = () => {
             (entries) => {
                 entries.forEach((entry) => {
                     const video = entry.target;
-                    // Play video if it's mostly in view
-                    if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
-                        video.play().catch(e => console.log('Autoplay prevented', e));
+                    // Play video if it's the main completely visible element
+                    if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
+                        // First, pause ALL videos to guarantee only 1 plays
+                        videoRefs.current.forEach(v => {
+                            if (v && v !== video && !v.paused) v.pause();
+                        });
+
+                        // Then play the current one
+                        const playPromise = video.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => console.log('Autoplay prevented', e));
+                        }
+
+                        // Register view logic
                         handleView(video.dataset.id);
                     } else {
+                        // Automatically pause when it's scrolling out of view
                         video.pause();
                     }
                 });
             },
-            { threshold: [0.6] }
+            { threshold: [0.3, 0.7] } // Check when it's leaving (0.3) and arriving (0.7)
         );
 
         videoRefs.current.forEach((video) => {

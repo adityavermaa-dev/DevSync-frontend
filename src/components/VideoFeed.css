@@ -1,6 +1,7 @@
 .video-feed {
     height: calc(100vh - 64px);
     /* assuming navbar is 64px */
+    max-height: calc(100vh - 64px);
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
@@ -19,15 +20,17 @@
 
 .video-item {
     height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
     width: 100%;
     max-width: 450px;
     margin: 0 auto;
     position: relative;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #111;
+    background-color: #000;
     overflow: hidden;
 }
 
