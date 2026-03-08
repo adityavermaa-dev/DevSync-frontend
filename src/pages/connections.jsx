@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../constants/commonData';
 import { addConnections } from '../redux/connectionSlice';
-import UserCard from '../components/UserCard';
+import UserListItem from '../components/UserListItem';
 import './Connections.css';
 
 const Connections = () => {
@@ -78,7 +78,7 @@ const Connections = () => {
                             style={{ animationDelay: `${idx * 0.04}s` }}
                             onClick={() => handleViewProfile(user)}
                         >
-                            <UserCard user={user} />
+                            <UserListItem user={user} />
                         </div>
                     ))}
                 </div>

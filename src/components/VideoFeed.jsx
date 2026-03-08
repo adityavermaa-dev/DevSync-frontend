@@ -1,16 +1,19 @@
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../constants/commonData';
 import { setReels, updateReelLikeStatus } from '../redux/reelsSlice';
 import './VideoFeed.css';
 
 const VideoFeed = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const videos = useSelector((store) => store.reels);
     const [loading, setLoading] = useState(true);
     const [activeCommentsVideoId, setActiveCommentsVideoId] = useState(null);
     const [comments, setComments] = useState([]);
     const [loadingComments, setLoadingComments] = useState(false);
+    const user = useSelector(store => store.user); // Get logged-in user for immediate comment display
     const videoRefs = useRef([]);
 
     useEffect(() => {
@@ -44,13 +47,14 @@ const VideoFeed = () => {
                 credentials: 'include',
             });
             const result = await response.json();
+            console.log(result)
 
             const currentVideo = videos.find(v => v._id === videoId);
             if (currentVideo) {
-                const isLiked = result.liked !== undefined ? result.liked : !currentVideo.liked;
+                const isLiked = result.liked !== undefined ? result.liked : !currentVideo.isLiked;
                 const updatedCount = isLiked ? (currentVideo.likesCount || 0) + 1 : Math.max((currentVideo.likesCount || 0) - 1, 0);
 
-                dispatch(updateReelLikeStatus({ videoId, liked: isLiked, likesCount: updatedCount }));
+                dispatch(updateReelLikeStatus({ videoId, isLiked, likesCount: updatedCount }));
             }
         } catch (error) {
             console.error('Like error:', error);
@@ -68,11 +72,15 @@ const VideoFeed = () => {
             });
             const newComment = await response.json();
 
-            // If we are currently viewing comments for this video, append it
+            // If we are currently viewing comments for this video, append it at the end (chronological order)
             if (activeCommentsVideoId === videoId) {
-                // To display it nicely in real-time, we mock the populated user data
-                // In a full app, the backend should return the populated comment, or we fetch user from Redux
-                setComments(prev => [{ ...newComment, userId: { firstName: 'You', photoUrl: '' } }, ...prev]);
+                const currentUser = {
+                    _id: user?._id,
+                    firstName: user?.firstName || 'You',
+                    lastName: user?.lastName || '',
+                    photoUrl: user?.photoUrl || ''
+                };
+                setComments(prev => [...prev, { ...newComment, userId: currentUser }]);
             }
 
             // Update comments count in Redux
@@ -99,6 +107,7 @@ const VideoFeed = () => {
                 credentials: 'include'
             });
             const data = await res.json();
+            console.log(data);
             setComments(data);
         } catch (error) {
             console.error('Error fetching comments:', error);
@@ -162,6 +171,14 @@ const VideoFeed = () => {
         }
     };
 
+    const handleViewProfile = (targetUser, e) => {
+        // Prevent video pause toggle when clicking profile
+        if (e) e.stopPropagation();
+        if (targetUser && targetUser._id) {
+            navigate(`/user/${targetUser._id}`, { state: { user: targetUser } });
+        }
+    };
+
     if (loading) return <div className="reels-loading">Loading Reels...</div>;
 
     if (!videos || videos.length === 0) {
@@ -187,23 +204,21 @@ const VideoFeed = () => {
                     />
                     <div className="video-overlay pointer-events-none">
                         <div className="video-info pointer-events-auto w-full pr-12">
-                            <p className="video-caption">{video.caption || 'No caption'}</p>
-                            <div className="comment-input-container w-full" onClick={() => !activeCommentsVideoId && toggleComments(video._id)}>
-                                <input
-                                    type="text"
-                                    placeholder="Add comment..."
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleComment(video._id, e.target.value);
-                                            e.target.value = '';
-                                        }
-                                    }}
+                            <div className="flex items-center gap-2 mb-2 cursor-pointer inline-flex" onClick={(e) => handleViewProfile(video.userId, e)}>
+                                <img
+                                    src={video.userId?.photoUrl || 'https://via.placeholder.com/40'}
+                                    alt={video.userId?.firstName}
+                                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
                                 />
+                                <span className="font-semibold text-white drop-shadow-md hover:underline">
+                                    {video.userId?.firstName} {video.userId?.lastName}
+                                </span>
                             </div>
+                            <p className="video-caption drop-shadow-md">{video.caption || 'No caption'}</p>
                         </div>
                         <div className="video-actions pointer-events-auto">
                             <button className="action-btn" onClick={() => handleLike(video._id)}>
-                                {video.liked ? heartFilledIcon : heartOutlineIcon}
+                                {video.isLiked ? heartFilledIcon : heartOutlineIcon}
                                 <span>{video.likesCount || 0}</span>
                             </button>
                             <button className="action-btn" onClick={() => toggleComments(video._id)}>
@@ -233,11 +248,16 @@ const VideoFeed = () => {
                                         <img
                                             src={c.userId?.photoUrl || 'https://via.placeholder.com/40'}
                                             alt={c.userId?.firstName}
-                                            className="comment-avatar"
-                                            onError={(e) => { e.target.src = 'https://via.placeholder.com/40'; }}
+                                            className="comment-avatar cursor-pointer"
+                                            onClick={(e) => handleViewProfile(c.userId, e)}
                                         />
                                         <div className="comment-content">
-                                            <span className="comment-author">{c.userId?.firstName} {c.userId?.lastName}</span>
+                                            <span
+                                                className="comment-author cursor-pointer hover:underline"
+                                                onClick={(e) => handleViewProfile(c.userId, e)}
+                                            >
+                                                {c.userId?.firstName} {c.userId?.lastName}
+                                            </span>
                                             <p className="comment-text">{c.text}</p>
                                         </div>
                                     </div>

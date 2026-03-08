@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../constants/commonData';
 import { addRequests, removeRequest } from '../redux/requestSlice';
-import UserCard from '../components/UserCard';
+import UserListItem from '../components/UserListItem';
 import './Requests.css';
 import toast from 'react-hot-toast';
 
@@ -104,12 +104,13 @@ const Requests = () => {
                                 style={{ animationDelay: `${idx * 0.04}s` }}
                                 onClick={() => handleViewProfile(user)}
                             >
-                                <UserCard
+                                <UserListItem
                                     user={user}
                                     actions={
-                                        <div className="feed-actions">
+                                        <>
                                             <button
                                                 className="feed-action-btn feed-btn-pass"
+                                                style={{ width: '40px', height: '40px' }}
                                                 title="Reject"
                                                 onClick={(e) => handleReview('rejected', req._id, e)}
                                             >
@@ -117,12 +118,13 @@ const Requests = () => {
                                             </button>
                                             <button
                                                 className="feed-action-btn feed-btn-like"
+                                                style={{ width: '40px', height: '40px' }}
                                                 title="Accept"
                                                 onClick={(e) => handleReview('accepted', req._id, e)}
                                             >
                                                 {acceptIcon}
                                             </button>
-                                        </div>
+                                        </>
                                     }
                                 />
                             </div>

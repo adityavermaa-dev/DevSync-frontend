@@ -11,12 +11,12 @@ const reelsSlice = createSlice({
             return null;
         },
         updateReelLikeStatus: (state, action) => {
-            const { videoId, liked, likesCount } = action.payload;
+            const { videoId, isLiked, likesCount } = action.payload;
             if (state) {
                 const reelIndex = state.findIndex((r) => r._id === videoId);
                 if (reelIndex !== -1) {
                     state[reelIndex].likesCount = likesCount;
-                    state[reelIndex].liked = liked;
+                    state[reelIndex].isLiked = isLiked;
                 }
             }
         }

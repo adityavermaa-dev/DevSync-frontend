@@ -1,0 +1,101 @@
+.user-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    width: 100%;
+}
+
+.user-list-item:hover {
+    background: var(--bg-default);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.user-list-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    overflow: hidden;
+}
+
+.user-list-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--border-color);
+}
+
+.user-list-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-right: 1rem;
+}
+
+.user-list-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.user-list-bio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    margin-top: 0.1rem;
+}
+
+.user-list-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Quick default button styles if actions aren't passed */
+.user-list-btn {
+    background: linear-gradient(135deg, #FD267A 0%, #FF6036 100%);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.user-list-btn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 480px) {
+    .user-list-item {
+        padding: 0.75rem;
+    }
+
+    .user-list-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .user-list-name {
+        font-size: 0.95rem;
+    }
+}
