@@ -16,6 +16,7 @@ import RefundPolicy from "./pages/RefundPolicy"
 import ContactUs from "./pages/ContactUs"
 import VideoUpload from "./components/VideoUpload"
 import VideoFeed from "./components/VideoFeed"
+import Premium from "./pages/Premium"
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/upload" element={<VideoUpload />} />
               <Route path="/feed" element={<VideoFeed />} />
+              <Route path="/premium" element={<Premium />} />
             </Route>
           </Routes>
         </BrowserRouter>

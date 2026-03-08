@@ -142,7 +142,7 @@ const Profile = () => {
             <div className="profile-page">
 
                 <div className="profile-edit-layout">
-                    {/* Live preview — mirrors exactly what others see in feed */}
+
                     <div className="profile-preview-wrap">
                         <p className="profile-preview-label">How others see you</p>
                         <UserCard
