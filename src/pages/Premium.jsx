@@ -3,21 +3,44 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import './Premium.css';
+import { BASE_URL } from '../constants/commonData';
+import axios from 'axios';
 
 const Premium = () => {
     const user = useSelector(store => store.user);
     const navigate = useNavigate();
 
-    const handlePurchase = (planId) => {
+    const handlePurchase = async (type) => {
         if (!user) {
             toast.error("Please login to purchase premium");
             navigate("/login");
             return;
         }
 
-        // This will be connected to Razorpay soon
-        toast.success(`Checking out for ${planId} plan (Razorpay integration coming soon!)`);
-        console.log("Initiate Razorpay checkout for", planId);
+        const order = await axios.post(`${BASE_URL}/payment/create`, { membershipType: type }, { withCredentials: true });
+
+        const { amount, keyId, currency, notes, orderId } = order.data;
+
+        const options = {
+            key: keyId,
+            amount: amount,
+            currency: currency,
+            name: "DevSync",
+            description: "Premium Membership",
+            image: "https://www.devsync.com/logo.png",
+            order_id: orderId,
+            notes: notes,
+            prefill: {
+                name: notes.firstName + " " + notes.lastName,
+                email: notes.email,
+            },
+            theme: {
+                color: "#637214"
+            }
+        }
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
     };
 
     return (
