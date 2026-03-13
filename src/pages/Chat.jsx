@@ -7,7 +7,7 @@ import { createSocketConnection } from '../utils/socket';
 const Chat = () => {
   const { targetUserId } = useParams();
   const user = useSelector(store => store.user);
-  const userId = user._id;
+  const userId = user?._id;
   const targetUser = user.filter((u) => u._id === targetUserId);
   const [newMessage,setNewMessage] = useState([]);
   
