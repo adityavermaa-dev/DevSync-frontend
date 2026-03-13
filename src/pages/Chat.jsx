@@ -1,55 +1,38 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import './Chat.css';
-import userIcon from '../assests/images/default-user-image.png';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
-const formatTime = (date) =>
-  date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+import { createSocketConnection } from '../utils/socket';
 
 const Chat = () => {
   const { targetUserId } = useParams();
-  const connections = useSelector((store) => store.connections);
-
-  const threadKey = targetUserId || 'unknown';
-
-  const targetUser = useMemo(() => {
-    if (!targetUserId || !Array.isArray(connections)) return null;
-    return connections.find((u) => u?._id === targetUserId) || null;
-  }, [connections, targetUserId]);
-
-  const targetName = `${targetUser?.firstName || ''} ${targetUser?.lastName || ''}`.trim() || 'User';
-  const targetAvatar = targetUser?.photoUrl || userIcon;
-
-  const [threads, setThreads] = useState(() => ({}));
-  const [drafts, setDrafts] = useState(() => ({}));
-  const messages = threads[threadKey] || [];
-  const draft = drafts[threadKey] || '';
-  const bottomRef = useRef(null);
-
+  const user = useSelector(store => store.user);
+  const userId = user._id;
+  const targetUser = user.filter((u) => u._id === targetUserId);
+  const [newMessage,setNewMessage] = useState([]);
+  
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages.length]);
+    const socket = createSocketConnection();
+    socket.emit("joinChat",{userId,targetUserId})
+
+    socket.on("messageReceived",({firstName,text}) => {
+      setNewMessage((newMessage => [...newMessage,{firstName,text}]))
+    })
+
+    return () => {
+      socket.disconnect();
+    }
+  },[userId,targetUserId])
 
   const sendMessage = () => {
-    const trimmed = draft.trim();
-    if (!trimmed) return;
-    const now = new Date();
-    const nextMessage = {
-      id: `${now.getTime()}-${Math.random().toString(16).slice(2)}`,
-      from: 'me',
-      text: trimmed,
-      time: formatTime(now),
-    };
-    setThreads((prev) => ({
-      ...prev,
-      [threadKey]: [...(prev[threadKey] || []), nextMessage],
-    }));
-    setDrafts((prev) => ({
-      ...prev,
-      [threadKey]: '',
-    }));
-  };
+    const socket = createSocketConnection();
+    socket.emit("sendMessage",{
+      firstName : user.firstName,
+      userId,
+      targetUserId,
+      text : newMessage
+    })
+  }
 
   return (
     <div className="chat-page">
@@ -58,11 +41,11 @@ const Chat = () => {
           <header className="chat-thread-header">
             <div className="chat-peer">
               <div className="chat-avatar-wrap large">
-                <img className="chat-avatar large" src={targetAvatar} alt={targetName} />
+                <img className="chat-avatar large" src={targetUser.photoUrl} alt={targetUser.firstName} />
                 <span className="chat-presence" aria-hidden="true" />
               </div>
               <div className="chat-peer-meta">
-                <div className="chat-peer-name">{targetName}</div>
+                <div className="chat-peer-name">{targetUser.firstName}</div>
                 <div className="chat-peer-status">
                   <span className="chat-status-dot" aria-hidden="true" />
                   {targetUserId ? `Chatting with: ${targetUserId}` : 'Open from Connections → Chat'}
@@ -72,7 +55,7 @@ const Chat = () => {
           </header>
 
           <div className="chat-thread-body" role="log" aria-label="Messages">
-            {messages.length ? (
+            {newMessage.length ? (
               <div className="chat-day-divider"><span>Today</span></div>
             ) : (
               <div className="chat-empty" aria-hidden="true">
@@ -80,7 +63,7 @@ const Chat = () => {
               </div>
             )}
 
-            {messages.map((m) => (
+            {newMessage.map((m) => (
               <div key={m.id} className={`chat-msg ${m.from === 'me' ? 'me' : 'them'}`}>
                 <div className={`chat-bubble ${m.from === 'me' ? 'me' : 'them'}`}>
                   <div className="chat-text">{m.text}</div>
@@ -93,7 +76,7 @@ const Chat = () => {
                 </div>
               </div>
             ))}
-            <div ref={bottomRef} />
+            {/* <div ref={bottomRef} /> */}
           </div>
 
           <footer className="chat-composer" aria-label="Message composer">
@@ -103,13 +86,10 @@ const Chat = () => {
                 rows={1}
                 placeholder="Type a message…"
                 aria-label="Type a message"
-                value={draft}
+                value={newMessage}
                 onChange={(e) =>
-                  setDrafts((prev) => ({
-                    ...prev,
-                    [threadKey]: e.target.value,
-                  }))
-                }
+                  setNewMessage(e.target.value)
+                  }
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
