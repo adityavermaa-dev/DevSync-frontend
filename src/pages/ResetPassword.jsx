@@ -7,8 +7,11 @@ import logo from '../assests/images/logo.png';
 import './Login.css';
 
 const ResetPassword = () => {
+    // 1. Get the token from the URL parameters
     const { token } = useParams();
     const navigate = useNavigate();
+    
+    // State management
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -18,9 +21,10 @@ const ResetPassword = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [passwordReset, setPasswordReset] = useState(false);
 
+    // Validate token presence on mount
     useEffect(() => {
         if (!token) {
-            setApiError("Invalid reset link");
+            setApiError("Invalid or missing reset token.");
         }
     }, [token]);
 
@@ -57,11 +61,18 @@ const ResetPassword = () => {
 
     const handleSubmit = async () => {
         if (!validate()) return;
+        
+        // Ensure token exists before making request
+        if (!token) {
+            setApiError("Invalid reset token.");
+            return;
+        }
 
         setIsLoading(true);
         setApiError("");
 
         try {
+            // 2. Make a POST call to the route /reset-password/:token
             const response = await axios.post(
                 BASE_URL + `/reset-password/${token}`,
                 { password },
@@ -70,13 +81,15 @@ const ResetPassword = () => {
 
             toast.success(response.data.message || "Password reset successfully");
             setPasswordReset(true);
+            
+            // Redirect to login after success
             setTimeout(() => navigate("/login"), 2000);
         } catch (error) {
             const msg =
                 error?.response?.data?.message ||
                 error?.response?.data ||
-                "Failed to reset password. Please try again.";
-            const errorMsg = typeof msg === "string" ? msg : "Failed to reset password. Please try again.";
+                "Failed to reset password. The link may have expired.";
+            const errorMsg = typeof msg === "string" ? msg : "Failed to reset password.";
             setApiError(errorMsg);
             toast.error(errorMsg);
         } finally {
