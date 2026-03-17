@@ -27,7 +27,7 @@ const Chat = () => {
           id: Date.now(),
           firstName,
           text,
-          from: firstName === user.firstName ? "me" : "them",
+          from: firstName === user?.firstName ? "me" : "them",
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -37,36 +37,41 @@ const Chat = () => {
       socket.off("messageReceived");
       socket.disconnect();
     };
-  }, [userId, targetUserId, user.firstName]);
+  }, [userId, targetUserId, user?.firstName]);
+
   if (!user) {
     return <div>Loading...</div>;
   }
 
   const sendMessage = () => {
-    if (!text.trim()) return;
+  if (!text.trim()) return;
 
-    const socket = socketRef.current;
+  const socket = socketRef.current;
+  if (!socket) return;
 
-    socket.emit("sendMessage", {
-      firstName: user.firstName,
-      userId,
-      targetUserId,
-      text,
-    });
+  socket.emit("sendMessage", {
+    firstName: user.firstName,
+    userId,
+    targetUserId,
+    text,
+  });
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        firstName: user.firstName,
-        text,
-        from: "me",
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+  setText("");
+};
 
-    setText("");
-  };
+    // setMessages((prev) => [
+    //   ...prev,
+    //   {
+    //     id: Date.now(),
+    //     firstName: user.firstName,
+    //     text,
+    //     from: "me",
+    //     time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    //   },
+    // ]);
+
+  //   setText("");
+  // };
 
   return (
     <div className="chat-page">
