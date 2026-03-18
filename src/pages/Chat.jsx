@@ -3,75 +3,126 @@ import "./Chat.css";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { createSocketConnection } from "../utils/socket";
+import axios from "axios";
+import { BASE_URL } from "../constants/commonData";
 
 const Chat = () => {
-  const { targetUserId } = useParams();
+  const { chatId } = useParams();
   const user = useSelector((store) => store.user);
-  const userId = user?._id;
+  const token = user?.token;
 
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState(null);
 
   const socketRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const bottomRef = useRef(null);
 
+  // 🔥 Fetch messages
   useEffect(() => {
-    const socket = createSocketConnection();
+    if (!chatId || !token) return;
+
+    const fetchMessages = async () => {
+      const res = await axios.get(`${BASE_URL}/messages/${chatId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setMessages(res.data.reverse());
+    };
+
+    fetchMessages();
+  }, [chatId, token]);
+
+  // 🔥 Socket setup
+  useEffect(() => {
+    if (!chatId || !token) return;
+
+    const socket = createSocketConnection(token);
     socketRef.current = socket;
 
-    socket.emit("joinChat", { userId, targetUserId });
+    socket.emit("joinChat", chatId);
 
-    socket.on("messageReceived", ({ firstName, text }) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          firstName,
-          text,
-          from: firstName === user?.firstName ? "me" : "them",
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ]);
+    // ✅ mark seen AFTER socket ready
+    socket.emit("markSeen", { chatId });
+
+    socket.on("messageReceived", (message) => {
+      setMessages((prev) => [...prev, message]);
+
+      // mark seen when new message comes
+      socket.emit("markSeen", { chatId });
+    });
+
+    socket.on("typing", ({ userId }) => {
+      if (userId !== user._id) {
+        setTypingUser(userId);
+      }
+    });
+
+    socket.on("stopTyping", () => {
+      setTypingUser(null);
+    });
+
+    socket.on("messagesSeen", ({ userId }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (!msg.readBy?.includes(userId)) {
+            return {
+              ...msg,
+              readBy: [...(msg.readBy || []), userId],
+            };
+          }
+          return msg;
+        })
+      );
     });
 
     return () => {
       socket.off("messageReceived");
+      socket.off("typing");
+      socket.off("stopTyping");
+      socket.off("messagesSeen");
       socket.disconnect();
     };
-  }, [userId, targetUserId, user?.firstName]);
+  }, [chatId, token, user?._id]);
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  // 🔥 Auto scroll
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
+  if (!user) return <div>Loading...</div>;
+
+  // 🔥 Send message
   const sendMessage = () => {
-  if (!text.trim()) return;
+    if (!text.trim()) return;
 
-  const socket = socketRef.current;
-  if (!socket) return;
+    socketRef.current.emit("sendMessage", { chatId, text });
 
-  socket.emit("sendMessage", {
-    firstName: user.firstName,
-    userId,
-    targetUserId,
-    text,
-  });
+    setText("");
+    setIsTyping(false);
+    socketRef.current.emit("stopTyping", chatId);
+  };
 
-  setText("");
-};
+  // 🔥 Typing handler (FIXED)
+  const handleTyping = (e) => {
+    setText(e.target.value);
 
-    // setMessages((prev) => [
-    //   ...prev,
-    //   {
-    //     id: Date.now(),
-    //     firstName: user.firstName,
-    //     text,
-    //     from: "me",
-    //     time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    //   },
-    // ]);
+    if (!isTyping) {
+      socketRef.current.emit("typing", chatId);
+      setIsTyping(true);
+    }
 
-  //   setText("");
-  // };
+    clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socketRef.current.emit("stopTyping", chatId);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const isSeen = (msg) => msg.readBy?.length > 1;
 
   return (
     <div className="chat-page">
@@ -81,53 +132,69 @@ const Chat = () => {
           <header className="chat-thread-header">
             <div className="chat-peer-meta">
               <div className="chat-peer-name">Chat</div>
-              <div className="chat-peer-status">
-                {targetUserId ? `Chatting with: ${targetUserId}` : "Open a chat"}
-              </div>
+              <div className="chat-peer-status">Chat ID: {chatId}</div>
             </div>
           </header>
 
           <div className="chat-thread-body">
 
-            {messages.length === 0 && (
-              <div className="chat-empty">Type a message to start.</div>
-            )}
-
             {messages.map((m) => (
               <div
-                key={m.id}
-                className={`chat-msg ${m.from === "me" ? "me" : "them"}`}
+                key={m._id}
+                className={`chat-msg ${m.senderId === user._id ? "me" : "them"
+                  }`}
               >
-                <div className={`chat-bubble ${m.from === "me" ? "me" : "them"}`}>
-                  <div className="chat-text">{m.text}</div>
+                <div className={`chat-bubble ${m.senderId === user._id ? "me" : "them"
+                  }`}>
+                  <div className="chat-text">
+                    {m.isDeleted ? "Message deleted" : m.text}
+                  </div>
+
                   <div className="chat-meta">
-                    <span className="chat-time">{m.time}</span>
+                    <span className="chat-time">
+                      {new Date(m.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+
+                    {m.isEdited && <span> (edited)</span>}
+
+                    {/* ✅ Seen status */}
+                    {m.senderId === user._id && (
+                      <span className="seen-status">
+                        {isSeen(m) ? " ✔✔ Seen" : " ✔ Sent"}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
+
+            {/* 🔥 Typing indicator */}
+            {typingUser && (
+              <div className="typing-indicator">Typing...</div>
+            )}
+
+            <div ref={bottomRef} />
           </div>
 
           <footer className="chat-composer">
-            <div className="chat-input-wrap">
-              <textarea
-                className="chat-input"
-                rows={1}
-                placeholder="Type a message…"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                  }
-                }}
-              />
-            </div>
+            <textarea
+              className="chat-input"
+              placeholder="Type a message…"
+              value={text}
+              onChange={handleTyping} // ✅ FIXED
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+            />
 
             <button className="chat-send-btn" onClick={sendMessage}>
-              <span className="chat-send-icon">{sendIcon}</span>
-              <span className="chat-send-text">Send</span>
+              Send
             </button>
           </footer>
 
@@ -136,13 +203,5 @@ const Chat = () => {
     </div>
   );
 };
-
-/* Icons */
-
-const sendIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 12 16.5-7.5-6.3 16.5-2.7-7.2-7.5-1.8Z" />
-  </svg>
-);
 
 export default Chat;
