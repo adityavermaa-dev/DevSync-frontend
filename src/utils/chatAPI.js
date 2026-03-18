@@ -9,6 +9,8 @@ const normalizeArrayResponse = (res, key) => {
 
 const normalizeObjectResponse = (res, key) => {
   if (res?.data?.[key]) return res.data[key];
+  if (res?.data?.data?.[key]) return res.data.data[key];
+  if (res?.data?.data && typeof res.data.data === "object") return res.data.data;
   return res?.data;
 };
 

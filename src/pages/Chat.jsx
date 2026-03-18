@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./Chat.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -21,6 +21,7 @@ const Chat = () => {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [pageError, setPageError] = useState("");
+  const messageLoadRequestRef = useRef(0);
 
   const activeChat = useMemo(
     () => chats.find((chat) => chat._id === activeChatId) || null,
@@ -42,15 +43,42 @@ const Chat = () => {
     return chat.lastMessage.text || "No messages yet";
   };
 
+  const getMessageKey = useCallback(
+    (message) => message?._id || message?.clientTempId,
+    []
+  );
+
+  const mergeMessages = useCallback(
+    (existing, incoming) => {
+      const incomingKeys = new Set(
+        incoming.map((message) => getMessageKey(message))
+      );
+      const optimisticMessages = existing.filter(
+        (message) =>
+          message?._optimistic && !incomingKeys.has(getMessageKey(message))
+      );
+
+      const merged = [...incoming, ...optimisticMessages];
+      return merged.sort(
+        (a, b) =>
+          new Date(a?.createdAt || 0).getTime() -
+          new Date(b?.createdAt || 0).getTime()
+      );
+    },
+    [getMessageKey]
+  );
+
   const loadMessages = useCallback(async (chatId) => {
     if (!chatId) return;
 
+    const requestId = ++messageLoadRequestRef.current;
     setIsLoadingMessages(true);
     setPageError("");
     try {
       const fetchedMessages = await chatAPI.getMessages(chatId, 1, 100);
       const ordered = [...fetchedMessages].reverse();
-      setMessages(ordered);
+      if (requestId !== messageLoadRequestRef.current) return;
+      setMessages((prev) => mergeMessages(prev, ordered));
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Unable to load messages.";
@@ -59,7 +87,7 @@ const Chat = () => {
     } finally {
       setIsLoadingMessages(false);
     }
-  }, []);
+  }, [mergeMessages]);
 
   const ensureActiveChat = useCallback(async (fetchedChats) => {
     if (!currentUserId) return;
@@ -129,13 +157,40 @@ const Chat = () => {
     const trimmed = text.trim();
     if (!trimmed || !activeChatId) return;
 
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage = {
+      _id: tempId,
+      clientTempId: tempId,
+      chatId: activeChatId,
+      senderId: currentUserId,
+      text: trimmed,
+      createdAt: new Date().toISOString(),
+      isEdited: false,
+      isDeleted: false,
+      _optimistic: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticMessage]);
+    updateChatPreview(activeChatId, optimisticMessage);
+    setText("");
     setIsSending(true);
     try {
       const sentMessage = await chatAPI.sendMessage(activeChatId, trimmed);
-      setMessages((prev) => [...prev, sentMessage]);
+      if (!sentMessage?._id) {
+        await loadMessages(activeChatId);
+        return;
+      }
+
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.clientTempId === tempId ? sentMessage : message
+        )
+      );
       updateChatPreview(activeChatId, sentMessage);
-      setText("");
     } catch (error) {
+      setMessages((prev) =>
+        prev.filter((message) => message.clientTempId !== tempId)
+      );
       const errorMessage =
         error?.response?.data?.message || "Unable to send message.";
       toast.error(errorMessage);
