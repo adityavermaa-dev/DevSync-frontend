@@ -277,8 +277,6 @@ const Chat = () => {
         });
         updateChatPreview(activeChatId, message);
       }
-
-      socketRef.current?.emit("sendMessage", { chatId: activeChatId, text: trimmed });
     } catch {
       toast.error("Failed to send message");
       setMessages((prev) =>
@@ -305,7 +303,6 @@ const Chat = () => {
         });
         updateChatPreview(tempMessage.chatId, message);
       }
-      socketRef.current?.emit("sendMessage", { chatId: tempMessage.chatId, text: tempMessage.text });
     } catch {
       toast.error("Still failed to send");
       setMessages((prev) =>
@@ -442,7 +439,14 @@ const Chat = () => {
                   <div>
                     <h3 className="chat-peer-name">{peer.firstName} {peer.lastName}</h3>
                     <span className="chat-peer-status">
-                      <span className={`chat-status-dot ${isPeerTyping ? "typing" : "online"}`} /> {isPeerTyping ? "Typing…" : "Online"}
+                      <span className={`chat-status-dot ${isPeerTyping ? "typing" : "online"}`} />
+                      {isPeerTyping ? (
+                        <span className="chat-typing-indicator">
+                          <span></span><span></span><span></span>
+                        </span>
+                      ) : (
+                        "Online"
+                      )}
                     </span>
                   </div>
                 </div>
@@ -536,8 +540,8 @@ const Chat = () => {
             </>
           ) : (
             <div className="chat-empty-thread">
-              <div className="chat-empty-icon">💬</div>
-              <h3>Select a conversation</h3>
+              <div className="chat-empty-icon animate-float">💬</div>
+              <h3 className="text-gradient">Select a conversation</h3>
               <p>Choose from your existing conversations or start a new one.</p>
             </div>
           )}

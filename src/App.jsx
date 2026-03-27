@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Navbar from "./components/Navbar"
 import Body from "./Body"
 import Login from "./pages/Login"
+import About from "./pages/About"
+import Community from "./pages/Community"
 import Profile from "./pages/Profile"
 import { Provider } from "react-redux"
 import appStore from "./redux/appStore"
@@ -33,6 +35,8 @@ function App() {
         <BrowserRouter basename="/">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/community" element={<Community />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/email-verified" element={<EmailVerified />} />
