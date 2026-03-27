@@ -1,25 +1,31 @@
-/* ===== Tinder-Style User Card ===== */
-
+/* ===== 3D Light Theme User Card ===== */
 .user-card {
   position: relative;
   width: 100%;
   max-width: 400px;
-  border-radius: 20px;
+  border-radius: 36px;
   overflow: hidden;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.85); /* Glassmorphic base */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 4px solid #ffffff; /* Thick white border for 3D effect */
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.12),
+    0 10px 20px rgba(0, 0, 0, 0.05),
+    inset 0 0 20px rgba(255, 255, 255, 0.6);
   user-select: none;
-  color: var(--text-pure);
+  color: #1a1a1a;
+  transition: transform 0.2s ease;
 }
 
-/* ── Full-Bleed Photo (Tinder style) ── */
+/* ── Full-Bleed Photo ── */
 .user-card-photo {
   position: relative;
   width: 100%;
   height: 420px;
   overflow: hidden;
-  background: var(--bg-surface-elevated);
+  background: #f3f4f6;
+  border-radius: 32px 32px 0 0; /* Smooth inner border to match outer 36px minus 4px */
 }
 
 .user-card-photo img {
@@ -29,7 +35,7 @@
   display: block;
 }
 
-/* Gradient overlay at bottom of photo */
+/* Light gradient overlay for text readability */
 .user-card-gradient {
   position: absolute;
   bottom: 0;
@@ -38,8 +44,8 @@
   height: 60%;
   background: linear-gradient(
     to top,
-    rgba(3, 3, 5, 0.95) 0%,
-    rgba(3, 3, 5, 0.7) 40%,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.2) 45%,
     transparent 100%
   );
   pointer-events: none;
@@ -56,68 +62,72 @@
 
 .user-card-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
   margin: 0;
   display: flex;
   align-items: baseline;
   gap: 8px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   letter-spacing: -0.5px;
 }
 
 .user-card-age {
-  font-weight: 400;
-  font-size: 1.3rem;
-  opacity: 0.85;
+  font-weight: 600;
+  font-size: 1.4rem;
+  opacity: 0.9;
 }
 
 /* ── Card Body ── */
 .user-card-body {
-  padding: 18px 22px 12px;
-  background: var(--bg-surface);
+  padding: 20px 24px 12px;
+  background: transparent;
 }
 
 .user-card-info-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 6px 0;
-  color: var(--text-secondary);
-  font-size: 0.88rem;
+  color: #4b5563;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .user-card-info-row svg {
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
+  width: 18px;
+  height: 18px;
+  color: #8b5cf6; /* vibrant purple icon */
   flex-shrink: 0;
 }
 
 .user-card-divider {
-  height: 1px;
-  background: var(--border-subtle);
-  margin: 10px 0;
+  height: 2px;
+  background: rgba(0,0,0,0.04);
+  margin: 14px 0;
+  border-radius: 2px;
 }
 
 .user-card-section {
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
 .user-card-section-title {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: var(--text-muted);
-  margin: 0 0 8px;
+  color: #9ca3af;
+  margin: 0 0 10px;
 }
 
 .user-card-about {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
+  font-size: 1.05rem;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.6;
   margin: 0;
 }
 
@@ -125,28 +135,30 @@
 .user-card-skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .user-card-skill {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: rgba(99, 102, 241, 0.12);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.1);
   transition: all 0.2s ease;
 }
 
 .user-card-skill:hover {
-  background: rgba(99, 102, 241, 0.25);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  background: #eff6ff;
 }
 
-/* ── Actions (Like/Pass buttons) ── */
+/* ── Actions (Like/Pass buttons parent) ── */
 .user-card-actions {
-  padding: 14px 22px 20px;
-  background: var(--bg-surface);
+  padding: 10px 24px 28px;
+  background: transparent;
 }
