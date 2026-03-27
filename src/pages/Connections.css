@@ -1,10 +1,12 @@
-/* Premium DevSync Connections CSS */
+/* Premium DevSync Connections CSS - Light Theme */
 
 .connections-page {
-  min-height: calc(100vh - 80px);
-  padding: 40px 20px;
+  min-height: 100vh;
+  padding: 120px 20px 60px;
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 10;
 }
 
 .connections-container {
@@ -17,27 +19,27 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   animation: fadeInUp 0.5s ease-out;
 }
 
 .connections-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-pure);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
   margin: 0;
   font-family: 'Outfit', sans-serif;
   letter-spacing: -0.5px;
 }
 
 .connections-count {
-  background: rgba(99, 102, 241, 0.15);
-  color: var(--accent-indigo);
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: #eff6ff;
+  color: #3b82f6;
+  padding: 6px 16px;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .connections-grid {
@@ -48,7 +50,7 @@
 
 .connection-card-wrap {
   opacity: 0;
-  animation: fadeInUp 0.5s forwards var(--ease-smooth);
+  animation: fadeInUp 0.5s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Loading & Empty States */
@@ -62,21 +64,23 @@
 }
 
 .connections-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border-subtle);
-  border-top-color: var(--accent-cyan);
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f4f6;
+  border-top-color: #3b82f6;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
 }
 
 .connections-empty {
-  background: var(--bg-surface-glass);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);
   padding: 60px 40px;
-  border-radius: 24px;
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-glass);
+  border-radius: 36px;
+  border: 4px solid #ffffff;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.06);
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .connections-empty-icon {
@@ -87,15 +91,18 @@
 }
 
 .connections-empty-title {
-  font-size: 1.5rem;
-  color: var(--text-pure);
-  margin: 0 0 10px 0;
-  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
 }
 
 .connections-empty-text {
-  color: var(--text-secondary);
-  font-size: 1rem;
-  max-width: 300px;
+  color: #6b7280;
+  font-size: 1.1rem;
+  font-weight: 500;
+  max-width: 320px;
   margin: 0 auto;
+  line-height: 1.6;
 }
