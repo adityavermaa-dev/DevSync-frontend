@@ -21,7 +21,7 @@ const Navbar = () => {
 
     const [scrolled, setScrolled] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [mobileOpen, setMobileOpen] = useState(false);
+
     const dropdownRef = useRef(null);
 
     // Scroll listener for collapsing/elevating navbar
@@ -133,10 +133,7 @@ const Navbar = () => {
                                     )}
                                 </div>
 
-                                {/* Mobile hamburger */}
-                                <div className={`nav-hamburger md:hidden ${mobileOpen ? 'open' : ''}`} onClick={() => setMobileOpen(prev => !prev)}>
-                                    <span /><span /><span />
-                                </div>
+
                             </>
                         )}
                     </div>
@@ -146,49 +143,7 @@ const Navbar = () => {
             {/* Spacer */}
             <div className="h-24 sm:h-28" />
 
-            {/* Mobile drawer */}
-            {user && (
-                <>
-                    <div className={`nav-mobile-overlay ${mobileOpen ? 'visible' : ''}`} onClick={() => setMobileOpen(false)} />
-                    <div className={`nav-mobile-drawer ${mobileOpen ? 'open' : ''}`}>
-                        <div className="flex items-center gap-3 mb-6 px-2">
-                            <div className="nav-avatar-btn">
-                                <img src={photoUrl} alt={firstName} className="w-12 h-12 rounded-full object-cover shadow-sm" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900">{user?.firstName} {user?.lastName}</p>
-                                <p className="text-sm text-gray-500">{user?.email}</p>
-                            </div>
-                        </div>
 
-                        <div className="nav-divider" />
-
-                        <div className="flex flex-col gap-1 my-4">
-                            {navLinks.map(({ to, label, icon }) => (
-                                <Link
-                                    key={to}
-                                    to={to}
-                                    className={`mobile-nav-item ${isActive(to) ? 'active' : ''}`}
-                                    onClick={() => setMobileOpen(false)}
-                                >
-                                    <span className="w-5 h-5">{icon}</span>
-                                    {label}
-                                </Link>
-                            ))}
-                            <Link to="/profile" className="mobile-nav-item" onClick={() => setMobileOpen(false)}>
-                                {profileIcon} Profile
-                            </Link>
-                        </div>
-                        
-                        <div className="mt-auto">
-                            <div className="nav-divider" />
-                            <button onClick={handleLogout} className="mobile-nav-item danger text-red-500 w-full justify-start mt-2">
-                                {logoutIcon} Sign out
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
         </>
     );
 };
