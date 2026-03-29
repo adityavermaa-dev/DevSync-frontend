@@ -1,36 +1,40 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import React, { Suspense, lazy } from 'react';
+import { Provider } from "react-redux"
+import { Toaster } from 'react-hot-toast'
+import appStore from "./redux/appStore"
+import ThemeProvider from "./components/ThemeProvider"
 import Body from "./Body"
 import Login from "./pages/Login"
-import About from "./pages/About"
-import Community from "./pages/Community"
-import Profile from "./pages/Profile"
-import { Provider } from "react-redux"
-import appStore from "./redux/appStore"
-import Feed from "./pages/Feed"
-import Connections from "./pages/connections"
-import UserProfile from "./pages/UserProfile"
-import Requests from "./pages/Requests"
-import { Toaster } from 'react-hot-toast'
-import PrivacyPolicy from "./pages/PrivacyPolicy"
-import TermsOfService from "./pages/TermsOfService"
-import RefundPolicy from "./pages/RefundPolicy"
-import ContactUs from "./pages/ContactUs"
-import VideoUpload from "./components/VideoUpload"
-import VideoFeed from "./components/VideoFeed"
-import Premium from "./pages/Premium"
-import ForgotPassword from "./pages/ForgotPassword"
-import ResetPassword from "./pages/ResetPassword"
-import EmailVerified from "./pages/EmailVerified"
-import VerificationFailed from "./pages/VerificationFailed"
-import SignupSuccess from "./pages/SignupSuccess"
-import Chat from "./pages/Chat"
-import ThemeProvider from "./components/ThemeProvider"
-import Projects from "./pages/Projects"
-import CreateProject from "./pages/CreateProject"
-import ProjectDetail from "./pages/ProjectDetail"
-import Notifications from "./pages/Notifications"
-import BuildLogs from "./pages/BuildLogs"
-import Onboarding from "./pages/Onboarding"
+
+// Lazy Loaded Routes
+const About = lazy(() => import("./pages/About"));
+const Community = lazy(() => import("./pages/Community"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Feed = lazy(() => import("./pages/Feed"));
+const Connections = lazy(() => import("./pages/connections"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
+const Requests = lazy(() => import("./pages/Requests"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
+const VideoUpload = lazy(() => import("./components/VideoUpload"));
+const VideoFeed = lazy(() => import("./components/VideoFeed"));
+const Premium = lazy(() => import("./pages/Premium"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const EmailVerified = lazy(() => import("./pages/EmailVerified"));
+const VerificationFailed = lazy(() => import("./pages/VerificationFailed"));
+const SignupSuccess = lazy(() => import("./pages/SignupSuccess"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Projects = lazy(() => import("./pages/Projects"));
+const CreateProject = lazy(() => import("./pages/CreateProject"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const BuildLogs = lazy(() => import("./pages/BuildLogs"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+
 
 function App() {
 
@@ -39,39 +43,47 @@ function App() {
       <Provider store={appStore}>
         <ThemeProvider>
           <BrowserRouter basename="/">
-            <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/email-verified" element={<EmailVerified />} />
-            <Route path="/verification-failed" element={<VerificationFailed />} />
-            <Route path="/verification-error" element={<VerificationFailed />} />
-            <Route path="/signup-success" element={<SignupSuccess />} />
-            <Route path="/" element={<Body />}>
-              <Route path="/" element={<Feed />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/connections" element={<Connections />} />
-              <Route path="/user/:userId" element={<UserProfile />} />
-              <Route path="/requests" element={<Requests />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/refund" element={<RefundPolicy />} />
-              <Route path="/contact" element={<ContactUs />} />
-              <Route path="/upload" element={<VideoUpload />} />
-              <Route path="/feed" element={<VideoFeed />} />
-              <Route path="/premium" element={<Premium />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/chat/:targetUserId" element={<Chat />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/new" element={<CreateProject />} />
-              <Route path="/projects/:projectId" element={<ProjectDetail />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/updates" element={<BuildLogs />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-            </Route>
-            </Routes>
+            <Suspense fallback={
+              <div className="flex h-screen w-full items-center justify-center bg-[#f9fafb] dark:bg-[#0D0D12]">
+                <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+              </div>
+            }>
+              <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/email-verified" element={<EmailVerified />} />
+              <Route path="/verification-failed" element={<VerificationFailed />} />
+              <Route path="/verification-error" element={<VerificationFailed />} />
+              <Route path="/signup-success" element={<SignupSuccess />} />
+              <Route path="/" element={<Body />}>
+                <Route path="/" element={<Feed />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/connections" element={<Connections />} />
+                <Route path="/user/:userId" element={<UserProfile />} />
+                <Route path="/requests" element={<Requests />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/refund" element={<RefundPolicy />} />
+                <Route path="/contact" element={<ContactUs />} />
+                <Route path="/upload" element={<VideoUpload />} />
+                <Route path="/feed" element={<VideoFeed />} />
+                <Route path="/premium" element={<Premium />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="/chat/:targetUserId" element={<Chat />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/new" element={<CreateProject />} />
+                <Route path="/projects/:projectId" element={<ProjectDetail />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/updates" element={<BuildLogs />} />
+                <Route path="/build-logs" element={<BuildLogs />} />
+                <Route path="/reels" element={<VideoFeed />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+              </Route>
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </ThemeProvider>
         <Toaster

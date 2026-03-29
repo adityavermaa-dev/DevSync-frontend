@@ -10,6 +10,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Peer from 'peerjs';
+import VideoCallModal from '../components/VideoCallModal';
 
 const formatTime = (dateStr) => {
   if (!dateStr) return "";
@@ -46,6 +48,18 @@ const Chat = () => {
   const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
   const [showMembersPanel, setShowMembersPanel] = useState(false);
   const [sidebarTab, setSidebarTab] = useState("direct"); // "direct" or "projects"
+
+  // Video Call State
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
+  const [isIncoming, setIsIncoming] = useState(false);
+  const [isOutgoing, setIsOutgoing] = useState(false);
+  const [callerName, setCallerName] = useState("");
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+  const [callStatus, setCallStatus] = useState(null); // 'calling', 'connected'
+
+  const peerRef = useRef(null);
+  const currentCallRef = useRef(null);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -126,14 +140,36 @@ const Chat = () => {
       setIsPeerTyping(false);
     });
 
-    // Seen/read receipts (event name may need to match backend)
     socket.on("messageSeen", ({ chatId, messageId }) => {
       if (chatId === activeChatIdRef.current && messageId) {
         setLastSeenMessageId(messageId);
       }
     });
 
-    return () => socket.disconnect();
+    // Initialize PeerJS for Video Calling
+    const peer = new Peer(currentUserId);
+    peerRef.current = peer;
+
+    peer.on('call', (call) => {
+      // Handle incoming call
+      setIsVideoCallOpen(true);
+      setIsIncoming(true);
+      setCallStatus('calling');
+      setCallerName('Incoming Caller');
+      currentCallRef.current = call;
+      
+      call.on('stream', (rStream) => {
+        setRemoteStream(rStream);
+      });
+      call.on('close', () => {
+        endCallUI();
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+      peer.destroy();
+    };
   }, [currentUserId]);
 
   useEffect(() => {
@@ -372,6 +408,74 @@ const Chat = () => {
     } catch { toast.error("Failed to delete message"); }
   };
 
+  // Video Call Actions
+  const openMediaStream = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      setLocalStream(stream);
+      return stream;
+    } catch (err) {
+      toast.error("Failed to access camera and microphone");
+      return null;
+    }
+  };
+
+  const initiateCall = async () => {
+    if (!peer || !peer._id) return;
+    const stream = await openMediaStream();
+    if (!stream) return;
+
+    setIsVideoCallOpen(true);
+    setIsOutgoing(true);
+    setCallStatus('calling');
+    setCallerName(peer.firstName);
+
+    const call = peerRef.current.call(peer._id, stream);
+    currentCallRef.current = call;
+
+    call.on('stream', (rStream) => {
+      setRemoteStream(rStream);
+      setCallStatus('connected');
+    });
+
+    call.on('close', () => {
+      endCallUI();
+    });
+  };
+
+  const activeAcceptCall = async () => {
+    const stream = await openMediaStream();
+    if (!stream) {
+        endCallUI();
+        return;
+    }
+    
+    setCallStatus('connected');
+    currentCallRef.current.answer(stream);
+  };
+
+  const endCallUI = () => {
+    setIsVideoCallOpen(false);
+    setIsIncoming(false);
+    setIsOutgoing(false);
+    setCallStatus(null);
+    setCallerName("");
+    
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      setLocalStream(null);
+    }
+    setRemoteStream(null);
+    currentCallRef.current = null;
+  };
+
+  const declineOrEndCall = () => {
+    if (currentCallRef.current) {
+        currentCallRef.current.close();
+    }
+    endCallUI();
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -418,6 +522,7 @@ const Chat = () => {
   if (!user) return <div className="chat-page"><div className="chat-loading">Loading...</div></div>;
 
   return (
+    <>
     <div className="chat-page">
       <div className={`chat-shell ${!activeChatId ? 'no-active' : ''}`}>
 
@@ -515,6 +620,7 @@ const Chat = () => {
                     </button>
                   </div>
                 ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                   <div className="chat-peer-info">
                     <img src={peer?.photoUrl || defaultAvatar} alt="" className="chat-peer-avatar" onError={(e) => { e.target.src = defaultAvatar; }} />
                     <div>
@@ -531,6 +637,15 @@ const Chat = () => {
                       </span>
                     </div>
                   </div>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <button onClick={initiateCall} title="Voice Call" style={{ background: 'var(--dashboard-glass-border)', border: '1px solid var(--dashboard-glass-border-translucent)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--dashboard-text-main)', transition: 'all 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform='scale(1)'}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="20" height="20"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.273-3.973-6.869-6.869l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
+                    </button>
+                    <button onClick={initiateCall} title="Video Call" style={{ background: 'var(--dashboard-glass-border)', border: '1px solid var(--dashboard-glass-border-translucent)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--dashboard-text-main)', transition: 'all 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform='scale(1)'}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="20" height="20"><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                    </button>
+                  </div>
+                </div>
                 )}
               </div>
 
@@ -701,15 +816,37 @@ const Chat = () => {
               </div>
             </>
           ) : (
-            <div className="chat-empty-thread">
-              <div className="chat-empty-icon animate-float">💬</div>
-              <h3 className="text-gradient">Select a conversation</h3>
-              <p>Choose from your existing conversations or start a new one.</p>
+            <div className="flex flex-col items-center justify-center h-full w-full bg-white/30 dark:bg-black/10 backdrop-blur-xl border-l border-white/40 dark:border-gray-800 text-center p-12">
+              <div className="w-32 h-32 bg-gradient-to-tr from-purple-200 to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-inner animate-float transform rotate-3">
+                <span className="text-6xl" style={{ filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.1))' }}>💬</span>
+              </div>
+              <h3 className="text-3xl font-extrabold feed-text-main mb-3" style={{ fontFamily: "'Outfit', sans-serif" }}>Your Conversations</h3>
+              <p className="text-gray-500 font-medium max-w-sm mb-8 text-[15px] leading-relaxed">Select a chat from the sidebar to start messaging, or browse the Hub to find new teams and projects.</p>
+              <button 
+                onClick={() => navigate('/projects')}
+                className="px-8 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/20 hover:scale-105 transition-all flex items-center gap-3"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" /></svg>
+                Explore Projects
+              </button>
             </div>
           )}
         </section>
       </div>
     </div>
+      <VideoCallModal 
+        isOpen={isVideoCallOpen} 
+        isIncoming={isIncoming} 
+        isOutgoing={isOutgoing} 
+        callerName={callerName} 
+        localStream={localStream} 
+        remoteStream={remoteStream} 
+        onAccept={activeAcceptCall} 
+        onDecline={declineOrEndCall} 
+        onEndCall={declineOrEndCall} 
+        callStatus={callStatus} 
+      />
+    </>
   );
 };
 
