@@ -186,6 +186,64 @@
   transform: translateY(-2px);
 }
 
+/* Intent & Networking */
+.profile-intent-badge-wrap {
+  margin-bottom: 20px;
+}
+
+.profile-intent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.intent-cofounder { background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1)); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
+.intent-freelance { background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1)); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+.intent-opensource { background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1)); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+.intent-mentor { background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(124, 58, 237, 0.1)); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
+.intent-networking { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1)); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+
+/* Edit Intent Selector */
+.profile-intent-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-intent-option {
+  padding: 12px 16px;
+  background: var(--dashboard-surface-alt);
+  border: 2px solid var(--dashboard-border);
+  border-radius: 12px;
+  color: var(--dashboard-text-faint);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-intent-option:hover {
+  background: var(--dashboard-surface);
+  border-color: #8b5cf6;
+}
+
+.profile-intent-option.active {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: #8b5cf6;
+  color: #a78bfa;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
 /* Tabs */
 .profile-tabs {
   display: flex;

@@ -2,6 +2,14 @@ import React from 'react';
 import defaultAvatar from '../assests/images/default-user-image.png';
 import './UserCard.css';
 
+const intentLabels = {
+    cofounder: '🚀 Looking for Co-Founder',
+    freelance: '💼 Open to Freelance/Hire',
+    opensource: '🤝 Open Source Collaborator',
+    mentor: '📚 Seeking Mentor/Mentee',
+    networking: '🧑‍💻 Just Networking',
+};
+
 const UserCard = ({ user, actions, showEmail = false }) => {
     if (!user) return null;
 
@@ -21,6 +29,15 @@ const UserCard = ({ user, actions, showEmail = false }) => {
                     onError={(e) => { e.target.src = defaultAvatar; }}
                 />
                 <div className="user-card-gradient" />
+                
+                {user.intent && (
+                    <div className="user-card-intent-badge">
+                        <span className={`intent-tag intent-${user.intent}`}>
+                            {intentLabels[user.intent] || user.intent}
+                        </span>
+                    </div>
+                )}
+                
                 <div className="user-card-identity">
                     <h2 className="user-card-name">
                         {user.firstName || 'Developer'}
