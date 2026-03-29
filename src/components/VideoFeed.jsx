@@ -213,7 +213,7 @@ const VideoFeed = () => {
                                     className="panel-avatar-small cursor-pointer"
                                     onClick={(e) => handleViewProfile(video.userId, e)}
                                 />
-                                <div className="panel-caption-text">
+                                <div className="panel-caption-text" style={{width: '100%'}}>
                                     <span 
                                         className="font-bold cursor-pointer hover:underline mr-2" 
                                         onClick={(e) => handleViewProfile(video.userId, e)}
@@ -221,6 +221,40 @@ const VideoFeed = () => {
                                         {video.userId?.firstName}
                                     </span>
                                     {video.caption || 'No caption provided.'}
+
+                                    {/* Linked Project */}
+                                    {video.targetProject && (
+                                        <div style={{ marginTop: '12px', marginBottom: '8px' }}>
+                                            <div 
+                                                className="video-project-link" 
+                                                onClick={(e) => { e.stopPropagation(); navigate(`/projects/${video.targetProject._id || video.targetProject}`); }}
+                                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', padding: '6px 14px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', border: '1px solid rgba(139, 92, 246, 0.2)' }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width:14, height:14}}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                                                </svg>
+                                                Linked Project
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Code Snippet */}
+                                    {video.codeSnippet && (
+                                        <div className="video-code-snippet" style={{ marginTop: '12px', backgroundColor: 'var(--dashboard-surface-alt)', padding: '12px', borderRadius: '12px', border: '1px solid var(--dashboard-border)' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--dashboard-text-faint)', textTransform: 'uppercase' }}>Snippet</span>
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(video.codeSnippet); toast.success("Copied snippet"); }}
+                                                    style={{ background: 'none', border: 'none', color: '#8b5cf6', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                                                >
+                                                    Copy
+                                                </button>
+                                            </div>
+                                            <pre style={{ margin: 0, padding: 0, whiteSpace: 'pre-wrap', fontFamily: '"JetBrains Mono", monospace', fontSize: '0.85rem', color: 'var(--dashboard-text-secondary)', overflowX: 'auto' }}>
+                                                <code>{video.codeSnippet}</code>
+                                            </pre>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             

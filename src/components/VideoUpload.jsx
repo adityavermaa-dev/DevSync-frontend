@@ -1,5 +1,7 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { BASE_URL } from '../constants/commonData';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import './VideoUpload.css';
 
@@ -8,9 +10,22 @@ const MAX_CAPTION = 280;
 const VideoUpload = () => {
     const [videoFile, setVideoFile] = useState(null);
     const [caption, setCaption] = useState('');
+    const [linkedProject, setLinkedProject] = useState('');
+    const [codeSnippet, setCodeSnippet] = useState('');
+    const [myProjects, setMyProjects] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
     const fileInputRef = useRef(null);
+    
+    const user = useSelector(store => store.user);
+
+    useEffect(() => {
+        if (user) {
+            axios.get(`${BASE_URL}/projects?owner=${user._id}`, { withCredentials: true })
+                .then(res => setMyProjects(res.data?.projects || res.data || []))
+                .catch(err => console.error('Failed to load projects for linking', err));
+        }
+    }, [user]);
 
     const fileSize = useMemo(() => {
         if (!videoFile) return '';
@@ -57,6 +72,8 @@ const VideoUpload = () => {
         const formData = new FormData();
         formData.append('video', videoFile);
         formData.append('caption', caption);
+        if (linkedProject) formData.append('targetProject', linkedProject);
+        if (codeSnippet.trim()) formData.append('codeSnippet', codeSnippet);
 
         try {
             const response = await fetch(`${BASE_URL}/upload`, {
@@ -69,6 +86,8 @@ const VideoUpload = () => {
                 toast.success('Reel uploaded successfully! 🎉', { id: uploadToast });
                 setVideoFile(null);
                 setCaption('');
+                setLinkedProject('');
+                setCodeSnippet('');
                 if (fileInputRef.current) fileInputRef.current.value = '';
             } else {
                 toast.error('Upload failed.', { id: uploadToast });
@@ -160,6 +179,46 @@ const VideoUpload = () => {
                         />
                         <div className={`caption-char-count ${captionLengthClass}`}>
                             {caption.length}/{MAX_CAPTION}
+                        </div>
+                    </div>
+
+                    {/* Code Snippet & Link Project */}
+                    <div className="video-extra-inputs">
+                        <div className="video-caption-group">
+                            <label className="video-caption-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{width:16, height:16, display:'inline', marginRight:4}}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                                </svg>
+                                Link to Project (Optional)
+                            </label>
+                            <select 
+                                className="video-caption-input" 
+                                value={linkedProject} 
+                                onChange={(e) => setLinkedProject(e.target.value)}
+                                style={{ padding: '12px' }}
+                            >
+                                <option value="">Do not link to a project</option>
+                                {myProjects.map(proj => (
+                                    <option key={proj._id} value={proj._id}>{proj.title}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="video-caption-group">
+                            <label className="video-caption-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{width:16, height:16, display:'inline', marginRight:4}}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                                </svg>
+                                Code Snippet (Optional)
+                            </label>
+                            <textarea
+                                className="video-caption-input"
+                                placeholder="Paste the exact code shown in the reel so others can copy it..."
+                                value={codeSnippet}
+                                onChange={(e) => setCodeSnippet(e.target.value)}
+                                rows={2}
+                                style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.85rem' }}
+                            />
                         </div>
                     </div>
 
