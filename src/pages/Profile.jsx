@@ -23,17 +23,18 @@ const Profile = () => {
     const [newSkill, setNewSkill] = useState('');
 
     const [form, setForm] = useState({
-        firstName: '', lastName: '', age: '', gender: '', about: '', skills: [], intent: '',
+        firstName: '', lastName: '', age: '', gender: '', about: '', skills: [], intent: '', githubUrl: ''
     });
 
     const [profileImageFile, setProfileImageFile] = useState(null);
     const [photoPreview, setPhotoPreview] = useState('');
 
-    // Video Tabs Data
-    const [activeTab, setActiveTab] = useState('my_videos'); // 'my_videos' | 'liked_videos'
+    // Tabs Data
+    const [activeTab, setActiveTab] = useState('my_videos'); // 'my_videos' | 'liked_videos' | 'projects'
     const [myVideos, setMyVideos] = useState([]);
     const [likedVideos, setLikedVideos] = useState([]);
-    const [loadingVideos, setLoadingVideos] = useState(false);
+    const [myProjects, setMyProjects] = useState([]);
+    const [loadingData, setLoadingData] = useState(false);
 
     // Modal
     const [videoToDelete, setVideoToDelete] = useState(null);
@@ -46,31 +47,34 @@ const Profile = () => {
                 age: user.age || '', gender: user.gender || '',
                 about: user.about || '', skills: user.skills || [],
                 intent: user.intent || '',
+                githubUrl: user.githubUrl || '',
             });
             setPhotoPreview(user.photoUrl || '');
         }
     }, [user]);
 
-    const fetchVideos = async () => {
-        setLoadingVideos(true);
+    const fetchProfileData = async () => {
+        setLoadingData(true);
         try {
-            const [myRes, likedRes] = await Promise.all([
-                axios.get(BASE_URL + '/my-videos', { withCredentials: true }),
-                axios.get(BASE_URL + '/liked-videos', { withCredentials: true })
+            const [myRes, likedRes, projRes] = await Promise.all([
+                axios.get(BASE_URL + '/my-videos', { withCredentials: true }).catch(() => ({ data: [] })),
+                axios.get(BASE_URL + '/liked-videos', { withCredentials: true }).catch(() => ({ data: [] })),
+                axios.get(BASE_URL + '/projects?owner=' + user._id, { withCredentials: true }).catch(() => ({ data: { projects: [] } }))
             ]);
             setMyVideos(myRes.data || []);
             setLikedVideos(likedRes.data || []);
+            setMyProjects(projRes.data?.projects || projRes.data || []);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load videos");
+            toast.error("Failed to load some profile data");
         } finally {
-            setLoadingVideos(false);
+            setLoadingData(false);
         }
     };
 
     useEffect(() => {
         if (user && !isEditing) {
-            fetchVideos();
+            fetchProfileData();
         }
     }, [user, isEditing]);
 
@@ -107,7 +111,7 @@ const Profile = () => {
         setIsEditing(false);
         setProfileImageFile(null);
         if (user) {
-            setForm({ firstName: user.firstName || '', lastName: user.lastName || '', age: user.age || '', gender: user.gender || '', about: user.about || '', skills: user.skills || [], intent: user.intent || '' });
+            setForm({ firstName: user.firstName || '', lastName: user.lastName || '', age: user.age || '', gender: user.gender || '', about: user.about || '', skills: user.skills || [], intent: user.intent || '', githubUrl: user.githubUrl || '' });
             setPhotoPreview(user.photoUrl || '');
         }
     };
@@ -123,6 +127,7 @@ const Profile = () => {
             if (form.about) formData.append('about', form.about);
             if (form.skills.length > 0) formData.append('skills', JSON.stringify(form.skills));
             if (form.intent) formData.append('intent', form.intent);
+            if (form.githubUrl) formData.append('githubUrl', form.githubUrl);
             if (profileImageFile) formData.append('profileImage', profileImageFile);
 
             await axios.patch(BASE_URL + '/profile/edit', formData, { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } });
@@ -185,6 +190,13 @@ const Profile = () => {
                         </div>
                         <h1 className="profile-name">{user.firstName} {user.lastName}</h1>
                         {user.about && <p className="profile-bio">{user.about}</p>}
+
+                        {user.githubUrl && (
+                            <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="profile-github-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                GitHub
+                            </a>
+                        )}
                         
                         <div className="profile-badges">
                             {user.age && (
@@ -216,8 +228,17 @@ const Profile = () => {
                         )}
                     </div>
 
-                    {/* Video Tabs */}
+                    {/* Tabs */}
                     <div className="profile-tabs">
+                        <button 
+                            className={`profile-tab ${activeTab === 'projects' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('projects')}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                            </svg>
+                            Projects
+                        </button>
                         <button 
                             className={`profile-tab ${activeTab === 'my_videos' ? 'active' : ''}`}
                             onClick={() => setActiveTab('my_videos')}
@@ -234,42 +255,68 @@ const Profile = () => {
                         </button>
                     </div>
 
-                    {/* Video Grid */}
-                    <div className="profile-video-list-wrap">
-                        {loadingVideos ? (
+                    {/* Content Grid */}
+                    <div className="profile-content-wrap">
+                        {loadingData ? (
                             <div className="profile-loading"><span className="profile-spinner" style={{borderColor: 'rgba(0,0,0,0.1)', borderTopColor: '#8b5cf6'}} /></div>
-                        ) : currentVideos.length > 0 ? (
-                            <div className="profile-video-grid">
-                                {currentVideos.map((video) => (
-                                    <div key={video._id} className="profile-video-item">
-                                        <img src={video.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"} alt="Reel thumbnail" />
-                                        
-                                        <div className="profile-video-overlay">
-                                            <div className="profile-video-stats">
-                                                <span className="profile-video-stat">{playIcon} {video.views || 0}</span>
-                                                <span className="profile-video-stat">{heartIcon} {video.likesCount || 0}</span>
+                        ) : activeTab === 'projects' ? (
+                            <div className="profile-projects-list">
+                                {myProjects.length > 0 ? (
+                                    <div className="profile-projects-grid">
+                                        {myProjects.map(proj => (
+                                            <div key={proj._id} className="profile-proj-card" onClick={() => navigate(`/projects/${proj._id}`)}>
+                                                <h4>{proj.title}</h4>
+                                                <p className="proj-status">{proj.status}</p>
+                                                <div className="proj-techs">
+                                                    {proj.techStack?.slice(0, 3).map((t, i) => <span key={i}>{t}</span>)}
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        {activeTab === 'my_videos' && (
-                                            <div className="profile-video-actions">
-                                                <button 
-                                                    className="profile-delete-video-btn" 
-                                                    onClick={(e) => { e.stopPropagation(); setVideoToDelete(video); }}
-                                                    title="Delete Video"
-                                                >
-                                                    {trashIcon}
-                                                </button>
-                                            </div>
-                                        )}
+                                        ))}
                                     </div>
-                                ))}
+                                ) : (
+                                    <div className="profile-empty-state">
+                                        <div style={{opacity: 0.5, transform: 'scale(1.5)', marginBottom: '10px'}}>🚀</div>
+                                        <h3>No projects yet</h3>
+                                        <p>Create a project to collaborate with others.</p>
+                                    </div>
+                                )}
                             </div>
                         ) : (
-                            <div className="profile-empty-videos">
-                                <div style={{opacity: 0.5, transform: 'scale(1.5)', marginBottom: '10px'}}>{videoGridIcon}</div>
-                                <h3>No videos found</h3>
-                                <p>{activeTab === 'my_videos' ? "Upload your first reel to see it here!" : "Videos you like will appear here."}</p>
+                            <div className="profile-video-list-wrap">
+                                {currentVideos.length > 0 ? (
+                                    <div className="profile-video-grid">
+                                        {currentVideos.map((video) => (
+                                            <div key={video._id} className="profile-video-item">
+                                                <img src={video.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"} alt="Reel thumbnail" />
+                                                
+                                                <div className="profile-video-overlay">
+                                                    <div className="profile-video-stats">
+                                                        <span className="profile-video-stat">{playIcon} {video.views || 0}</span>
+                                                        <span className="profile-video-stat">{heartIcon} {video.likesCount || 0}</span>
+                                                    </div>
+                                                </div>
+
+                                                {activeTab === 'my_videos' && (
+                                                    <div className="profile-video-actions">
+                                                        <button 
+                                                            className="profile-delete-video-btn" 
+                                                            onClick={(e) => { e.stopPropagation(); setVideoToDelete(video); }}
+                                                            title="Delete Video"
+                                                        >
+                                                            {trashIcon}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="profile-empty-state">
+                                        <div style={{opacity: 0.5, transform: 'scale(1.5)', marginBottom: '10px'}}>{videoGridIcon}</div>
+                                        <h3>No videos found</h3>
+                                        <p>{activeTab === 'my_videos' ? "Upload your first reel to see it here!" : "Videos you like will appear here."}</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -387,6 +434,11 @@ const Profile = () => {
                             <input className="profile-input" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={handleSkillKeyDown} placeholder="React, Python..." style={{ flex: 1 }} />
                             <button type="button" className="profile-skill-add-btn" onClick={handleAddSkill}>+ Add</button>
                         </div>
+                    </div>
+
+                    <div className="profile-field">
+                        <label className="profile-field-label">GitHub URL (Optional)</label>
+                        <input className="profile-input" type="url" name="githubUrl" value={form.githubUrl} onChange={handleChange} placeholder="https://github.com/username" />
                     </div>
                 </div>
 
