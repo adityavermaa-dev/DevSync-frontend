@@ -1,9 +1,9 @@
 /* ===== VideoFeed (Reels) - Instagram Split Layout ===== */
 
 .video-feed {
-    height: calc(100vh - 120px);
-    margin-top: 120px;
-    padding-bottom: 20px;
+    height: calc(100vh - 16px);
+    margin-top: 0;
+    padding-bottom: 0px;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
@@ -19,11 +19,11 @@
 
 /* ── Split Layout Card ── */
 .video-item-split {
-    height: calc(100vh - 160px);
+    height: calc(100vh - 96px);
     min-height: 500px;
     width: 100%;
     max-width: 950px; /* Expansive wide desktop card */
-    margin: 0 auto 50px;
+    margin: 40px auto;
     scroll-snap-align: center;
     scroll-snap-stop: always;
     display: flex;
@@ -253,7 +253,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 16px);
 }
 
 .reels-loading h2, .no-reels h2 {
@@ -299,7 +299,7 @@
         gap: 24px;
         position: absolute;
         right: 16px;
-        bottom: 120px;
+        bottom: 80px;
         z-index: 20;
     }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import Navbar from './components/Navbar'
+import Sidebar from './components/Sidebar'
 import Footer from './components/Footer'
 import { Outlet, useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -56,9 +56,9 @@ const Body = () => {
             <div className="landing-bg-circle circle-pink" />
             <div className="landing-bg-circle circle-yellow" />
 
-            <div className="relative z-10 flex flex-col min-h-screen w-full">
-                <Navbar />
-                <main className="flex-grow w-full">
+            <Sidebar />
+            <div className={`relative z-10 flex flex-col min-h-screen w-full transition-all duration-300 ${user ? 'md:pl-[80px]' : ''}`}>
+                <main className="flex-grow w-full pb-20 md:pb-0 pt-4 px-4">
                     <Outlet />
                 </main>
                 <Footer />

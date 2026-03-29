@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -11,37 +11,16 @@ import { removeReels } from '../redux/reelsSlice';
 import logo from '../assests/images/logo.png';
 import userIcon from '../assests/images/default-user-image.png';
 import ThemeToggle from './ThemeToggle';
-import './Navbar.css';
+import './Sidebar.css';
 import toast from 'react-hot-toast';
 
-const Navbar = () => {
+const Sidebar = () => {
     const user = useSelector(store => store.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [scrolled, setScrolled] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-
-    const dropdownRef = useRef(null);
-
-    // Scroll listener for collapsing/elevating navbar
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 12);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
-
-    // Close dropdown on outside click
-    useEffect(() => {
-        const handleClick = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-                setDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
-    }, []);
+    const [isHovered, setIsHovered] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -74,79 +53,69 @@ const Navbar = () => {
     const firstName = user?.firstName || 'User';
     const photoUrl = user?.photoUrl || userIcon;
 
+    if (!user) {
+        return (
+            <div className="fixed top-0 left-0 w-full p-4 z-50 pointer-events-none">
+                <Link to="/" className="flex items-center gap-2 text-white no-underline w-max pointer-events-auto">
+                    <img src={logo} alt="DevSync" className="w-10 h-10 rounded-xl" />
+                    <span className="text-2xl font-bold">DevSync</span>
+                </Link>
+            </div>
+        );
+    }
+
     return (
-        <>
-            <div className="fixed top-0 left-0 w-full flex justify-center z-50 px-4 pt-4 pointer-events-none">
-                <nav className={`app-navbar pointer-events-auto ${scrolled ? 'nav-scrolled' : ''}`}>
-                    
-                    {/* Logo */}
-                    <Link to="/" className="nav-brand">
-                        <img src={logo} alt="DevSync" className="nav-logo-img" />
-                        <span className="nav-brand-text hidden sm:inline-block">DevSync</span>
-                    </Link>
-
-                    {/* Center nav links – desktop */}
-                    {user && (
-                        <div className="nav-main-pill hidden md:flex">
-                            {navLinks.map(({ to, label, icon }) => (
-                                <Link
-                                    key={to}
-                                    to={to}
-                                    className={`nav-pill-item ${isActive(to) ? 'active' : ''}`}
-                                    title={label}
-                                >
-                                    <span className="nav-icon-wrap">{icon}</span>
-                                    <span className="nav-label-hidden xl:inline-block ml-1.5 font-medium">{label}</span>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Right side */}
-                    <div className="nav-actions flex items-center gap-3">
-                        {user && (
-                            <>
-                                <ThemeToggle className="mr-2" />
-                                {/* Avatar dropdown */}
-                                <div className="relative" ref={dropdownRef}>
-                                    <button
-                                        onClick={() => setDropdownOpen(prev => !prev)}
-                                        className="nav-avatar-btn focus:outline-none"
-                                    >
-                                        <img src={photoUrl} alt={firstName} className="nav-avatar-img" />
-                                    </button>
-
-                                    {dropdownOpen && (
-                                        <div className="nav-dropdown-menu">
-                                            {/* User info header */}
-                                            <div className="nav-dropdown-header">
-                                                <p className="nav-dropdown-name">{user?.firstName} {user?.lastName}</p>
-                                                <p className="nav-dropdown-email">{user?.email}</p>
-                                            </div>
-                                            <div className="nav-divider" />
-                                            <Link to="/profile" className="nav-dropdown-item" onClick={() => setDropdownOpen(false)}>
-                                                {profileIcon} Profile
-                                            </Link>
-                                            <div className="nav-divider" />
-                                            <button onClick={handleLogout} className="nav-dropdown-item danger">
-                                                {logoutIcon} Sign out
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
-
-                            </>
-                        )}
-                    </div>
-                </nav>
+        <aside 
+            className={`app-sidebar ${isHovered ? 'expanded' : 'collapsed'}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {/* Logo Area */}
+            <div className="sidebar-brand">
+                <Link to="/" className="sidebar-logo-link">
+                    <img src={logo} alt="DevSync" className="sidebar-logo-img" />
+                    <span className="sidebar-brand-text">DevSync</span>
+                </Link>
             </div>
 
-            {/* Spacer */}
-            <div className="h-24 sm:h-28" />
+            {/* Navigation Links */}
+            <div className="sidebar-nav-links">
+                {navLinks.map(({ to, label, icon }) => (
+                    <Link
+                        key={to}
+                        to={to}
+                        className={`sidebar-link-item ${isActive(to) ? 'active' : ''}`}
+                        title={label}
+                    >
+                        <span className="sidebar-icon-wrap">{icon}</span>
+                        <span className="sidebar-label-text">{label}</span>
+                    </Link>
+                ))}
+            </div>
 
+            {/* Bottom Actions */}
+            <div className="sidebar-bottom-actions">
+                <div className="sidebar-theme-wrap">
+                    <ThemeToggle />
+                    <span className="sidebar-label-text font-semibold ml-2">Theme</span>
+                </div>
+                
+                <div className="sidebar-divider" />
 
-        </>
+                <Link to="/profile" className="sidebar-profile-link" title="Profile">
+                    <img src={photoUrl} alt={firstName} className="sidebar-avatar-img" />
+                    <div className="sidebar-profile-info flex-1 min-w-0">
+                        <p className="sidebar-profile-name truncate">{user?.firstName} {user?.lastName}</p>
+                        <p className="sidebar-profile-email truncate">{user?.email}</p>
+                    </div>
+                </Link>
+
+                <button onClick={handleLogout} className="sidebar-logout-btn" title="Sign Out">
+                    <span className="sidebar-icon-wrap text-red-500">{logoutIcon}</span>
+                    <span className="sidebar-label-text text-red-500 font-bold">Sign out</span>
+                </button>
+            </div>
+        </aside>
     );
 };
 
@@ -179,12 +148,8 @@ const chatIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75A6.75 6.75 0 0 1 9 6h6a6.75 6.75 0 0 1 6.75 6.75v.75A6.75 6.75 0 0 1 15 21H9a7.43 7.43 0 0 1-2.813-.548L2.25 21l1.035-3.45A6.73 6.73 0 0 1 2.25 14.25v-1.5Z" /></svg>
 );
 
-const profileIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-);
-
 const logoutIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" /></svg>
 );
 
-export default Navbar;
+export default Sidebar;

@@ -4,7 +4,7 @@
 .policy-page {
   min-height: calc(100vh - 80px);
   background: transparent;
-  padding: 120px 20px 80px;
+  padding: 40px 20px 80px;
   display: flex;
   justify-content: center;
 }

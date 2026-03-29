@@ -309,7 +309,7 @@ const Feed = () => {
             <div className="feed-page w-full flex flex-col items-center">
                 
                 {/* Clean Typography Header */}
-                <div className="w-full max-w-lg mb-8 text-center relative z-10 flex flex-col items-center mt-12 sm:mt-16">
+                <div className="w-full max-w-lg mb-8 text-center relative z-10 flex flex-col items-center mt-6">
                     <h1 className="text-3xl md:text-5xl font-extrabold feed-text-main tracking-tight mb-3" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         Discover Matches
                     </h1>
@@ -372,7 +372,7 @@ const Feed = () => {
         <div className="w-full max-w-[1500px] mx-auto flex flex-col xl:flex-row gap-6 lg:gap-8 px-4 py-4">
             
             {/* 1. LEFT SIDEBAR: Connections */}
-            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 h-[calc(100vh-140px)] sticky top-28 backdrop-blur-xl rounded-3xl overflow-hidden transition-all feed-sidebar">
+            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 h-[calc(100vh-40px)] sticky top-6 backdrop-blur-xl rounded-3xl overflow-hidden transition-all feed-sidebar">
                 <div className="p-6 feed-sidebar-header shadow-sm z-10">
                     <h2 className="text-2xl font-extrabold feed-text-main tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>Your Network</h2>
                     <p className="text-sm feed-text-faint font-semibold mt-1">{connections?.length || 0} active connections</p>
@@ -408,7 +408,7 @@ const Feed = () => {
             </main>
 
             {/* 3. RIGHT SIDEBAR: Incoming Requests */}
-            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 h-[calc(100vh-140px)] sticky top-28 backdrop-blur-xl rounded-3xl overflow-hidden transition-all feed-sidebar">
+            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 h-[calc(100vh-40px)] sticky top-6 backdrop-blur-xl rounded-3xl overflow-hidden transition-all feed-sidebar">
                 <div className="p-6 feed-sidebar-header shadow-sm z-10">
                     <h2 className="text-2xl font-extrabold feed-text-main tracking-tight flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         Requests
