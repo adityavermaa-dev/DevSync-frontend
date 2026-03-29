@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import Sidebar from './components/Sidebar'
 import Footer from './components/Footer'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { BASE_URL } from './constants/commonData'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,7 +11,18 @@ const Body = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const user = useSelector(store => store.user)
+
+    useEffect(() => {
+        if (user && location.pathname !== '/onboarding') {
+            const hasNoSkills = !user.skills || user.skills.length === 0;
+            if (hasNoSkills) {
+                navigate('/onboarding');
+            }
+        }
+    }, [user, navigate, location.pathname]);
+
 
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const handleMouseMove = useCallback((e) => {
@@ -39,6 +50,8 @@ const Body = () => {
         fetchUser();
     }, [])
 
+    const isOnboarding = location.pathname === '/onboarding';
+
     return (
         <div 
             className="landing-page flex flex-col min-h-screen relative"
@@ -56,8 +69,8 @@ const Body = () => {
             <div className="landing-bg-circle circle-pink" />
             <div className="landing-bg-circle circle-yellow" />
 
-            <Sidebar />
-            <div className={`relative z-10 flex flex-col min-h-screen w-full transition-all duration-300 ${user ? 'md:pl-[80px]' : ''}`}>
+            {!isOnboarding && <Sidebar />}
+            <div className={`relative z-10 flex flex-col min-h-screen w-full transition-all duration-300 ${user && !isOnboarding ? 'md:pl-[80px]' : ''}`}>
                 <main className="flex-grow w-full pb-20 md:pb-0 pt-4 px-4">
                     <Outlet />
                 </main>

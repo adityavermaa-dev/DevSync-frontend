@@ -47,3 +47,101 @@
 @media (max-width: 480px) {
   .userprofile-page { padding: 20px 12px 60px; }
 }
+
+/* User Profile Github Integration */
+
+.userprofile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.up-github-section {
+  background: var(--dashboard-glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.up-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--dashboard-text-main);
+  margin: 0 0 20px 0;
+}
+
+.up-repos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .up-repos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.up-repo-card {
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 16px;
+  padding: 16px;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.up-repo-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.up-repo-name {
+  color: #8b5cf6;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+}
+
+.up-repo-desc {
+  color: var(--dashboard-text-secondary);
+  font-size: 0.85rem;
+  margin: 0 0 16px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.up-repo-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.up-repo-lang {
+  margin-left: auto;
+  color: var(--dashboard-text-faint);
+}
+
+.up-github-loading, .up-github-empty {
+  color: var(--dashboard-text-faint);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 20px;
+}

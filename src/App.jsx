@@ -29,7 +29,8 @@ import Projects from "./pages/Projects"
 import CreateProject from "./pages/CreateProject"
 import ProjectDetail from "./pages/ProjectDetail"
 import Notifications from "./pages/Notifications"
-
+import BuildLogs from "./pages/BuildLogs"
+import Onboarding from "./pages/Onboarding"
 
 function App() {
 
@@ -67,6 +68,8 @@ function App() {
               <Route path="/projects/new" element={<CreateProject />} />
               <Route path="/projects/:projectId" element={<ProjectDetail />} />
               <Route path="/notifications" element={<Notifications />} />
+              <Route path="/updates" element={<BuildLogs />} />
+              <Route path="/onboarding" element={<Onboarding />} />
             </Route>
             </Routes>
           </BrowserRouter>

@@ -26,6 +26,7 @@ const Feed = () => {
     const [loading, setLoading] = useState(false);
     const [swiping, setSwiping] = useState(false);
     const [removingReqId, setRemovingReqId] = useState(null);
+    const [recommendations, setRecommendations] = useState({ matchedDevelopers: [], matchedProjects: [] });
 
     // Refs for smooth DOM manipulation
     const cardRef = useRef(null);
@@ -73,10 +74,20 @@ const Feed = () => {
         }
     };
 
+    const fetchRecommendations = async () => {
+        try {
+            const res = await axios.get(BASE_URL + '/matches/recommendations', { withCredentials: true });
+            setRecommendations(res.data);
+        } catch (error) {
+            console.error('Recommendations fetch error:', error);
+        }
+    };
+
     useEffect(() => { 
         fetchFeed(); 
         fetchConnections();
         fetchRequests();
+        fetchRecommendations();
     }, []);
 
     const advanceFeed = useCallback(() => {
@@ -407,48 +418,96 @@ const Feed = () => {
                 {renderFeedState()}
             </main>
 
-            {/* 3. RIGHT SIDEBAR: Incoming Requests */}
+            {/* 3. RIGHT SIDEBAR: Incoming Requests & Recommendations */}
             <aside className="hidden xl:flex flex-col w-[320px] shrink-0 h-[calc(100vh-40px)] sticky top-6 backdrop-blur-xl rounded-3xl overflow-hidden transition-all feed-sidebar">
-                <div className="p-6 feed-sidebar-header shadow-sm z-10">
-                    <h2 className="text-2xl font-extrabold feed-text-main tracking-tight flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Requests
-                        {requests?.length > 0 && (
-                            <span className="bg-purple-100 text-purple-700 text-xs py-1 px-2.5 rounded-full">{requests.length}</span>
-                        )}
-                    </h2>
-                    <p className="text-sm feed-text-faint font-semibold mt-1">Pending approvals</p>
-                </div>
                 
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                    {(!requests || requests.length === 0) ? (
-                        <div className="text-center p-6 text-gray-500 h-full flex flex-col justify-center items-center">
-                            <span className="text-4xl mb-4 opacity-80">📬</span>
-                            <p className="text-base font-bold feed-text-main">No pending requests</p>
-                            <p className="text-sm mt-2 opacity-80 font-medium leading-tight feed-text-faint">When someone swipes right on you, they'll appear here.</p>
-                        </div>
-                    ) : (
-                        requests.map(req => {
-                            const user = req.fromUserId || req;
-                            const isRemoving = removingReqId === req._id;
-                            return (
-                                <div key={req._id} className={`group flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer feed-sidebar-item ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ transitionDuration: '300ms' }} onClick={() => navigate(`/user/${user._id}`, { state: { user } })}>
-                                    <img src={user.photoUrl || defaultAvatar} alt={user.firstName} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" onError={(e) => { e.target.src = defaultAvatar; }} />
-                                    <div className="flex-1 min-w-0 pr-1">
-                                        <p className="text-[14px] font-bold feed-text-main truncate">{user.firstName} {user.lastName}</p>
-                                        <p className="text-xs font-semibold text-gray-500 truncate">{user.skills?.[0] || 'Developer'}</p>
+                {/* Top Half: Requests */}
+                <div className="flex flex-col h-1/2 border-b border-white/20">
+                    <div className="p-5 pb-3 feed-sidebar-header shadow-sm z-10">
+                        <h2 className="text-[1.35rem] font-extrabold feed-text-main tracking-tight flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                            Requests
+                            {requests?.length > 0 && (
+                                <span className="bg-purple-100 text-purple-700 text-xs py-1 px-2.5 rounded-full">{requests.length}</span>
+                            )}
+                        </h2>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                        {(!requests || requests.length === 0) ? (
+                            <div className="text-center p-4 text-gray-500 h-full flex flex-col justify-center items-center">
+                                <span className="text-3xl mb-2 opacity-80">📬</span>
+                                <p className="text-sm font-bold feed-text-main">No pending requests</p>
+                            </div>
+                        ) : (
+                            requests.map(req => {
+                                const user = req.fromUserId || req;
+                                const isRemoving = removingReqId === req._id;
+                                return (
+                                    <div key={req._id} className={`group flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer feed-sidebar-item ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ transitionDuration: '300ms' }} onClick={() => navigate(`/user/${user._id}`, { state: { user } })}>
+                                        <img src={user.photoUrl || defaultAvatar} alt={user.firstName} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" onError={(e) => { e.target.src = defaultAvatar; }} />
+                                        <div className="flex-1 min-w-0 pr-1">
+                                            <p className="text-[13px] font-bold feed-text-main truncate">{user.firstName} {user.lastName}</p>
+                                            <p className="text-[11px] font-semibold text-gray-500 truncate">{user.skills?.[0] || 'Developer'}</p>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <button className="p-1.5 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:scale-110 transition-all shadow-sm" onClick={(e) => handleReviewRequest('rejected', req._id, e)} title="Reject">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                                            </button>
+                                            <button className="p-1.5 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:scale-110 transition-all shadow-sm" onClick={(e) => handleReviewRequest('accepted', req._id, e)} title="Accept">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1">
-                                        <button className="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:scale-110 transition-all shadow-sm" onClick={(e) => handleReviewRequest('rejected', req._id, e)} title="Reject">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-                                        </button>
-                                        <button className="p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:scale-110 transition-all shadow-sm" onClick={(e) => handleReviewRequest('accepted', req._id, e)} title="Accept">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
-                                        </button>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
+
+                {/* Bottom Half: Top Matches */}
+                <div className="flex flex-col h-1/2">
+                    <div className="p-5 pb-3 feed-sidebar-header shadow-sm z-10 flex justify-between items-center">
+                        <h2 className="text-[1.35rem] font-extrabold feed-text-main tracking-tight flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                            Top Matches
+                        </h2>
+                        <span className="bg-blue-100 text-blue-700 text-[10px] font-bold py-0.5 px-2 rounded-full uppercase tracking-wider">AI</span>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                        {(!recommendations?.matchedDevelopers?.length && !recommendations?.matchedProjects?.length) ? (
+                            <div className="text-center p-4 text-gray-500 h-full flex flex-col justify-center items-center">
+                                <span className="text-3xl mb-2 opacity-80">✨</span>
+                                <p className="text-sm font-bold feed-text-main">No exact matches yet</p>
+                                <p className="text-xs mt-1 opacity-80 font-medium feed-text-faint">Add more skills to your profile!</p>
+                            </div>
+                        ) : (
+                            <>
+                                {recommendations?.matchedDevelopers?.slice(0, 4).map(dev => (
+                                    <div key={`dev-${dev._id}`} className="group flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer feed-sidebar-item bg-white/50 hover:bg-white/80" onClick={() => navigate(`/user/${dev._id}`, { state: { user: dev } })}>
+                                        <img src={dev.photoUrl || defaultAvatar} alt={dev.firstName} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" onError={(e) => { e.target.src = defaultAvatar; }} />
+                                        <div className="flex-1 min-w-0 pr-1">
+                                            <p className="text-[13px] font-bold feed-text-main truncate">{dev.firstName} {dev.lastName}</p>
+                                            <p className="text-[11px] font-bold text-blue-600 truncate flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clipRule="evenodd" /></svg>
+                                                {dev.matchScore} matching skills
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })
-                    )}
+                                ))}
+                                {recommendations?.matchedProjects?.slice(0, 3).map(proj => (
+                                    <div key={`proj-${proj._id}`} className="group flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer feed-sidebar-item bg-purple-50/50 hover:bg-purple-50/90" onClick={() => navigate(`/projects/${proj._id}`)}>
+                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0 border-2 border-white">
+                                            {proj.title.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="flex-1 min-w-0 pr-1">
+                                            <p className="text-[13px] font-bold feed-text-main truncate">{proj.title}</p>
+                                            <p className="text-[10px] font-bold uppercase text-purple-600 tracking-wider">Project Match</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
                 </div>
             </aside>
 
