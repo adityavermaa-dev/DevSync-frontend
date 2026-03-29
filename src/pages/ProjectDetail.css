@@ -115,6 +115,42 @@
   gap: 24px;
 }
 
+/* Tabs */
+.pd-tabs-wrapper {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--dashboard-glass-bg);
+  padding: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  width: fit-content;
+}
+
+.pd-tab-btn {
+  background: transparent;
+  color: var(--dashboard-text-secondary);
+  border: none;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pd-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--dashboard-text-main);
+}
+
+.pd-tab-btn.active {
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
 /* Cards shared */
 .pd-card {
   background: var(--dashboard-glass-bg);

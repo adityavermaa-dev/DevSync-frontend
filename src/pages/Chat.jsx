@@ -45,6 +45,7 @@ const Chat = () => {
   const [isPeerTyping, setIsPeerTyping] = useState(false);
   const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
   const [showMembersPanel, setShowMembersPanel] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState("direct"); // "direct" or "projects"
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -154,7 +155,10 @@ const Chat = () => {
       setChats(data);
       if (targetProjectId) {
         const existingProjectChat = data.find((chat) => chat.projectId === targetProjectId);
-        if (existingProjectChat) setActiveChatId(existingProjectChat._id);
+        if (existingProjectChat) {
+          setActiveChatId(existingProjectChat._id);
+          setSidebarTab("projects");
+        }
       } else if (targetUserId) {
         const existing = data.find((chat) => chat.participants.some((p) => p._id === targetUserId));
         if (existing) {
@@ -382,9 +386,21 @@ const Chat = () => {
 
   // Filter chats
   const filteredChats = chats.filter((chat) => {
-    const other = chat.participants.find((p) => p._id !== currentUserId);
-    const name = `${other?.firstName || ""} ${other?.lastName || ""}`.toLowerCase();
-    return name.includes(searchQuery.toLowerCase());
+    const isGroup = chat.isGroup || chat.participants?.length > 2;
+    
+    // Tab filter
+    if (sidebarTab === "direct" && isGroup) return false;
+    if (sidebarTab === "projects" && !isGroup) return false;
+
+    // Search filter
+    if (isGroup) {
+      const name = (chat.name || chat.projectName || "").toLowerCase();
+      return name.includes(searchQuery.toLowerCase());
+    } else {
+      const other = chat.participants.find((p) => p._id !== currentUserId);
+      const name = `${other?.firstName || ""} ${other?.lastName || ""}`.toLowerCase();
+      return name.includes(searchQuery.toLowerCase());
+    }
   });
 
   // Group messages by day
@@ -410,6 +426,21 @@ const Chat = () => {
           <div className="chat-sidebar-header">
             <h2 className="chat-sidebar-title">Messages</h2>
             <span className="chat-sidebar-count">{chats.length}</span>
+          </div>
+
+          <div className="chat-sidebar-tabs">
+            <button 
+              className={`chat-sidebar-tab ${sidebarTab === 'direct' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('direct')}
+            >
+              Direct
+            </button>
+            <button 
+              className={`chat-sidebar-tab ${sidebarTab === 'projects' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('projects')}
+            >
+              Projects
+            </button>
           </div>
 
           <div className="chat-search">

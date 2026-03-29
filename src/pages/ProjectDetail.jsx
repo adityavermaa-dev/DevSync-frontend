@@ -12,11 +12,12 @@ const ProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const user = useSelector(store => store.user);
   const project = useSelector(store => store.projects.activeProject);
-  
+
   const [loading, setLoading] = useState(true);
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [applyRole, setApplyRole] = useState('');
   const [applyMessage, setApplyMessage] = useState('');
   const [applying, setApplying] = useState(false);
@@ -37,16 +38,51 @@ const ProjectDetail = () => {
       }
     };
     fetchProject();
-    
+
     return () => dispatch(setActiveProject(null));
   }, [projectId, dispatch, navigate]);
+
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      await projectAPI.handleApplication(projectId, requestId, 'accept');
+      toast.success('Member accepted!');
+      
+      const updatedProject = await projectAPI.getProject(projectId);
+      dispatch(setActiveProject(updatedProject));
+    } catch (err) {
+      toast.error('Failed to accept request');
+    }
+  };
+
+  const handleMarkComplete = async () => {
+    if (!window.confirm("Are you sure you want to mark this project as completely finished? It will stop new join requests.")) return;
+    try {
+      await projectAPI.updateProject(projectId, { status: 'Closed' });
+      toast.success("Project marked as complete!");
+      const updatedProject = await projectAPI.getProject(projectId);
+      dispatch(setActiveProject(updatedProject));
+    } catch (err) {
+      toast.error("Failed to update project status");
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!window.confirm("CRITICAL WARNING: Are you sure you want to delete this project? This action cannot be undone.")) return;
+    try {
+      await projectAPI.deleteProject(projectId);
+      toast.success("Project deleted successfully");
+      navigate('/projects');
+    } catch (err) {
+      toast.error("Failed to delete project");
+    }
+  };
 
   const handleApply = async () => {
     if (!applyRole || !applyMessage.trim()) {
       toast.error('Please select a role and write a message');
       return;
     }
-    
+
     setApplying(true);
     try {
       await projectAPI.applyToProject(projectId, applyRole, applyMessage);
@@ -84,27 +120,27 @@ const ProjectDetail = () => {
   return (
     <div className="pd-page">
       <div className="pd-container">
-        
+
         {/* Header Block */}
         <div className="pd-header">
           <button className="pd-back-btn" onClick={() => navigate('/projects')}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
             Back to Hub
           </button>
-          
+
           <div className="pd-title-area">
             <h1 className="pd-title">{project.title}</h1>
             <span className={`project-status status-${project.status?.toLowerCase() || 'open'}`}>
               {project.status || 'Active'}
             </span>
           </div>
-          
+
           <div className="pd-owner-row">
-            <img 
-              src={project.owner?.photoUrl || defaultAvatar} 
-              alt="Owner" 
+            <img
+              src={project.owner?.photoUrl || defaultAvatar}
+              alt="Owner"
               className="pd-owner-avatar"
             />
             <div className="pd-owner-info">
@@ -116,24 +152,22 @@ const ProjectDetail = () => {
 
         {/* Content Body */}
         <div className="pd-body-grid">
-          
+
           {/* Main Column */}
           <div className="pd-main-col">
-            
+
             {/* Tabs for Project Members */}
             {(isOwner || isMember) && (
-              <div className="pd-tabs" style={{display:'flex', gap:'12px', marginBottom:'20px'}}>
+              <div className="pd-tabs-wrapper">
                 <button 
-                  className={`cp-btn ${activeTab === 'details' ? 'cp-btn-save' : 'cp-btn-cancel'}`}
+                  className={`pd-tab-btn ${activeTab === 'details' ? 'active' : ''}`}
                   onClick={() => setActiveTab('details')}
-                  style={{padding:'8px 16px', flex: 0}}
                 >
                   Project Details
                 </button>
                 <button 
-                  className={`cp-btn ${activeTab === 'tasks' ? 'cp-btn-save' : 'cp-btn-cancel'}`}
+                  className={`pd-tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
                   onClick={() => setActiveTab('tasks')}
-                  style={{padding:'8px 16px', flex: 0}}
                 >
                   Task Board (Kanban)
                 </button>
@@ -145,7 +179,7 @@ const ProjectDetail = () => {
                 <div className="pd-card">
                   <h3 className="pd-section-title">About the Project</h3>
                   <p className="pd-description">{project.description}</p>
-                  
+
                   {project.repoUrl && (
                     <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="pd-repo-link">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -176,11 +210,11 @@ const ProjectDetail = () => {
 
           {/* Sidebar Column */}
           <div className="pd-side-col">
-            
+
             {/* Action Card */}
             <div className="pd-card pd-action-card">
               <h3 className="pd-section-title">Collaboration</h3>
-              
+
               <div className="pd-roles-list">
                 <p className="pd-label mb-2">Roles Needed:</p>
                 {project.rolesNeeded?.length > 0 ? (
@@ -193,20 +227,20 @@ const ProjectDetail = () => {
               </div>
 
               <div className="pd-action-divider" />
-              
+
               {isOwner || isMember ? (
                 <>
                   <p className="pd-member-status">
-                     <span className="status-dot online"></span>
-                     You are part of this project
+                    <span className="status-dot online"></span>
+                    You are part of this project
                   </p>
                   <button className="pd-primary-btn" onClick={startProjectChat}>
                     Open Group Chat
                   </button>
                 </>
               ) : (
-                <button 
-                  className="pd-primary-btn" 
+                <button
+                  className="pd-primary-btn"
                   onClick={() => setApplyModalOpen(true)}
                   disabled={project.status === 'Closed'}
                 >
@@ -215,27 +249,54 @@ const ProjectDetail = () => {
               )}
             </div>
 
+            {/* Manage Project Card (Owner Only) */}
+            {isOwner && (
+              <div className="pd-card pd-action-card">
+                <h3 className="pd-section-title">Manage Project</h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                  {project.status !== 'Closed' && (
+                    <button 
+                      className="pd-primary-btn" 
+                      style={{ background: 'var(--dashboard-surface-alt)', color: 'var(--dashboard-text-main)' }}
+                      onClick={handleMarkComplete}
+                    >
+                      Mark as Complete
+                    </button>
+                  )}
+                  
+                  <button 
+                    className="cp-btn cp-btn-cancel" 
+                    style={{ width: '100%', padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}
+                    onClick={handleDeleteProject}
+                  >
+                    Delete Project
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Members Card */}
             <div className="pd-card">
               <h3 className="pd-section-title">
-                 Team Members 
-                 <span className="pd-member-count">({project.members?.length || 1}/{project.maxMembers || '∞'})</span>
+                Team Members
+                <span className="pd-member-count">({project.members?.length || 1}/{project.maxMembers || '∞'})</span>
               </h3>
-              
+
               <div className="pd-member-list">
                 {/* Lead is always listed */}
-                <div className="pd-member-item" onClick={() => navigate(`/profile/${project.owner?._id}`)}>
+                <div className="pd-member-item" onClick={() => navigate(`/user/${project.owner?._id}`)}>
                   <img src={project.owner?.photoUrl || defaultAvatar} alt="owner" />
                   <span>{project.owner?.firstName}</span>
                   <span className="pd-lead-badge">Lead</span>
                 </div>
-                
+
                 {/* Other members */}
                 {project.members?.map(member => {
                   const mUser = member.user;
                   if (!mUser || mUser._id === project.owner?._id) return null;
                   return (
-                    <div key={mUser._id} className="pd-member-item" onClick={() => navigate(`/profile/${mUser._id}`)}>
+                    <div key={mUser._id} className="pd-member-item" onClick={() => navigate(`/user/${mUser._id}`)}>
                       <img src={mUser.photoUrl || defaultAvatar} alt="member" />
                       <span>{mUser.firstName}</span>
                     </div>
@@ -254,12 +315,12 @@ const ProjectDetail = () => {
           <div className="pd-modal animate-fade-in">
             <h3 className="pd-modal-title">Join Project</h3>
             <p className="pd-modal-sub">Tell the lead how you can contribute to '{project.title}'.</p>
-            
+
             <div className="pd-modal-body">
               <label className="cp-label">Which role are you applying for?</label>
-              <select 
-                className="cp-input cp-select mb-4" 
-                value={applyRole} 
+              <select
+                className="cp-input cp-select mb-4"
+                value={applyRole}
                 onChange={(e) => setApplyRole(e.target.value)}
               >
                 <option value="">Select a role...</option>
@@ -270,25 +331,25 @@ const ProjectDetail = () => {
               </select>
 
               <label className="cp-label">Why do you want to join?</label>
-              <textarea 
-                className="cp-input cp-textarea" 
+              <textarea
+                className="cp-input cp-textarea"
                 value={applyMessage}
                 onChange={(e) => setApplyMessage(e.target.value)}
                 placeholder="Share your relevant skills and experience briefly..."
                 rows={4}
               />
             </div>
-            
+
             <div className="pd-modal-actions mt-6">
-              <button 
-                className="cp-btn cp-btn-cancel" 
+              <button
+                className="cp-btn cp-btn-cancel"
                 onClick={() => setApplyModalOpen(false)}
                 disabled={applying}
               >
                 Cancel
               </button>
-              <button 
-                className="cp-btn cp-btn-save" 
+              <button
+                className="cp-btn cp-btn-save"
                 onClick={handleApply}
                 disabled={applying}
               >

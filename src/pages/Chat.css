@@ -87,6 +87,39 @@
   position: relative;
 }
 
+/* Sidebar Tabs */
+.chat-sidebar-tabs {
+  display: flex;
+  margin: 0 24px 20px;
+  background: var(--dashboard-surface-alt);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.chat-sidebar-tab {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  color: var(--dashboard-text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-sidebar-tab:hover {
+  color: var(--dashboard-text-main);
+}
+
+.chat-sidebar-tab.active {
+  background: var(--dashboard-surface);
+  color: #8b5cf6;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
 .chat-search-icon {
   position: absolute;
   top: 13px;
