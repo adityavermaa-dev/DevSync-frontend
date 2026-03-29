@@ -25,6 +25,9 @@ import VerificationFailed from "./pages/VerificationFailed"
 import SignupSuccess from "./pages/SignupSuccess"
 import Chat from "./pages/Chat"
 import ThemeProvider from "./components/ThemeProvider"
+import Projects from "./pages/Projects"
+import CreateProject from "./pages/CreateProject"
+import ProjectDetail from "./pages/ProjectDetail"
 
 
 function App() {
@@ -59,6 +62,9 @@ function App() {
               <Route path="/premium" element={<Premium />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/chat/:targetUserId" element={<Chat />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/new" element={<CreateProject />} />
+              <Route path="/projects/:projectId" element={<ProjectDetail />} />
             </Route>
             </Routes>
           </BrowserRouter>
