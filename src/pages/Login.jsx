@@ -121,28 +121,50 @@ const Login = () => {
 
     const handleGitHubLogin = async () => {
         let authPopup = null;
+        let popupWatcher = null;
 
         try {
             setIsLoading(true);
             setApiError("");
 
-            authPopup = window.open("about:blank", "devsync-github-auth", "width=520,height=720,left=120,top=80");
+            const githubAuthUrl = `${BASE_URL}/auth/github`;
+            authPopup = window.open(githubAuthUrl, "devsync-github-auth", "width=520,height=720,left=120,top=80");
 
-            const { data } = await axios.get(`${BASE_URL}/auth/github/url`, {
-                withCredentials: true,
-            });
-
-            if (!data?.url) {
-                throw new Error("Missing GitHub authorization URL");
+            if (!authPopup) {
+                window.location.assign(githubAuthUrl);
+                return;
             }
 
-            if (authPopup) {
-                authPopup.location.href = data.url;
-                authPopup.focus();
-            } else {
-                window.location.assign(data.url);
-            }
+            popupWatcher = window.setInterval(() => {
+                if (!authPopup || authPopup.closed) {
+                    window.clearInterval(popupWatcher);
+                    popupWatcher = null;
+                    setIsLoading(false);
+                    return;
+                }
+
+                try {
+                    const popupLocation = authPopup.location;
+                    if (!popupLocation) {
+                        return;
+                    }
+
+                    const popupPath = popupLocation.pathname || "/";
+                    if (popupPath === "/" || popupPath === "/login") {
+                        window.clearInterval(popupWatcher);
+                        popupWatcher = null;
+                        authPopup.close();
+                        window.location.replace("/");
+                    }
+                } catch {
+                    // Ignore cross-origin access until the popup returns to our origin.
+                }
+            }, 500);
         } catch (error) {
+            if (popupWatcher) {
+                window.clearInterval(popupWatcher);
+            }
+
             if (authPopup && !authPopup.closed) {
                 authPopup.close();
             }
