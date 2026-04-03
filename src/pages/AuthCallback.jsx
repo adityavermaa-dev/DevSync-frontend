@@ -43,6 +43,13 @@ const AuthCallback = ({ provider = "Authentication" }) => {
 
                 dispatch(addUser(profileRes.data));
                 toast.success(`${provider} login successful.`);
+
+                if (window.opener && !window.opener.closed) {
+                    window.opener.location.replace("/");
+                    window.close();
+                    return;
+                }
+
                 navigate("/", { replace: true });
             } catch {
                 if (!isMounted) {

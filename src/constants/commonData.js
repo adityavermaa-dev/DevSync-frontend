@@ -10,11 +10,10 @@ const isAbsoluteHttpUrl = (value) => /^https?:\/\//i.test(value || "");
 const configuredBaseUrl = trimTrailingSlash(import.meta.env.VITE_API_BASE_URL);
 
 const isDev = Boolean(import.meta.env.DEV);
-const looksLikeLocalBackend =
-	configuredBaseUrl &&
-	/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredBaseUrl);
 
-export const BASE_URL = (isDev && looksLikeLocalBackend) ? "/api" : (configuredBaseUrl || "/api");
+// In development we always use the Vite proxy so auth requests stay same-origin.
+// In production you can point to a real API origin with VITE_API_BASE_URL.
+export const BASE_URL = isDev ? "/api" : (configuredBaseUrl || "/api");
 
 const runtimeOrigin =
 	typeof window !== "undefined" ? window.location.origin : "";

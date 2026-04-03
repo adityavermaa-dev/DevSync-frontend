@@ -120,9 +120,13 @@ const Login = () => {
     };
 
     const handleGitHubLogin = async () => {
+        let authPopup = null;
+
         try {
             setIsLoading(true);
             setApiError("");
+
+            authPopup = window.open("about:blank", "devsync-github-auth", "width=520,height=720,left=120,top=80");
 
             const { data } = await axios.get(`${BASE_URL}/auth/github/url`, {
                 withCredentials: true,
@@ -132,8 +136,17 @@ const Login = () => {
                 throw new Error("Missing GitHub authorization URL");
             }
 
-            window.location.assign(data.url);
+            if (authPopup) {
+                authPopup.location.href = data.url;
+                authPopup.focus();
+            } else {
+                window.location.assign(data.url);
+            }
         } catch (error) {
+            if (authPopup && !authPopup.closed) {
+                authPopup.close();
+            }
+
             const msg =
                 error?.response?.data?.message ||
                 error?.response?.data ||
