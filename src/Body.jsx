@@ -69,7 +69,7 @@ const Body = () => {
             <div className="landing-bg-circle circle-yellow" />
 
             {!isOnboarding && <Sidebar />}
-            <div className={`relative z-10 flex flex-col min-h-screen w-full transition-all duration-300 ${user && !isOnboarding ? 'md:pl-[260px]' : ''}`}>
+            <div className={`relative z-10 flex flex-col min-h-screen w-full transition-all duration-300 ${user && !isOnboarding ? 'md:pl-20' : ''}`}>
                 <main className={`grow w-full pt-4 px-4 ${user && !isOnboarding ? 'pb-24 md:pb-6' : ''}`}>
                     <Outlet />
                 </main>

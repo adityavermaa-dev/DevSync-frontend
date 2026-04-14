@@ -67,7 +67,7 @@ const Sidebar = () => {
     }
 
     return (
-        <aside className="app-sidebar expanded">
+        <aside className="app-sidebar">
             {/* Logo Area */}
             <div className="sidebar-brand">
                 <Link to="/" className="sidebar-logo-link">
