@@ -36,6 +36,7 @@ const Notifications = lazy(() => import("./pages/Notifications"));
 const BuildLogs = lazy(() => import("./pages/BuildLogs"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const VerifyEmailHandler = lazy(() => import("./pages/VerifyEmailHandler"));
 
 
 function App() {
@@ -59,6 +60,8 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/email-verified" element={<EmailVerified />} />
+              <Route path="/verify-email" element={<VerifyEmailHandler />} />
+              <Route path="/verify-email/:token" element={<VerifyEmailHandler />} />
               <Route path="/verification-failed" element={<VerificationFailed />} />
               <Route path="/verification-error" element={<VerificationFailed />} />
               <Route path="/signup-success" element={<SignupSuccess />} />
