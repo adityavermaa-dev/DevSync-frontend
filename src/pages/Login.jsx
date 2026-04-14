@@ -35,6 +35,11 @@ const Login = () => {
     const location = useLocation();
     const user = useSelector(store => store.user);
 
+    const isEmailVerificationRequiredMessage = (value) => {
+        const text = String(value || '').toLowerCase();
+        return text.includes('verify') && text.includes('email');
+    };
+
     useEffect(() => {
         if (user) {
             return navigate("/");
@@ -95,6 +100,13 @@ const Login = () => {
         } catch (error) {
             const msg = error?.response?.data?.message || error?.response?.data || (error?.response?.status === 401 ? "Invalid email or password" : "Something went wrong.");
             const errorMsg = typeof msg === "string" ? msg : "Something went wrong.";
+
+            if (isEmailVerificationRequiredMessage(errorMsg)) {
+                toast.error(errorMsg);
+                navigate('/signup-success', { state: { email: email.trim() } });
+                return;
+            }
+
             setApiError(errorMsg);
             toast.error(errorMsg);
         } finally {
@@ -187,9 +199,34 @@ const Login = () => {
         setIsLoading(true);
         setApiError("");
         try {
-            await axios.post(BASE_URL + "/signup", { email: email.trim(), password, firstName, lastName }, { withCredentials: true });
+            const trimmedEmail = email.trim();
+            const signupRes = await axios.post(
+                BASE_URL + "/signup",
+                { email: trimmedEmail, password, firstName, lastName },
+                { withCredentials: true }
+            );
+
+            const signupMsg = String(signupRes?.data?.message || '').toLowerCase();
+            const backendConfirmedVerificationEmail =
+                signupRes?.data?.verificationEmailSent === true ||
+                signupRes?.data?.emailSent === true ||
+                signupMsg.includes('verification email sent');
+
+            // Fallback: trigger resend endpoint if signup response does not confirm an email send.
+            if (!backendConfirmedVerificationEmail) {
+                try {
+                    await axios.post(
+                        BASE_URL + "/resend-verification",
+                        { email: trimmedEmail },
+                        { withCredentials: true }
+                    );
+                } catch (resendError) {
+                    console.error('Verification email fallback failed', resendError);
+                }
+            }
+
             toast.success('Account created! Please verify your email.');
-            navigate("/signup-success", { state: { email: email.trim() } });
+            navigate("/signup-success", { state: { email: trimmedEmail } });
         } catch (error) {
             const msg = error?.response?.data?.message || error?.response?.data || "Something went wrong.";
             const errorMsg = typeof msg === "string" ? msg : "Something went wrong.";
