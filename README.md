@@ -9,6 +9,7 @@
 
 - `VITE_GOOGLE_CLIENT_ID`: Google OAuth client id.
 - `VITE_API_BASE_URL` (optional): Overrides the API base URL. Leave unset for local development (recommended). If you set this to a different domain (e.g. `https://api.example.com`), the backend must allow CORS (and credentials, if using cookies) for your frontend origin.
+- `VITE_ENABLE_PREMIUM` (optional): Set to `true` to expose premium UI/routes. Default is `false`, which keeps premium code ready but hidden from users.
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

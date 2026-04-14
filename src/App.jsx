@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import { Provider } from "react-redux"
 import { Toaster } from 'react-hot-toast'
 import appStore from "./redux/appStore"
+import { ENABLE_PREMIUM } from "./constants/commonData";
 import ThemeProvider from "./components/ThemeProvider"
 import Body from "./Body"
 import Login from "./pages/Login"
@@ -21,7 +22,7 @@ const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 const VideoUpload = lazy(() => import("./components/VideoUpload"));
 const VideoFeed = lazy(() => import("./components/VideoFeed"));
-const Premium = lazy(() => import("./pages/Premium"));
+const Premium = ENABLE_PREMIUM ? lazy(() => import("./pages/Premium")) : null;
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const EmailVerified = lazy(() => import("./pages/EmailVerified"));
@@ -73,7 +74,7 @@ function App() {
                 <Route path="/contact" element={<ContactUs />} />
                 <Route path="/upload" element={<VideoUpload />} />
                 <Route path="/feed" element={<VideoFeed />} />
-                <Route path="/premium" element={<Premium />} />
+                <Route path="/premium" element={ENABLE_PREMIUM && Premium ? <Premium /> : <Navigate to="/" replace />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/chat/:targetUserId" element={<Chat />} />
                 <Route path="/projects" element={<Projects />} />

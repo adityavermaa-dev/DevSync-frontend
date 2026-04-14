@@ -43,3 +43,6 @@ export const BASE_URL = isDev || useSameOriginApiInProd ? "/api" : (configuredBa
 export const SERVER_ORIGIN = isAbsoluteHttpUrl(configuredBaseUrl)
 	? configuredBaseUrl.replace(/\/api$/i, "")
 	: runtimeOrigin;
+
+// Premium flows are kept code-ready but hidden until explicitly enabled.
+export const ENABLE_PREMIUM = String(import.meta.env.VITE_ENABLE_PREMIUM || "false").toLowerCase() === "true";

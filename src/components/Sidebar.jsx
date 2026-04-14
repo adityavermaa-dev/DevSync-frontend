@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL } from '../constants/commonData';
+import { BASE_URL, ENABLE_PREMIUM } from '../constants/commonData';
 import { removeUser } from '../redux/userSlice';
 import { removeConnections } from '../redux/connectionSlice';
 import { removeFeed } from '../redux/feedSlice';
@@ -49,7 +49,7 @@ const Sidebar = () => {
         { to: '/updates', label: 'Updates', icon: updatesIcon },
         { to: '/upload', label: 'Upload', icon: uploadIcon },
         { to: '/notifications', label: 'Alerts', icon: notificationsIcon, badge: unreadCount },
-        { to: '/premium', label: 'Premium', icon: premiumIcon },
+        ...(ENABLE_PREMIUM ? [{ to: '/premium', label: 'Premium', icon: premiumIcon }] : []),
     ];
 
     const isActive = (path) => location.pathname === path;
