@@ -1,7 +1,7 @@
 /* ===== VideoFeed (Reels) - Instagram Split Layout ===== */
 
 .video-feed {
-    height: calc(100vh - 16px);
+    height: calc(100dvh - 16px);
     margin-top: 0;
     padding-bottom: 0px;
     overflow-y: scroll;
@@ -19,7 +19,7 @@
 
 /* ── Split Layout Card ── */
 .video-item-split {
-    height: calc(100vh - 96px);
+    height: calc(100dvh - 96px);
     min-height: 500px;
     width: 100%;
     max-width: 950px; /* Expansive wide desktop card */
@@ -253,7 +253,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 16px);
+    height: calc(100dvh - 16px);
 }
 
 .reels-loading h2, .no-reels h2 {
@@ -271,9 +271,14 @@
 
 /* ═══ RESPONSIVE (Fallback to Overlays) ═══ */
 @media (max-width: 900px) {
+    .video-feed {
+        height: calc(100dvh - 70px);
+        padding-bottom: 8px;
+    }
+
     .video-item-split {
         flex-direction: column;
-        height: calc(100vh - 80px); /* Fill mobile screen height */
+        height: calc(100dvh - 70px); /* Fill mobile screen height */
         max-width: 100%;
         border-radius: 0;
         border: none;

@@ -1,7 +1,7 @@
 /* Premium DevSync Connections CSS - Light Theme */
 
 .connections-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 40px 20px 60px;
   max-width: 800px;
   margin: 0 auto;

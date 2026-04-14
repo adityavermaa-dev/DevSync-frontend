@@ -21,7 +21,7 @@
 
 /* ── Page Layout ── */
 .profile-page {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100dvh - 80px);
   display: flex;
   align-items: flex-start;
   justify-content: center;

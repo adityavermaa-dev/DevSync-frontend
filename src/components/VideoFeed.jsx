@@ -176,7 +176,7 @@ const VideoFeed = () => {
                             playsInline
                         />
                         {/* Mobile Overlay (Only visible on small screens to mimic old layout) */}
-                        <div className="mobile-overlay-actions md-hidden">
+                        <div className="mobile-overlay-actions">
                             <button className="mobile-action-btn" onClick={(e) => { e.stopPropagation(); handleLike(video._id); }}>
                                 {video.isLiked ? heartFilledIcon : heartOutlineIcon}
                             </button>

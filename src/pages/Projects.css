@@ -1,7 +1,7 @@
 /* ===== Projects Hub ===== */
 
 .projects-page {
-  min-height: calc(100vh - 80px); /* Account for mobile nav */
+  min-height: calc(100dvh - 80px); /* Account for mobile nav */
   padding: 40px 20px 80px;
   display: flex;
   justify-content: center;
