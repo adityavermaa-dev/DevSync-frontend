@@ -6,7 +6,8 @@ import { BASE_URL } from '../constants/commonData';
 import { addUser } from '../redux/userSlice';
 import './Profile.css';
 import toast from 'react-hot-toast';
-import { extractGithubUsername, fetchGithubActivity, fetchGithubContributionStats, persistGithubUsername, summarizeGithubEvent } from '../utils/githubAPI';
+import { extractGithubUsername, fetchGithubContributionStats, persistGithubUsername } from '../utils/githubAPI';
+import ContributionGraph from '../components/ContributionGraph';
 
 const intentLabels = {
     cofounder: '🚀 Looking for Co-Founder',
@@ -99,15 +100,13 @@ const Profile = () => {
     const [photoPreview, setPhotoPreview] = useState('');
 
     // Tabs Data
-    const [activeTab, setActiveTab] = useState('my_videos'); // 'my_videos' | 'liked_videos' | 'projects'
+    const [activeTab, setActiveTab] = useState('my_videos'); // 'my_videos' | 'liked_videos' | 'projects' | 'github' | 'activity'
     const [myVideos, setMyVideos] = useState([]);
     const [likedVideos, setLikedVideos] = useState([]);
     const [myProjects, setMyProjects] = useState([]);
     const [githubRepos, setGithubRepos] = useState([]);
     const [githubLanguageMix, setGithubLanguageMix] = useState([]);
-    const [githubEvents, setGithubEvents] = useState([]);
     const [githubStats, setGithubStats] = useState(null);
-    const [githubGraphFailed, setGithubGraphFailed] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
 
     // Modal
@@ -193,26 +192,6 @@ const Profile = () => {
             }
         };
         fetchGithub();
-    }, [user, isEditing]);
-
-    useEffect(() => {
-        if (!user || isEditing) return;
-        const username = extractGithubUsername(user);
-        if (!username) {
-            setGithubEvents([]);
-            return;
-        }
-
-        const controller = new AbortController();
-        fetchGithubActivity(username, { perPage: 6, signal: controller.signal })
-            .then((events) => setGithubEvents(Array.isArray(events) ? events : []))
-            .catch((err) => {
-                if (controller.signal.aborted) return;
-                console.error('Failed to fetch github activity', err);
-                setGithubEvents([]);
-            });
-
-        return () => controller.abort();
     }, [user, isEditing]);
 
     const handleChange = (e) => {
@@ -411,6 +390,15 @@ const Profile = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                             GitHub
                         </button>
+                        <button
+                            className={`profile-tab ${activeTab === 'activity' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('activity')}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h3l2.25-6 4.5 12 2.25-6h4.5" />
+                            </svg>
+                            Activity
+                        </button>
                         {hasAnyVideos && (
                             <>
                                 <button 
@@ -523,35 +511,6 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 )}
-
-                                <div className="profile-github-heatmap">
-                                    {!githubGraphFailed && extractGithubUsername(user) && (
-                                        <img 
-                                            src={`https://github-readme-activity-graph.vercel.app/graph?username=${extractGithubUsername(user)}&bg_color=transparent&color=8b5cf6&line=8b5cf6&point=3b82f6&hide_border=true`} 
-                                            alt="GitHub Activity Graph" 
-                                            onError={() => setGithubGraphFailed(true)}
-                                        />
-                                    )}
-
-                                    {(githubGraphFailed || !extractGithubUsername(user)) && (
-                                        <div style={{ width: '100%', padding: '18px 16px', borderRadius: '16px', border: '1px solid var(--dashboard-border)', background: 'var(--dashboard-surface-alt)' }}>
-                                            <h3 style={{ margin: 0, color: 'var(--dashboard-text-main)', fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: '1.05rem' }}>Recent GitHub Activity</h3>
-                                            {githubEvents.length > 0 ? (
-                                                <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                                    {githubEvents.slice(0, 5).map((ev) => (
-                                                        <div key={ev.id} style={{ color: 'var(--dashboard-text-secondary)', fontWeight: 600, fontSize: '0.9rem' }}>
-                                                            {summarizeGithubEvent(ev)}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <p style={{ marginTop: '10px', marginBottom: 0, color: 'var(--dashboard-text-faint)', fontWeight: 600 }}>
-                                                    No recent public events found.
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
                                 <h3 style={{ alignSelf: 'flex-start', margin: '10px 0 0', color: 'var(--dashboard-text-main)', fontFamily: "'Outfit', sans-serif" }}>Recent Repositories</h3>
                                 {githubRepos.length > 0 ? (
                                     <div className="profile-github-repos-grid">
@@ -576,6 +535,10 @@ const Profile = () => {
                                 {githubStats?.note && (
                                     <p className="profile-github-stats-note">{githubStats.note}</p>
                                 )}
+                            </div>
+                        ) : activeTab === 'activity' ? (
+                            <div className="profile-github-section">
+                                <ContributionGraph />
                             </div>
                         ) : (
                             <div className="profile-video-list-wrap">
