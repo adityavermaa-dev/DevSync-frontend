@@ -6,7 +6,7 @@ import { BASE_URL } from '../constants/commonData';
 import { addUser } from '../redux/userSlice';
 import './Profile.css';
 import toast from 'react-hot-toast';
-import { extractGithubUsername, fetchGithubActivity, summarizeGithubEvent } from '../utils/githubAPI';
+import { extractGithubUsername, fetchGithubActivity, fetchGithubContributionStats, summarizeGithubEvent } from '../utils/githubAPI';
 
 const intentLabels = {
     cofounder: '🚀 Looking for Co-Founder',
@@ -47,6 +47,36 @@ const isUserPartOfProject = (project, userId) => {
     return memberIds.includes(userId);
 };
 
+const formatIsoDate = (isoDate) => {
+    if (!isoDate) return '-';
+    const date = new Date(`${isoDate}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+const computeLanguageMix = (repos, limit = 3) => {
+    if (!Array.isArray(repos) || repos.length === 0) return [];
+
+    const weights = new Map();
+    repos.forEach((repo) => {
+        const language = repo?.language;
+        if (!language) return;
+        const weight = Number(repo?.size) > 0 ? Number(repo.size) : 1;
+        weights.set(language, (weights.get(language) || 0) + weight);
+    });
+
+    const total = Array.from(weights.values()).reduce((sum, value) => sum + value, 0);
+    if (!total) return [];
+
+    return Array.from(weights.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([name, weight]) => ({
+            name,
+            percent: Math.round((weight / total) * 100),
+        }));
+};
+
 const Profile = () => {
     const user = useSelector(store => store.user);
     const dispatch = useDispatch();
@@ -69,7 +99,9 @@ const Profile = () => {
     const [likedVideos, setLikedVideos] = useState([]);
     const [myProjects, setMyProjects] = useState([]);
     const [githubRepos, setGithubRepos] = useState([]);
+    const [githubLanguageMix, setGithubLanguageMix] = useState([]);
     const [githubEvents, setGithubEvents] = useState([]);
+    const [githubStats, setGithubStats] = useState(null);
     const [githubGraphFailed, setGithubGraphFailed] = useState(false);
     const [loadingData, setLoadingData] = useState(false);
 
@@ -132,12 +164,26 @@ const Profile = () => {
         if (!user || isEditing) return;
         const fetchGithub = async () => {
             const username = extractGithubUsername(user);
-            if (!username) return;
+            if (!username) {
+                setGithubRepos([]);
+                setGithubStats(null);
+                return;
+            }
             try {
-                const res = await axios.get(`https://api.github.com/users/${username}/repos?sort=updated&per_page=3`);
-                setGithubRepos(res.data);
+                const [reposRes, stats] = await Promise.all([
+                    axios.get(`https://api.github.com/users/${username}/repos?sort=updated&per_page=50`),
+                    fetchGithubContributionStats(username, { maxPages: 3 }),
+                ]);
+
+                const repos = Array.isArray(reposRes?.data) ? reposRes.data : [];
+                setGithubRepos(repos.slice(0, 6));
+                setGithubLanguageMix(computeLanguageMix(repos, 3));
+                setGithubStats(stats);
             } catch (err) {
                 console.error("Failed to fetch github repos", err);
+                setGithubRepos([]);
+                setGithubLanguageMix([]);
+                setGithubStats(null);
             }
         };
         fetchGithub();
@@ -246,6 +292,8 @@ const Profile = () => {
     }
 
     const currentVideos = activeTab === 'my_videos' ? myVideos : likedVideos;
+    const githubUsername = extractGithubUsername(user);
+    const githubProfileUrl = githubUsername ? `https://github.com/${githubUsername}` : '';
 
     /* ── View Mode ── */
     if (!isEditing) {
@@ -275,8 +323,8 @@ const Profile = () => {
                         <h1 className="profile-name">{user.firstName} {user.lastName}</h1>
                         {user.about && <p className="profile-bio">{user.about}</p>}
 
-                        {user.githubUrl && (
-                            <a href={user.githubUrl} target="_blank" rel="noopener noreferrer" className="profile-github-link">
+                        {githubProfileUrl && (
+                            <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer" className="profile-github-link">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                                 GitHub
                             </a>
@@ -323,15 +371,13 @@ const Profile = () => {
                             </svg>
                             Projects
                         </button>
-                        {(user.githubUrl || user.githubUsername) && (
-                            <button 
-                                className={`profile-tab ${activeTab === 'github' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('github')}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                                GitHub
-                            </button>
-                        )}
+                        <button 
+                            className={`profile-tab ${activeTab === 'github' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('github')}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            GitHub
+                        </button>
                         {hasAnyVideos && (
                             <>
                                 <button 
@@ -380,6 +426,71 @@ const Profile = () => {
                             </div>
                         ) : activeTab === 'github' ? (
                             <div className="profile-github-section">
+                                {!githubUsername && (
+                                    <div className="profile-empty-state" style={{ width: '100%', minHeight: 180 }}>
+                                        <div style={{ opacity: 0.5, transform: 'scale(1.4)', marginBottom: '10px' }}>🐙</div>
+                                        <h3>Add GitHub to unlock stats</h3>
+                                        <p>Add your GitHub URL in Edit Profile to see contributions, streaks, and repo insights.</p>
+                                    </div>
+                                )}
+                                {githubStats && (
+                                    <div className="profile-github-legacy-grid">
+                                        <div className="profile-legacy-card">
+                                            <p className="profile-legacy-kicker">Legacy</p>
+                                            <h4 className="profile-legacy-title">Total Contributions</h4>
+                                            <div className="profile-legacy-total">{githubStats.totalContributions}</div>
+                                            <p className="profile-legacy-range">
+                                                {githubStats.activityWindow
+                                                    ? `${formatIsoDate(githubStats.activityWindow.start)} - ${formatIsoDate(githubStats.activityWindow.end)}`
+                                                    : 'No contribution data yet'}
+                                            </p>
+                                        </div>
+
+                                        <div className="profile-legacy-card profile-legacy-card-center">
+                                            <div className="profile-streak-crown">♛</div>
+                                            <div className="profile-streak-ring-wrap">
+                                                <div className="profile-streak-ring">
+                                                    <span>{githubStats.currentStreak}</span>
+                                                </div>
+                                            </div>
+                                            <p className="profile-legacy-kicker">Current Streak</p>
+                                            <p className="profile-legacy-muted">
+                                                {githubStats.currentRange
+                                                    ? `${formatIsoDate(githubStats.currentRange.start)} - ${formatIsoDate(githubStats.currentRange.end)}`
+                                                    : 'No active streak'}
+                                            </p>
+                                            <div className="profile-longest-strip">
+                                                <strong>Longest Streak</strong>
+                                                <span>{githubStats.longestStreak}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="profile-legacy-card">
+                                            <p className="profile-legacy-kicker">The Arsenal</p>
+                                            {githubLanguageMix.length > 0 ? (
+                                                <div className="profile-arsenal-list">
+                                                    {githubLanguageMix.map((language, index) => (
+                                                        <div key={language.name} className="profile-arsenal-item">
+                                                            <div className="profile-arsenal-head">
+                                                                <span>{language.name}</span>
+                                                                <strong>{language.percent}%</strong>
+                                                            </div>
+                                                            <div className="profile-arsenal-bar-track">
+                                                                <div
+                                                                    className={`profile-arsenal-bar-fill tier-${index + 1}`}
+                                                                    style={{ width: `${Math.max(language.percent, 6)}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className="profile-legacy-muted">No language data found.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="profile-github-heatmap">
                                     {!githubGraphFailed && extractGithubUsername(user) && (
                                         <img 
@@ -428,6 +539,9 @@ const Profile = () => {
                                     </div>
                                 ) : (
                                     <p style={{ color: 'var(--dashboard-text-faint)' }}>No public repositories found.</p>
+                                )}
+                                {githubStats?.note && (
+                                    <p className="profile-github-stats-note">{githubStats.note}</p>
                                 )}
                             </div>
                         ) : (

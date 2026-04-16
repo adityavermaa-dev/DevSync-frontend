@@ -138,3 +138,158 @@ export const summarizeGithubEvent = (event) => {
 
   return [action, repo ? `in ${repo}` : "", when ? `• ${when}` : ""].filter(Boolean).join(" ");
 };
+
+const toIsoDay = (value) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString().slice(0, 10);
+};
+
+const eventContributionWeight = (event) => {
+  const type = event?.type;
+  switch (type) {
+    case "PushEvent":
+      return Math.max(1, event?.payload?.commits?.length || 0);
+    case "PullRequestEvent":
+    case "IssuesEvent":
+    case "IssueCommentEvent":
+    case "PullRequestReviewEvent":
+    case "PullRequestReviewCommentEvent":
+    case "CommitCommentEvent":
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+const buildStreaksFromDays = (days) => {
+  if (!Array.isArray(days) || days.length === 0) {
+    return {
+      currentStreak: 0,
+      longestStreak: 0,
+      currentRange: null,
+      longestRange: null,
+    };
+  }
+
+  const sortedAsc = [...new Set(days)].sort();
+  const asDate = (isoDay) => new Date(`${isoDay}T00:00:00Z`);
+  const dayDiff = (a, b) => Math.round((asDate(b) - asDate(a)) / (24 * 60 * 60 * 1000));
+
+  let longest = 1;
+  let longestStart = sortedAsc[0];
+  let longestEnd = sortedAsc[0];
+
+  let runStart = sortedAsc[0];
+  let runEnd = sortedAsc[0];
+  let runLen = 1;
+
+  for (let i = 1; i < sortedAsc.length; i += 1) {
+    const prev = sortedAsc[i - 1];
+    const curr = sortedAsc[i];
+    if (dayDiff(prev, curr) === 1) {
+      runLen += 1;
+      runEnd = curr;
+    } else {
+      if (runLen > longest) {
+        longest = runLen;
+        longestStart = runStart;
+        longestEnd = runEnd;
+      }
+      runStart = curr;
+      runEnd = curr;
+      runLen = 1;
+    }
+  }
+
+  if (runLen > longest) {
+    longest = runLen;
+    longestStart = runStart;
+    longestEnd = runEnd;
+  }
+
+  const sortedDesc = [...sortedAsc].sort((a, b) => (a < b ? 1 : -1));
+  const todayIso = toIsoDay(new Date());
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const yesterdayIso = toIsoDay(yesterday);
+
+  let current = 0;
+  let currentStart = null;
+  let currentEnd = null;
+
+  if (sortedDesc[0] === todayIso || sortedDesc[0] === yesterdayIso) {
+    current = 1;
+    currentEnd = sortedDesc[0];
+    currentStart = sortedDesc[0];
+    for (let i = 1; i < sortedDesc.length; i += 1) {
+      const prev = sortedDesc[i - 1];
+      const curr = sortedDesc[i];
+      if (dayDiff(curr, prev) === 1) {
+        current += 1;
+        currentStart = curr;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return {
+    currentStreak: current,
+    longestStreak: longest,
+    currentRange: currentStart && currentEnd ? { start: currentStart, end: currentEnd } : null,
+    longestRange: { start: longestStart, end: longestEnd },
+  };
+};
+
+export const fetchGithubContributionStats = async (username, { maxPages = 3, signal } = {}) => {
+  const u = extractGithubUsername(username);
+  if (!u) return null;
+
+  const cacheKey = `contrib-stats:${u}:${maxPages}`;
+  const cached = getCached(cacheKey);
+  if (cached) return cached;
+
+  const events = [];
+  for (let page = 1; page <= maxPages; page += 1) {
+    const res = await githubClient.get(`/users/${encodeURIComponent(u)}/events/public`, {
+      params: { per_page: 100, page },
+      signal,
+    });
+
+    const chunk = Array.isArray(res.data) ? res.data : [];
+    events.push(...chunk);
+    if (chunk.length < 100) break;
+  }
+
+  const contributionByDay = new Map();
+  let totalContributions = 0;
+
+  for (const event of events) {
+    const day = toIsoDay(event?.created_at);
+    const weight = eventContributionWeight(event);
+    if (!day || weight <= 0) continue;
+    totalContributions += weight;
+    contributionByDay.set(day, (contributionByDay.get(day) || 0) + weight);
+  }
+
+  const activeDays = Array.from(contributionByDay.keys()).sort();
+  const streaks = buildStreaksFromDays(activeDays);
+
+  const result = {
+    username: u,
+    totalContributions,
+    activeDaysCount: activeDays.length,
+    currentStreak: streaks.currentStreak,
+    longestStreak: streaks.longestStreak,
+    currentRange: streaks.currentRange,
+    longestRange: streaks.longestRange,
+    activityWindow: activeDays.length > 0 ? { start: activeDays[0], end: activeDays[activeDays.length - 1] } : null,
+    generatedAt: new Date().toISOString(),
+    note: "Based on recent public events (up to 300 events)",
+  };
+
+  setCached(cacheKey, result);
+  return result;
+};

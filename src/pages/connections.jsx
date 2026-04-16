@@ -31,8 +31,13 @@ const Connections = () => {
     }, [fetchConnections]);
 
     const handleViewProfile = (user) => {
+        if (!user?._id) return;
         navigate(`/user/${user._id}`, { state: { user } });
     };
+
+    const validConnections = Array.isArray(connections)
+        ? connections.filter((user) => Boolean(user?._id))
+        : [];
 
     /* ── Loading ── */
     if (loading) {
@@ -46,7 +51,7 @@ const Connections = () => {
     }
 
     /* ── Empty ── */
-    if (!connections || connections.length === 0) {
+    if (!validConnections || validConnections.length === 0) {
         return (
             <div className="connections-page">
                 <div className="connections-empty">
@@ -66,14 +71,14 @@ const Connections = () => {
                 <div className="connections-header">
                     <h1 className="connections-title">Connections</h1>
                     <span className="connections-count">
-                        {connections.length}
+                        {validConnections.length}
                     </span>
                 </div>
 
                 <div className="connections-grid">
-                    {connections.map((user, idx) => (
+                    {validConnections.map((user, idx) => (
                         <div
-                            key={user._id || idx}
+                            key={user._id}
                             className="connection-card-wrap"
                             style={{ animationDelay: `${idx * 0.04}s` }}
                             onClick={() => handleViewProfile(user)}
