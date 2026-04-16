@@ -153,6 +153,7 @@
 .cg-snake-head {
   background: var(--cg-cyan);
   box-shadow: 0 0 10px rgba(14, 230, 255, 0.92);
+  animation: cgSnakePulse 320ms ease-in-out infinite alternate;
 }
 
 .cg-snake-body {
@@ -231,6 +232,17 @@
   color: #d4be73;
   background: rgba(4, 10, 26, 0.8);
   font-weight: 600;
+}
+
+@keyframes cgSnakePulse {
+  from {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(14, 230, 255, 0.78);
+  }
+  to {
+    transform: scale(1.12);
+    box-shadow: 0 0 12px rgba(14, 230, 255, 0.98);
+  }
 }
 
 @media (max-width: 640px) {
