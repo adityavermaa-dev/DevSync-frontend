@@ -5,6 +5,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { BASE_URL } from '../constants/commonData';
 import { addUser } from '../redux/userSlice';
+import { extractGithubUsername, persistGithubUsername } from '../utils/githubAPI';
 import logo from '../assests/images/logo.png';
 import AnimatedEmoji from '../components/AnimatedEmoji';
 import './Onboarding.css';
@@ -60,7 +61,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   const getInitialGithubUsername = () => {
-    const raw = (user?.githubUrl || user?.githubUsername || '').trim();
+    const raw = (extractGithubUsername(user) || '').trim();
     if (!raw) return '';
     return raw
       .replace(/^https?:\/\/github\.com\//i, '')
@@ -210,9 +211,22 @@ const Onboarding = () => {
         throw new Error('Failed to refresh updated profile');
       }
 
-      dispatch(addUser(refreshedUser));
+      const fallbackUsername = extractGithubUsername(formData.githubUsername);
+      if (fallbackUsername) {
+        persistGithubUsername(fallbackUsername, refreshedUser?._id || refreshedUser?.id || user?._id);
+      }
 
-      if (!Array.isArray(refreshedUser?.skills) || refreshedUser.skills.length === 0) {
+      const hydratedUser = (!extractGithubUsername(refreshedUser) && fallbackUsername)
+        ? {
+            ...refreshedUser,
+            githubUsername: fallbackUsername,
+            githubUrl: `https://github.com/${fallbackUsername}`,
+          }
+        : refreshedUser;
+
+      dispatch(addUser(hydratedUser));
+
+      if (!Array.isArray(hydratedUser?.skills) || hydratedUser.skills.length === 0) {
         throw new Error('Your skills were not saved. Please try again.');
       }
 

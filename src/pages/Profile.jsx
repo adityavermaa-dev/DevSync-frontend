@@ -6,7 +6,7 @@ import { BASE_URL } from '../constants/commonData';
 import { addUser } from '../redux/userSlice';
 import './Profile.css';
 import toast from 'react-hot-toast';
-import { extractGithubUsername, fetchGithubActivity, fetchGithubContributionStats, summarizeGithubEvent } from '../utils/githubAPI';
+import { extractGithubUsername, fetchGithubActivity, fetchGithubContributionStats, persistGithubUsername, summarizeGithubEvent } from '../utils/githubAPI';
 
 const intentLabels = {
     cofounder: '🚀 Looking for Co-Founder',
@@ -77,6 +77,11 @@ const computeLanguageMix = (repos, limit = 3) => {
         }));
 };
 
+const isInvalidFieldError = (error) => {
+    const msg = String(error?.response?.data?.message || '').toLowerCase();
+    return msg.includes('invalid field') || msg.includes('not allowed');
+};
+
 const Profile = () => {
     const user = useSelector(store => store.user);
     const dispatch = useDispatch();
@@ -113,12 +118,13 @@ const Profile = () => {
 
     useEffect(() => {
         if (user) {
+            const githubUsername = extractGithubUsername(user) || '';
             setForm({
                 firstName: user.firstName || '', lastName: user.lastName || '',
                 age: user.age || '', gender: user.gender || '',
                 about: user.about || '', skills: user.skills || [],
                 intent: user.intent || '',
-                githubUrl: user.githubUrl || '',
+                githubUrl: githubUsername,
             });
             setPhotoPreview(user.photoUrl || '');
         }
@@ -242,7 +248,8 @@ const Profile = () => {
         setIsEditing(false);
         setProfileImageFile(null);
         if (user) {
-            setForm({ firstName: user.firstName || '', lastName: user.lastName || '', age: user.age || '', gender: user.gender || '', about: user.about || '', skills: user.skills || [], intent: user.intent || '', githubUrl: user.githubUrl || '' });
+            const githubUsername = extractGithubUsername(user) || '';
+            setForm({ firstName: user.firstName || '', lastName: user.lastName || '', age: user.age || '', gender: user.gender || '', about: user.about || '', skills: user.skills || [], intent: user.intent || '', githubUrl: githubUsername });
             setPhotoPreview(user.photoUrl || '');
         }
     };
@@ -250,19 +257,45 @@ const Profile = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            const formData = new FormData();
-            formData.append('firstName', form.firstName);
-            formData.append('lastName', form.lastName);
-            if (form.age) formData.append('age', form.age);
-            if (form.gender) formData.append('gender', form.gender);
-            if (form.about) formData.append('about', form.about);
-            if (form.skills.length > 0) formData.append('skills', JSON.stringify(form.skills));
-            if (form.githubUrl) formData.append('githubUrl', form.githubUrl);
-            if (profileImageFile) formData.append('profileImage', profileImageFile);
+            const githubUsername = extractGithubUsername(form.githubUrl);
 
-            await axios.patch(BASE_URL + '/profile/edit', formData, { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } });
+            const buildPayload = (includeGithubField = true) => {
+                const formData = new FormData();
+                formData.append('firstName', form.firstName);
+                formData.append('lastName', form.lastName);
+                if (form.age) formData.append('age', form.age);
+                if (form.gender) formData.append('gender', form.gender);
+                if (form.about) formData.append('about', form.about);
+                if (form.skills.length > 0) formData.append('skills', JSON.stringify(form.skills));
+                if (includeGithubField && githubUsername) formData.append('githubUsername', githubUsername);
+                if (profileImageFile) formData.append('profileImage', profileImageFile);
+                return formData;
+            };
+
+            try {
+                await axios.patch(BASE_URL + '/profile/edit', buildPayload(true), { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } });
+            } catch (error) {
+                if (!(githubUsername && isInvalidFieldError(error))) throw error;
+                // Backend may reject github fields. Save remaining profile fields and keep GitHub locally.
+                await axios.patch(BASE_URL + '/profile/edit', buildPayload(false), { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } });
+            }
+
             const profileRes = await axios.get(BASE_URL + '/profile/view', { withCredentials: true });
-            dispatch(addUser(profileRes.data));
+
+            const refreshedUser = profileRes?.data?.data || profileRes?.data;
+            if (githubUsername) {
+                persistGithubUsername(githubUsername, refreshedUser?._id || refreshedUser?.id || user?._id);
+            }
+
+            const hydratedUser = (!extractGithubUsername(refreshedUser) && githubUsername)
+                ? {
+                    ...refreshedUser,
+                    githubUsername,
+                    githubUrl: `https://github.com/${githubUsername}`,
+                }
+                : refreshedUser;
+
+            dispatch(addUser(hydratedUser));
             toast.success('Profile updated!');
             setIsEditing(false);
         } catch (error) {
@@ -684,8 +717,8 @@ const Profile = () => {
                     </div>
 
                     <div className="profile-field">
-                        <label className="profile-field-label">GitHub URL (Optional)</label>
-                        <input className="profile-input" type="url" name="githubUrl" value={form.githubUrl} onChange={handleChange} placeholder="https://github.com/username" />
+                        <label className="profile-field-label">GitHub Username or URL (Optional)</label>
+                        <input className="profile-input" type="text" name="githubUrl" value={form.githubUrl} onChange={handleChange} placeholder="username or https://github.com/username" />
                     </div>
                 </div>
 

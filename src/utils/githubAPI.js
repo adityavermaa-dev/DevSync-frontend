@@ -9,6 +9,25 @@ const githubClient = axios.create({
 
 const memoryCache = new Map();
 const CACHE_TTL_MS = 2 * 60 * 1000;
+const GITHUB_FALLBACK_KEY = "devsync-github-username";
+
+const getStorageValue = (key) => {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const setStorageValue = (key, value) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // ignore storage failures in private mode
+  }
+};
 
 const getCached = (key) => {
   const entry = memoryCache.get(key);
@@ -24,15 +43,32 @@ const setCached = (key, value) => {
   memoryCache.set(key, { value, timestamp: Date.now() });
 };
 
+export const readPersistedGithubUsername = (userId) => {
+  const scopedKey = userId ? `${GITHUB_FALLBACK_KEY}:${userId}` : null;
+  return (scopedKey ? getStorageValue(scopedKey) : null) || getStorageValue(GITHUB_FALLBACK_KEY) || null;
+};
+
+export const persistGithubUsername = (username, userId) => {
+  const normalized = extractGithubUsername(username);
+  if (!normalized) return;
+  setStorageValue(GITHUB_FALLBACK_KEY, normalized);
+  if (userId) {
+    setStorageValue(`${GITHUB_FALLBACK_KEY}:${userId}`, normalized);
+  }
+};
+
 export const extractGithubUsername = (input) => {
   if (!input) return null;
 
   if (typeof input === "object") {
-    return (
+    const direct = (
       extractGithubUsername(input.githubUsername) ||
       extractGithubUsername(input.githubUrl) ||
       null
     );
+
+    if (direct) return direct;
+    return readPersistedGithubUsername(input._id || input.id);
   }
 
   if (typeof input !== "string") return null;
