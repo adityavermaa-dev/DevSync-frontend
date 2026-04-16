@@ -409,15 +409,15 @@ const Feed = () => {
                         <div className="tinder-match-row custom-scrollbar">
                             {recommendations?.matchedDevelopers?.slice(0, 6).map(dev => (
                                 <button
-                                    key={`dev-${dev._id}`}
+                                    key={`dev-${dev?._id}`}
                                     type="button"
                                     className="tinder-pill"
-                                    onClick={() => navigate(`/user/${dev._id}`, { state: { user: dev } })}
+                                    onClick={() => navigate(`/user/${dev?._id}`, { state: { user: dev } })}
                                 >
-                                    <img src={dev.photoUrl || defaultAvatar} alt={dev.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
+                                    <img src={dev?.photoUrl || defaultAvatar} alt={dev?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
                                     <div>
-                                        <p>{dev.firstName}</p>
-                                        <small>{dev.matchScore || 100}%</small>
+                                        <p>{dev?.firstName}</p>
+                                        <small>{dev?.matchScore || 100}%</small>
                                     </div>
                                 </button>
                             ))}
@@ -450,13 +450,13 @@ const Feed = () => {
                                 <p className="tinder-empty-text">No connections yet. Swipe right to connect.</p>
                             ) : (
                                 connections.slice(0, 6).map(user => (
-                                    <div key={user._id} className="tinder-list-item" onClick={() => navigate(`/user/${user._id}`, { state: { user } })}>
-                                        <img src={user.photoUrl || defaultAvatar} alt={user.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
+                                    <div key={user?._id} className="tinder-list-item" onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
+                                        <img src={user?.photoUrl || defaultAvatar} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
                                         <div>
-                                            <p>{user.firstName} {user.lastName}</p>
-                                            <small>{user.skills?.[0] || 'Developer'}</small>
+                                            <p>{user?.firstName} {user?.lastName}</p>
+                                            <small>{user?.skills?.[0] || 'Developer'}</small>
                                         </div>
-                                        <Link to={`/chat/${user._id}`} onClick={(e) => e.stopPropagation()}>Chat</Link>
+                                        <Link to={`/chat/${user?._id}`} onClick={(e) => e.stopPropagation()}>Chat</Link>
                                     </div>
                                 ))
                             )}
@@ -473,18 +473,18 @@ const Feed = () => {
                                 <p className="tinder-empty-text">No pending requests.</p>
                             ) : (
                                 requests.slice(0, 6).map(req => {
-                                    const user = req.fromUserId || req;
-                                    const isRemoving = removingReqId === req._id;
+                                    const user = req?.fromUserId || req;
+                                    const isRemoving = removingReqId === req?._id;
                                     return (
-                                        <div key={req._id} className={`tinder-list-item ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ transitionDuration: '300ms' }} onClick={() => navigate(`/user/${user._id}`, { state: { user } })}>
-                                            <img src={user.photoUrl || defaultAvatar} alt={user.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
+                                        <div key={req?._id} className={`tinder-list-item ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ transitionDuration: '300ms' }} onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
+                                            <img src={user?.photoUrl || defaultAvatar} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
                                             <div>
-                                                <p>{user.firstName} {user.lastName}</p>
-                                                <small>{user.skills?.[0] || 'Developer'}</small>
+                                                <p>{user?.firstName} {user?.lastName}</p>
+                                                <small>{user?.skills?.[0] || 'Developer'}</small>
                                             </div>
                                             <div className="tinder-list-actions" onClick={(e) => e.stopPropagation()}>
-                                                <button type="button" onClick={(e) => handleReviewRequest('rejected', req._id, e)}>×</button>
-                                                <button type="button" onClick={(e) => handleReviewRequest('accepted', req._id, e)}>✓</button>
+                                                <button type="button" onClick={(e) => handleReviewRequest('rejected', req?._id, e)}>×</button>
+                                                <button type="button" onClick={(e) => handleReviewRequest('accepted', req?._id, e)}>✓</button>
                                             </div>
                                         </div>
                                     );

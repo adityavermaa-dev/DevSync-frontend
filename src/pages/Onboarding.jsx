@@ -10,13 +10,48 @@ import AnimatedEmoji from '../components/AnimatedEmoji';
 import './Onboarding.css';
 
 const PREDEFINED_SKILLS = [
-  'React', 'Node.js', 'Python', 'Java', 'C++', 'Go', 'Rust', 'Ruby', 'PHP',
-  'TypeScript', 'MongoDB', 'PostgreSQL', 'Docker', 'AWS', 'Kubernetes'
+  'HTML', 'CSS', 'JavaScript', 'TypeScript',
+  'React', 'Next.js', 'Redux', 'Tailwind CSS',
+  'Node.js', 'Express.js', 'REST API', 'GraphQL',
+  'Python', 'Django', 'Flask',
+  'Java', 'Spring Boot',
+  'PHP', 'Laravel',
+  'Ruby on Rails',
+  'Go', 'Rust', 'C++',
+  'MongoDB', 'PostgreSQL', 'MySQL', 'Redis',
+  'Docker', 'Kubernetes', 'AWS', 'Azure', 'Google Cloud',
+  'CI/CD', 'Nginx',
+  'Machine Learning', 'Deep Learning',
+  'TensorFlow', 'PyTorch',
+  'Git', 'GitHub', 'GitLab',
+  'Linux', 'Bash', 'Postman',
+  'Figma', 'UI Design', 'UX Research'
 ];
 
 const UI_ROLES = [
-  'Frontend Developer', 'Backend Developer', 'Full Stack Developer',
-  'Mobile Developer', 'DevOps Engineer', 'UI/UX Designer', 'Data Scientist'
+  'Frontend Developer',
+  'Backend Developer',
+  'Full Stack Developer',
+  'Mobile App Developer',
+  'DevOps Engineer',
+  'Cloud Engineer',
+  'Site Reliability Engineer',
+  'Security Engineer',
+  'Data Scientist',
+  'Machine Learning Engineer',
+  'AI Engineer',
+  'UI/UX Designer',
+  'Product Designer',
+  'Product Manager',
+  'QA Engineer',
+  'Test Automation Engineer',
+  'Game Developer',
+  'Blockchain Developer',
+  'Embedded Systems Engineer',
+  'Project Manager',
+  'Technical Writer',
+  'Open Source Contributor',
+  'Student / Learner'
 ];
 
 const Onboarding = () => {
@@ -110,7 +145,7 @@ const Onboarding = () => {
 
   const isInvalidFieldError = (error) => {
     const msg = String(error?.response?.data?.message || '').toLowerCase();
-    return msg.includes('invalid field');
+    return msg.includes('invalid field') || msg.includes('not allowed');
   };
 
   const submitOnboarding = async () => {
@@ -163,10 +198,24 @@ const Onboarding = () => {
         }
       }
 
-      const updatedUser = res?.data?.data || res?.data;
-      if (updatedUser) {
-        dispatch(addUser(updatedUser));
+      if (!res) {
+        throw new Error('Profile update did not return a valid response');
       }
+
+      // Fetch the canonical profile shape before redirecting.
+      const profileRes = await axios.get(BASE_URL + '/profile/view', { withCredentials: true });
+      const refreshedUser = profileRes?.data?.data || profileRes?.data;
+
+      if (!refreshedUser) {
+        throw new Error('Failed to refresh updated profile');
+      }
+
+      dispatch(addUser(refreshedUser));
+
+      if (!Array.isArray(refreshedUser?.skills) || refreshedUser.skills.length === 0) {
+        throw new Error('Your skills were not saved. Please try again.');
+      }
+
       toast.success('Profile completed! 🎉');
       navigate('/'); // Go to Hub/Feed
     } catch (error) {

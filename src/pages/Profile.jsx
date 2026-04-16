@@ -16,6 +16,37 @@ const intentLabels = {
     networking: '🧑‍💻 Just Networking',
 };
 
+const normalizeList = (payload, keys = []) => {
+    if (Array.isArray(payload)) return payload;
+    if (payload && typeof payload === 'object') {
+        for (const key of keys) {
+            if (Array.isArray(payload[key])) return payload[key];
+        }
+        if (payload.data && Array.isArray(payload.data)) return payload.data;
+    }
+    return [];
+};
+
+const getIdString = (value) => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'object') return String(value._id || value.id || '');
+    return '';
+};
+
+const isUserPartOfProject = (project, userId) => {
+    if (!project || !userId) return false;
+
+    const ownerId = getIdString(project.owner);
+    if (ownerId && ownerId === userId) return true;
+
+    const memberIds = Array.isArray(project.members)
+        ? project.members.map((member) => getIdString(member?.user || member))
+        : [];
+
+    return memberIds.includes(userId);
+};
+
 const Profile = () => {
     const user = useSelector(store => store.user);
     const dispatch = useDispatch();
@@ -46,6 +77,8 @@ const Profile = () => {
     const [videoToDelete, setVideoToDelete] = useState(null);
     const [deletingVideo, setDeletingVideo] = useState(false);
 
+    const hasAnyVideos = myVideos.length > 0 || likedVideos.length > 0;
+
     useEffect(() => {
         if (user) {
             setForm({
@@ -67,9 +100,14 @@ const Profile = () => {
                 axios.get(BASE_URL + '/liked-videos', { withCredentials: true }).catch(() => ({ data: [] })),
                 axios.get(BASE_URL + '/projects?owner=' + user._id, { withCredentials: true }).catch(() => ({ data: { projects: [] } }))
             ]);
-            setMyVideos(myRes.data || []);
-            setLikedVideos(likedRes.data || []);
-            setMyProjects(projRes.data?.projects || projRes.data || []);
+
+            const myVideoList = normalizeList(myRes?.data, ['videos', 'myVideos', 'items']);
+            const likedVideoList = normalizeList(likedRes?.data, ['videos', 'likedVideos', 'items']);
+            const projectList = normalizeList(projRes?.data, ['projects', 'items']);
+
+            setMyVideos(myVideoList);
+            setLikedVideos(likedVideoList);
+            setMyProjects(projectList.filter((project) => isUserPartOfProject(project, String(user?._id || ''))));
         } catch (error) {
             console.error(error);
             toast.error("Failed to load some profile data");
@@ -83,6 +121,12 @@ const Profile = () => {
             fetchProfileData();
         }
     }, [user, isEditing, fetchProfileData]);
+
+    useEffect(() => {
+        if (!hasAnyVideos && (activeTab === 'my_videos' || activeTab === 'liked_videos')) {
+            setActiveTab('projects');
+        }
+    }, [activeTab, hasAnyVideos]);
 
     useEffect(() => {
         if (!user || isEditing) return;
@@ -167,7 +211,6 @@ const Profile = () => {
             if (form.gender) formData.append('gender', form.gender);
             if (form.about) formData.append('about', form.about);
             if (form.skills.length > 0) formData.append('skills', JSON.stringify(form.skills));
-            if (form.intent) formData.append('intent', form.intent);
             if (form.githubUrl) formData.append('githubUrl', form.githubUrl);
             if (profileImageFile) formData.append('profileImage', profileImageFile);
 
@@ -289,20 +332,24 @@ const Profile = () => {
                                 GitHub
                             </button>
                         )}
-                        <button 
-                            className={`profile-tab ${activeTab === 'my_videos' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('my_videos')}
-                        >
-                            {videoGridIcon}
-                            My Videos
-                        </button>
-                        <button 
-                            className={`profile-tab ${activeTab === 'liked_videos' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('liked_videos')}
-                        >
-                            {heartSolidIcon}
-                            Liked
-                        </button>
+                        {hasAnyVideos && (
+                            <>
+                                <button 
+                                    className={`profile-tab ${activeTab === 'my_videos' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('my_videos')}
+                                >
+                                    {videoGridIcon}
+                                    My Videos
+                                </button>
+                                <button 
+                                    className={`profile-tab ${activeTab === 'liked_videos' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('liked_videos')}
+                                >
+                                    {heartSolidIcon}
+                                    Liked
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {/* Content Grid */}
@@ -504,22 +551,6 @@ const Profile = () => {
                     <div className="profile-field">
                         <label className="profile-field-label">About</label>
                         <textarea className="profile-input profile-textarea" name="about" value={form.about} onChange={handleChange} placeholder="Tell the world about yourself..." rows={3} />
-                    </div>
-
-                    <div className="profile-field">
-                        <label className="profile-field-label">What are you looking for?</label>
-                        <div className="profile-intent-selector">
-                            {Object.entries(intentLabels).map(([key, label]) => (
-                                <button
-                                    key={key}
-                                    type="button"
-                                    className={`profile-intent-option ${form.intent === key ? 'active' : ''}`}
-                                    onClick={() => setForm(prev => ({ ...prev, intent: key }))}
-                                >
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
                     </div>
 
                     <div className="profile-field">
