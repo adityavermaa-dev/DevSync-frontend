@@ -19,6 +19,23 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes streakRingPop {
+  0% { transform: scale(0.92); opacity: 0.75; }
+  70% { transform: scale(1.035); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes streakHaloBreath {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.06); }
+}
+
+@keyframes streakCountPop {
+  0% { transform: scale(0.75); opacity: 0; }
+  60% { transform: scale(1.09); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* ── Page Layout ── */
 .profile-page {
   min-height: calc(100dvh - 80px);
@@ -140,6 +157,31 @@
   margin: 0 0 16px;
 }
 
+.profile-github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  color: var(--dashboard-text-main);
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-github-link svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-github-link:hover {
+  color: color-mix(in srgb, var(--auth-btn-bg) 62%, var(--dashboard-text-main));
+  transform: translateY(-1px);
+}
+
 /* Info Badges & Skills */
 .profile-badges {
   display: flex;
@@ -253,6 +295,13 @@
   padding: 0 20px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   margin-top: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.profile-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .profile-tab {
@@ -269,6 +318,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .profile-tab:hover {
@@ -884,12 +935,25 @@
 }
 
 .profile-streak-ring-wrap {
+  position: relative;
   width: 150px;
   height: 150px;
   border-radius: 50%;
   padding: 8px;
   margin-bottom: 8px;
   background: radial-gradient(circle, color-mix(in srgb, var(--auth-btn-bg) 16%, transparent), transparent 65%);
+  animation: streakRingPop 560ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.profile-streak-ring-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--auth-btn-bg) 38%, transparent);
+  filter: blur(1px);
+  pointer-events: none;
+  animation: streakHaloBreath 2.8s ease-in-out infinite;
 }
 
 .profile-streak-ring {
@@ -908,6 +972,7 @@
   font-weight: 800;
   line-height: 1;
   color: var(--dashboard-text-main);
+  animation: streakCountPop 520ms ease-out 120ms both;
 }
 
 .profile-legacy-muted {
