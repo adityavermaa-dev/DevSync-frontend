@@ -16,6 +16,11 @@ const SWIPE_THRESHOLD = 120;
 const VELOCITY_THRESHOLD = 0.5;
 const FLY_DURATION = 350;
 
+const getUserPhotoUrl = (user) => {
+    if (!user || typeof user !== 'object') return defaultAvatar;
+    return user.photoUrl || user.profileImageUrl || user.avatarUrl || user.photo || defaultAvatar;
+};
+
 const Feed = () => {
     const feed = useSelector(store => store.feed);
     const connections = useSelector(store => store.connections);
@@ -336,7 +341,7 @@ const Feed = () => {
                 <div
                     className="tinder-stage"
                     style={{
-                        backgroundImage: `linear-gradient(160deg, rgba(8, 18, 32, 0.5), rgba(8, 18, 32, 0.2)), url('${currentUser?.photoUrl || defaultAvatar}')`
+                        backgroundImage: `linear-gradient(160deg, rgba(8, 18, 32, 0.5), rgba(8, 18, 32, 0.2)), url('${getUserPhotoUrl(currentUser)}')`
                     }}
                 >
                     <div className="feed-deck m-auto">
@@ -414,7 +419,7 @@ const Feed = () => {
                                     className="tinder-pill"
                                     onClick={() => navigate(`/user/${dev?._id}`, { state: { user: dev } })}
                                 >
-                                    <img src={dev?.photoUrl || defaultAvatar} alt={dev?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
+                                    <img src={getUserPhotoUrl(dev)} alt={dev?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
                                     <div>
                                         <p>{dev?.firstName}</p>
                                         <small>{dev?.matchScore || 100}%</small>
@@ -451,7 +456,7 @@ const Feed = () => {
                             ) : (
                                 connections.slice(0, 6).map(user => (
                                     <div key={user?._id} className="tinder-list-item" onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
-                                        <img src={user?.photoUrl || defaultAvatar} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
+                                        <img src={getUserPhotoUrl(user)} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
                                         <div>
                                             <p>{user?.firstName} {user?.lastName}</p>
                                             <small>{user?.skills?.[0] || 'Developer'}</small>
@@ -477,7 +482,7 @@ const Feed = () => {
                                     const isRemoving = removingReqId === req?._id;
                                     return (
                                         <div key={req?._id} className={`tinder-list-item ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ transitionDuration: '300ms' }} onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
-                                            <img src={user?.photoUrl || defaultAvatar} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
+                                            <img src={getUserPhotoUrl(user)} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
                                             <div>
                                                 <p>{user?.firstName} {user?.lastName}</p>
                                                 <small>{user?.skills?.[0] || 'Developer'}</small>
