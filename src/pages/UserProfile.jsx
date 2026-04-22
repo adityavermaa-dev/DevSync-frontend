@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import UserCard from '../components/UserCard';
 import axios from 'axios';
 import { BASE_URL } from '../constants/commonData';
@@ -38,17 +39,54 @@ const normalizeUserPayload = (payload) => {
     return null;
 };
 
+const extractGithubFromUserLike = (userLike) => {
+    if (!userLike || typeof userLike !== 'object') {
+        return { githubUsername: '', githubUrl: '' };
+    }
+
+    const githubUsername = userLike.githubUsername
+        || userLike.github_user
+        || userLike?.github?.username
+        || userLike?.github?.user
+        || userLike?.github?.handle
+        || userLike?.social?.githubUsername
+        || userLike?.social?.github?.username
+        || userLike?.social?.github?.handle
+        || userLike?.profiles?.githubUsername
+        || userLike?.profiles?.github?.username
+        || '';
+
+    const githubUrl = userLike.githubUrl
+        || userLike.github_url
+        || userLike.github
+        || userLike.githubProfile
+        || userLike?.social?.github
+        || userLike?.social?.githubUrl
+        || userLike?.social?.github?.url
+        || userLike?.socialLinks?.github
+        || userLike?.socialLinks?.githubUrl
+        || userLike?.links?.github
+        || userLike?.links?.githubUrl
+        || userLike?.profiles?.github
+        || userLike?.profiles?.githubUrl
+        || '';
+
+    return { githubUsername, githubUrl };
+};
+
 const mergeUserData = (baseUser, incomingUser) => {
     if (!incomingUser) return baseUser;
     if (!baseUser) return incomingUser;
 
     const merged = { ...baseUser, ...incomingUser };
+    const incomingGithub = extractGithubFromUserLike(incomingUser);
+    const baseGithub = extractGithubFromUserLike(baseUser);
     merged.skills = Array.isArray(incomingUser.skills) && incomingUser.skills.length > 0
         ? incomingUser.skills
         : (Array.isArray(baseUser.skills) ? baseUser.skills : []);
     merged.about = incomingUser.about || baseUser.about || '';
-    merged.githubUrl = incomingUser.githubUrl || baseUser.githubUrl || '';
-    merged.githubUsername = incomingUser.githubUsername || baseUser.githubUsername || '';
+    merged.githubUrl = incomingGithub.githubUrl || baseGithub.githubUrl || '';
+    merged.githubUsername = incomingGithub.githubUsername || baseGithub.githubUsername || '';
     return merged;
 };
 
@@ -58,6 +96,8 @@ const findMatchingUserInList = (list, targetUserId) => {
             item,
             item?.user,
             item?.userId,
+            item?.member,
+            item?.memberId,
             item?.fromUserId,
             item?.toUserId,
             item?.owner,
@@ -83,6 +123,8 @@ const UserProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { userId } = useParams();
+    const sessionUser = useSelector((store) => store.user);
+    const routeStateUser = location.state?.user || null;
     const [user, setUser] = useState(location.state?.user || null);
     const [loadingUser, setLoadingUser] = useState(true);
 
@@ -107,55 +149,48 @@ const UserProfile = () => {
                 return;
             }
 
-            const endpointCandidates = [
-                `${BASE_URL}/profile/view/${userId}`,
-                `${BASE_URL}/user/${userId}`,
-                `${BASE_URL}/user/view/${userId}`,
-                `${BASE_URL}/users/${userId}`,
-            ];
+            const validFallbackUser = routeStateUser?._id && idEquals(routeStateUser._id, userId)
+                ? routeStateUser
+                : null;
 
-            const listEndpoints = [
-                `${BASE_URL}/user/connections`,
-                `${BASE_URL}/user/feed`,
-                `${BASE_URL}/user/request/received`,
-                `${BASE_URL}/feed`,
-                `${BASE_URL}/projects`,
-            ];
+            const isSelfProfile = sessionUser?._id && idEquals(sessionUser._id, userId);
 
-            let resolvedUser = null;
-            for (const endpoint of endpointCandidates) {
+            if (isSelfProfile) {
                 try {
-                    const res = await axios.get(endpoint, { withCredentials: true });
-                    const candidateUser = normalizeUserPayload(res?.data);
-                    if (candidateUser?._id && idEquals(candidateUser._id, userId)) {
-                        resolvedUser = candidateUser;
-                        break;
+                    const res = await axios.get(`${BASE_URL}/profile/view`, { withCredentials: true });
+                    const selfUser = normalizeUserPayload(res?.data) || sessionUser;
+                    if (!cancelled) {
+                        setUser(mergeUserData(validFallbackUser, selfUser));
+                        setLoadingUser(false);
                     }
+                    return;
                 } catch {
-                    // Try the next compatible endpoint shape.
+                    if (!cancelled) {
+                        setUser(sessionUser || null);
+                        setLoadingUser(false);
+                    }
+                    return;
                 }
             }
 
-            for (const endpoint of listEndpoints) {
-                try {
-                    const res = await axios.get(endpoint, { withCredentials: true });
-                    const list = normalizeArrayPayload(res?.data);
-                    const matchedUser = findMatchingUserInList(list, userId);
-                    if (matchedUser?._id) {
-                        resolvedUser = mergeUserData(resolvedUser, matchedUser);
-                    }
-                } catch {
-                    // Ignore unsupported endpoints and continue enrichment.
+            let resolvedUser = validFallbackUser;
+
+            try {
+                const res = await axios.get(`${BASE_URL}/user/${userId}`, { withCredentials: true });
+                const candidateUser = normalizeUserPayload(res?.data);
+                if (candidateUser?._id && idEquals(candidateUser._id, userId)) {
+                    resolvedUser = mergeUserData(resolvedUser, candidateUser);
                 }
+            } catch {
+                // Keep route-state fallback when direct user lookup is unavailable.
             }
 
             if (!cancelled) {
-                const fallbackUser = location.state?.user;
-                const validFallbackUser = fallbackUser?._id && idEquals(fallbackUser._id, userId)
-                    ? fallbackUser
+                const sessionFallbackUser = sessionUser?._id && idEquals(sessionUser._id, userId)
+                    ? sessionUser
                     : null;
 
-                setUser(mergeUserData(validFallbackUser, resolvedUser));
+                setUser(mergeUserData(sessionFallbackUser || validFallbackUser, resolvedUser));
                 setLoadingUser(false);
             }
         };
@@ -166,7 +201,7 @@ const UserProfile = () => {
         return () => {
             cancelled = true;
         };
-    }, [userId, location.state]);
+    }, [userId, routeStateUser, sessionUser]);
 
     useEffect(() => {
         const fetchRepos = async () => {

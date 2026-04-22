@@ -44,8 +44,10 @@ const setCached = (key, value) => {
 };
 
 export const readPersistedGithubUsername = (userId) => {
-  const scopedKey = userId ? `${GITHUB_FALLBACK_KEY}:${userId}` : null;
-  return (scopedKey ? getStorageValue(scopedKey) : null) || getStorageValue(GITHUB_FALLBACK_KEY) || null;
+  if (userId) {
+    return getStorageValue(`${GITHUB_FALLBACK_KEY}:${userId}`) || null;
+  }
+  return getStorageValue(GITHUB_FALLBACK_KEY) || null;
 };
 
 export const persistGithubUsername = (username, userId) => {
@@ -63,7 +65,21 @@ export const extractGithubUsername = (input) => {
   if (typeof input === "object") {
     const direct = (
       extractGithubUsername(input.githubUsername) ||
+      extractGithubUsername(input.github_user) ||
       extractGithubUsername(input.githubUrl) ||
+      extractGithubUsername(input.github_url) ||
+      extractGithubUsername(input.githubProfile) ||
+      extractGithubUsername(input.github) ||
+      extractGithubUsername(input?.social?.githubUsername) ||
+      extractGithubUsername(input?.social?.githubUrl) ||
+      extractGithubUsername(input?.social?.github?.username) ||
+      extractGithubUsername(input?.social?.github?.url) ||
+      extractGithubUsername(input?.socialLinks?.github) ||
+      extractGithubUsername(input?.socialLinks?.githubUrl) ||
+      extractGithubUsername(input?.links?.github) ||
+      extractGithubUsername(input?.links?.githubUrl) ||
+      extractGithubUsername(input?.profiles?.github) ||
+      extractGithubUsername(input?.profiles?.githubUrl) ||
       null
     );
 
