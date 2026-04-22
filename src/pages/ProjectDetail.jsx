@@ -91,6 +91,11 @@ const ProjectDetail = () => {
     navigate(`/chat?project=${project._id}`);
   };
 
+  const handleOpenMemberProfile = (selectedUser) => {
+    if (!selectedUser?._id) return;
+    navigate(`/user/${selectedUser._id}`, { state: { user: selectedUser } });
+  };
+
   if (loading || !project) {
     return (
       <div className="pd-page">
@@ -273,7 +278,7 @@ const ProjectDetail = () => {
 
               <div className="pd-member-list">
                 {/* Lead is always listed */}
-                <div className="pd-member-item" onClick={() => navigate(`/user/${project.owner?._id}`)}>
+                <div className="pd-member-item" onClick={() => handleOpenMemberProfile(project.owner)}>
                   <img src={project.owner?.photoUrl || defaultAvatar} alt="owner" />
                   <span>{project.owner?.firstName}</span>
                   <span className="pd-lead-badge">Lead</span>
@@ -284,7 +289,7 @@ const ProjectDetail = () => {
                   const mUser = member.user;
                   if (!mUser || mUser._id === project.owner?._id) return null;
                   return (
-                    <div key={mUser._id} className="pd-member-item" onClick={() => navigate(`/user/${mUser._id}`)}>
+                    <div key={mUser._id} className="pd-member-item" onClick={() => handleOpenMemberProfile(mUser)}>
                       <img src={mUser.photoUrl || defaultAvatar} alt="member" />
                       <span>{mUser.firstName}</span>
                     </div>
