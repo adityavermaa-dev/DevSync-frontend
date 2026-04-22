@@ -23,7 +23,7 @@ const getUserPhotoUrl = (user) => {
     return user.photoUrl || user.profileImageUrl || user.avatarUrl || user.photo || defaultAvatar;
 };
 
-const UserCard = ({ user, actions, showEmail = false }) => {
+const UserCard = ({ user, actions, showEmail = false, variant = 'default' }) => {
     if (!user) return null;
 
     const displayPhoto = getUserPhotoUrl(user);
@@ -34,8 +34,10 @@ const UserCard = ({ user, actions, showEmail = false }) => {
         ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1)
         : null;
 
+    const cardClassName = `user-card ${variant === 'profile' ? 'user-card--profile' : ''}`.trim();
+
     return (
-        <div className="user-card">
+        <div className={cardClassName}>
             {/* ── Photo ── */}
             <div className="user-card-photo">
                 <img

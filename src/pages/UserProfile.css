@@ -5,14 +5,53 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+:root {
+  --up-ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .userprofile-page {
   min-height: calc(100vh - 80px);
   background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px 80px;
-  animation: userprofile-fade-in 0.5s var(--ease-smooth);
+  padding: 32px 20px 84px;
+  animation: userprofile-fade-in 0.55s var(--up-ease-soft);
+  position: relative;
+  isolation: isolate;
+}
+
+.userprofile-page::before,
+.userprofile-page::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(56px);
+}
+
+.userprofile-page::before {
+  width: 360px;
+  height: 360px;
+  top: 14%;
+  right: -110px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--auth-btn-bg) 24%, transparent),
+    transparent
+  );
+}
+
+.userprofile-page::after {
+  width: 320px;
+  height: 320px;
+  left: -90px;
+  bottom: 10%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--dashboard-text-main) 10%, transparent),
+    transparent
+  );
 }
 
 .userprofile-back {
@@ -20,7 +59,7 @@
   align-items: center;
   gap: 8px;
   align-self: flex-start;
-  max-width: 420px;
+  max-width: 1120px;
   width: 100%;
   margin: 0 auto 20px;
   background: none;
@@ -30,8 +69,41 @@
   font-weight: 600;
   cursor: pointer;
   padding: 8px 4px;
-  transition: all 0.2s ease;
+  transition: color 0.22s var(--up-ease-soft), transform 0.28s var(--up-ease-soft);
   font-family: 'Outfit', sans-serif;
+}
+
+.userprofile-header {
+  width: 100%;
+  max-width: 1120px;
+  margin: 2px auto 18px;
+}
+
+.userprofile-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--dashboard-text-faint);
+}
+
+.userprofile-title {
+  margin: 6px 0 0;
+  font-size: clamp(1.6rem, 2.9vw, 2.15rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: var(--dashboard-text-main);
+  font-family: 'Outfit', sans-serif;
+}
+
+.userprofile-subtitle {
+  margin: 8px 0 0;
+  max-width: 620px;
+  color: var(--dashboard-text-faint);
+  font-size: 0.96rem;
+  font-weight: 600;
 }
 
 .userprofile-back:hover {
@@ -51,11 +123,32 @@
 /* User Profile Github Integration */
 
 .userprofile-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  align-items: start;
   gap: 24px;
   width: 100%;
-  max-width: 600px;
+  max-width: 1120px;
+}
+
+.up-left-col {
+  min-width: 0;
+}
+
+.up-card-wrapper {
+  position: sticky;
+  top: 98px;
+}
+
+.up-card-wrapper .user-card {
+  max-width: 100%;
+  box-shadow: 0 20px 54px rgba(15, 23, 42, 0.16);
+}
+
+.up-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .up-github-section {
@@ -64,7 +157,14 @@
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--dashboard-glass-border-translucent);
   border-radius: 24px;
-  padding: 24px;
+  padding: 22px;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+  transition: transform 0.26s var(--up-ease-soft), box-shadow 0.26s var(--up-ease-soft), border-color 0.26s var(--up-ease-soft);
+}
+
+.up-github-section:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
 }
 
 .up-section-title {
@@ -72,10 +172,67 @@
   align-items: center;
   gap: 10px;
   font-family: 'Outfit', sans-serif;
-  font-size: 1.2rem;
+  font-size: clamp(1.02rem, 1.3vw, 1.18rem);
   font-weight: 700;
   color: var(--dashboard-text-main);
   margin: 0 0 20px 0;
+}
+
+.up-section-subtitle {
+  margin: -12px 0 14px;
+  color: var(--dashboard-text-faint);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.up-github-visual {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  min-height: 150px;
+  align-items: center;
+}
+
+.up-github-graph {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+}
+
+.up-activity-fallback {
+  width: 100%;
+}
+
+.up-activity-title {
+  margin: 0;
+  color: var(--dashboard-text-main);
+  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+}
+
+.up-activity-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.up-activity-item {
+  color: var(--dashboard-text-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.up-activity-empty {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: var(--dashboard-text-faint);
+  font-weight: 600;
 }
 
 .up-repos-grid {
@@ -96,19 +253,20 @@
   border-radius: 16px;
   padding: 16px;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: transform 0.24s var(--up-ease-soft), box-shadow 0.24s var(--up-ease-soft), border-color 0.24s var(--up-ease-soft);
   display: flex;
   flex-direction: column;
+  min-height: 140px;
 }
 
 .up-repo-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: color-mix(in srgb, var(--auth-btn-bg) 45%, var(--dashboard-border) 55%);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
 }
 
 .up-repo-name {
-  color: #8b5cf6;
+  color: color-mix(in srgb, var(--auth-btn-bg) 76%, var(--dashboard-text-main) 24%);
   font-weight: 700;
   margin: 0 0 8px 0;
   font-size: 1.05rem;
@@ -134,6 +292,14 @@
   font-weight: 600;
 }
 
+.up-repo-stars {
+  color: color-mix(in srgb, #f59e0b 82%, var(--dashboard-text-main) 18%);
+}
+
+.up-repo-forks {
+  color: color-mix(in srgb, #10b981 78%, var(--dashboard-text-main) 22%);
+}
+
 .up-repo-lang {
   margin-left: auto;
   color: var(--dashboard-text-faint);
@@ -144,4 +310,125 @@
   font-size: 0.95rem;
   text-align: center;
   padding: 20px;
+}
+
+.up-devsync-section {
+  background: var(--dashboard-glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+  transition: transform 0.26s var(--up-ease-soft), box-shadow 0.26s var(--up-ease-soft), border-color 0.26s var(--up-ease-soft);
+}
+
+.up-devsync-section:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+.up-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.up-stat-card {
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.24s var(--up-ease-soft), box-shadow 0.24s var(--up-ease-soft), border-color 0.24s var(--up-ease-soft);
+}
+
+.up-stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .userprofile-page,
+  .up-github-section,
+  .up-devsync-section,
+  .up-repo-card,
+  .up-stat-card,
+  .userprofile-back {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+.up-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--dashboard-text-main);
+  line-height: 1;
+}
+
+.up-stat-label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--dashboard-text-faint);
+}
+
+.up-devsync-empty {
+  color: var(--dashboard-text-faint);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 10px 0;
+}
+
+@media (max-width: 980px) {
+  .userprofile-content {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+    gap: 18px;
+  }
+
+  .userprofile-header {
+    max-width: 640px;
+  }
+
+  .up-card-wrapper {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .userprofile-page {
+    padding: 18px 12px 60px;
+  }
+
+  .userprofile-back {
+    margin-bottom: 12px;
+  }
+
+  .userprofile-header {
+    margin-bottom: 14px;
+  }
+
+  .userprofile-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .up-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .up-github-visual {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .up-github-section,
+  .up-devsync-section {
+    padding: 16px;
+    border-radius: 18px;
+  }
 }
