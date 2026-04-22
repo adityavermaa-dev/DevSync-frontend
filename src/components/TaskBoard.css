@@ -225,6 +225,21 @@
   gap: 0.35rem;
 }
 
+.tb-edit-toggle {
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-border);
+  color: var(--dashboard-text-secondary);
+  border-radius: 8px;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tb-edit-toggle:hover {
+  border-color: color-mix(in srgb, var(--dashboard-border) 58%, var(--auth-btn-bg) 42%);
+}
+
 .tb-actions select {
   background: var(--dashboard-surface-alt);
   border: 1px solid var(--dashboard-border);
@@ -237,7 +252,10 @@
 
 .tb-actions select:focus-visible,
 .tb-add-btn:focus-visible,
-.tb-delete-btn:focus-visible {
+.tb-delete-btn:focus-visible,
+.tb-edit-toggle:focus-visible,
+.tb-edit-btn:focus-visible,
+.tb-edit-input:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--auth-btn-bg) 48%, #93c5fd 52%);
   outline-offset: 1px;
 }
@@ -260,6 +278,65 @@
 
 .tb-delete-btn:hover {
   background: rgba(239, 68, 68, 0.08);
+}
+
+.tb-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tb-edit-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tb-edit-input {
+  width: 100%;
+  border: 1px solid var(--dashboard-border);
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-main);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.78rem;
+}
+
+.tb-edit-textarea {
+  resize: vertical;
+  min-height: 54px;
+}
+
+.tb-edit-actions {
+  margin-top: 4px;
+  display: flex;
+  gap: 8px;
+}
+
+.tb-edit-btn {
+  border-radius: 8px;
+  border: 1px solid var(--dashboard-border);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.tb-edit-save {
+  background: color-mix(in srgb, var(--dashboard-surface-alt) 72%, var(--auth-btn-bg) 28%);
+  color: color-mix(in srgb, var(--auth-btn-bg) 80%, var(--dashboard-text-main) 20%);
+  border-color: color-mix(in srgb, var(--dashboard-border) 62%, var(--auth-btn-bg) 38%);
+}
+
+.tb-edit-cancel {
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-secondary);
+}
+
+.tb-edit-btn:disabled,
+.tb-edit-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Drag over states */
@@ -354,5 +431,9 @@
   .tb-form-row {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .tb-edit-row {
+    grid-template-columns: 1fr;
   }
 }

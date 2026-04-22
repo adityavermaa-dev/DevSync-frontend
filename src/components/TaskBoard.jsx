@@ -10,6 +10,15 @@ const TaskBoard = ({ projectId, members }) => {
   const [showForm, setShowForm] = useState(false);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverStatus, setDragOverStatus] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState('');
+  const [savingTaskId, setSavingTaskId] = useState('');
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    priority: 'medium',
+    status: 'todo',
+    assignee: ''
+  });
 
   // Form State
   const [form, setForm] = useState({
@@ -107,9 +116,76 @@ const TaskBoard = ({ projectId, members }) => {
     try {
       await taskAPI.deleteTask(projectId, taskId);
       setTasks((prev) => prev.filter((task) => task._id !== taskId));
+      if (editingTaskId === taskId) {
+        setEditingTaskId('');
+      }
       toast.success('Task deleted');
     } catch {
       toast.error('Failed to delete task');
+    }
+  };
+
+  const startEditTask = (task) => {
+    setEditingTaskId(task._id);
+    setEditForm({
+      title: task.title || '',
+      description: task.description || '',
+      priority: task.priority || 'medium',
+      status: task.status || 'todo',
+      assignee: task.assignee?._id || ''
+    });
+  };
+
+  const cancelEditTask = () => {
+    setEditingTaskId('');
+    setSavingTaskId('');
+    setEditForm({ title: '', description: '', priority: 'medium', status: 'todo', assignee: '' });
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveTaskEdit = async (taskId) => {
+    if (!editForm.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+
+    const previousTasks = [...tasks];
+    const optimisticAssignee = memberOptions.find((member) => member._id === editForm.assignee) || null;
+    const optimisticUpdate = {
+      title: editForm.title.trim(),
+      description: editForm.description.trim(),
+      priority: editForm.priority,
+      status: editForm.status,
+      assignee: optimisticAssignee
+    };
+
+    setSavingTaskId(taskId);
+    setTasks((prev) => prev.map((task) => (task._id === taskId ? { ...task, ...optimisticUpdate } : task)));
+
+    try {
+      const updated = await taskAPI.updateTask(projectId, taskId, {
+        title: optimisticUpdate.title,
+        description: optimisticUpdate.description,
+        priority: optimisticUpdate.priority,
+        status: optimisticUpdate.status,
+        assignee: editForm.assignee || null
+      });
+
+      if (updated?._id) {
+        setTasks((prev) => prev.map((task) => (task._id === taskId ? { ...task, ...updated } : task)));
+      }
+
+      setSavingTaskId('');
+      setEditingTaskId('');
+      toast.success('Task updated');
+    } catch {
+      setTasks(previousTasks);
+      setSavingTaskId('');
+      toast.error('Failed to update task');
     }
   };
 
@@ -238,6 +314,8 @@ const TaskBoard = ({ projectId, members }) => {
               </div>
               
               {colTasks.map((task) => {
+                const isEditing = editingTaskId === task._id;
+                const isSaving = savingTaskId === task._id;
                 const assigneeName = task.assignee
                   ? `${task.assignee.firstName || ''} ${task.assignee.lastName || ''}`.trim() || 'Assigned member'
                   : 'Unassigned';
@@ -246,54 +324,144 @@ const TaskBoard = ({ projectId, members }) => {
                 <div 
                   key={task._id} 
                   className="tb-card"
-                  draggable
+                  draggable={!isEditing && !isSaving}
                   onDragStart={(e) => handleDragStart(e, task)}
                   onDragEnd={handleDragEnd}
                 >
-                  <div className="tb-card-header">
-                    <h5 className="tb-card-title">{task.title}</h5>
-                    <span className={`tb-pri ${task.priority}`}>{task.priority}</span>
-                  </div>
-                  
-                  {task.description && <p className="tb-card-desc">{task.description}</p>}
-                  
-                  <div className="tb-card-footer">
-                    <div className="tb-assignee">
-                      {task.assignee ? (
-                        <>
-                          <img
-                            src={task.assignee.photoUrl || defaultAvatar}
-                            alt={assigneeName}
-                            className="tb-assignee-img"
-                            title={assigneeName}
-                          />
-                          <span className="tb-assignee-name">{assigneeName}</span>
-                        </>
-                      ) : (
-                        <span className="tb-unassigned">Unassigned</span>
-                      )}
-                    </div>
-                    <div className="tb-actions">
-                      <select 
-                        value={task.status} 
-                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label="Change task status"
+                  {isEditing ? (
+                    <div className="tb-edit-form" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        className="tb-edit-input"
+                        name="title"
+                        value={editForm.title}
+                        onChange={handleEditInputChange}
+                        placeholder="Task title"
+                        disabled={isSaving}
+                      />
+                      <textarea
+                        className="tb-edit-input tb-edit-textarea"
+                        name="description"
+                        rows="2"
+                        value={editForm.description}
+                        onChange={handleEditInputChange}
+                        placeholder="Task description"
+                        disabled={isSaving}
+                      />
+                      <div className="tb-edit-row">
+                        <select
+                          className="tb-edit-input"
+                          name="priority"
+                          value={editForm.priority}
+                          onChange={handleEditInputChange}
+                          disabled={isSaving}
+                        >
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                        <select
+                          className="tb-edit-input"
+                          name="status"
+                          value={editForm.status}
+                          onChange={handleEditInputChange}
+                          disabled={isSaving}
+                        >
+                          <option value="todo">To Do</option>
+                          <option value="in-progress">In Progress</option>
+                          <option value="done">Done</option>
+                        </select>
+                      </div>
+                      <select
+                        className="tb-edit-input"
+                        name="assignee"
+                        value={editForm.assignee}
+                        onChange={handleEditInputChange}
+                        disabled={isSaving}
                       >
-                        <option value="todo">To Do</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="done">Done</option>
+                        <option value="">Unassigned</option>
+                        {memberOptions.map((member) => (
+                          <option key={member._id} value={member._id}>
+                            {member.firstName} {member.lastName}
+                          </option>
+                        ))}
                       </select>
-                      <button 
-                        onClick={() => handleDeleteTask(task._id)}
-                        className="tb-delete-btn"
-                        title="Delete Task"
-                        aria-label="Delete task"
-                      >
-                        x
-                      </button>
+                      <div className="tb-edit-actions">
+                        <button
+                          type="button"
+                          className="tb-edit-btn tb-edit-save"
+                          onClick={() => handleSaveTaskEdit(task._id)}
+                          disabled={isSaving}
+                        >
+                          {isSaving ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          type="button"
+                          className="tb-edit-btn tb-edit-cancel"
+                          onClick={cancelEditTask}
+                          disabled={isSaving}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="tb-card-header">
+                        <h5 className="tb-card-title">{task.title}</h5>
+                        <span className={`tb-pri ${task.priority}`}>{task.priority}</span>
+                      </div>
+                      
+                      {task.description && <p className="tb-card-desc">{task.description}</p>}
+                      
+                      <div className="tb-card-footer">
+                        <div className="tb-assignee">
+                          {task.assignee ? (
+                            <>
+                              <img
+                                src={task.assignee.photoUrl || defaultAvatar}
+                                alt={assigneeName}
+                                className="tb-assignee-img"
+                                title={assigneeName}
+                              />
+                              <span className="tb-assignee-name">{assigneeName}</span>
+                            </>
+                          ) : (
+                            <span className="tb-unassigned">Unassigned</span>
+                          )}
+                        </div>
+                        <div className="tb-actions">
+                          <select 
+                            value={task.status} 
+                            onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label="Change task status"
+                          >
+                            <option value="todo">To Do</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="done">Done</option>
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => startEditTask(task)}
+                            className="tb-edit-toggle"
+                            title="Edit Task"
+                            aria-label="Edit task"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => handleDeleteTask(task._id)}
+                            className="tb-delete-btn"
+                            title="Delete Task"
+                            aria-label="Delete task"
+                          >
+                            x
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
                 );
               })}
