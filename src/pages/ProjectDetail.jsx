@@ -413,93 +413,114 @@ const ProjectDetail = () => {
       {applyModalOpen && (
         <div className="pd-modal-overlay">
           <div className="pd-modal animate-fade-in">
-            <div className="pd-modal-hero">
-              <span className="pd-modal-eyebrow">Join Project</span>
-              <h3 className="pd-modal-title">Tell the lead how you can contribute</h3>
-              <p className="pd-modal-sub">Your application will be sent directly to the project lead for review.</p>
+            <div className="pd-modal-layout">
+              <aside className="pd-modal-aside">
+                <span className="pd-modal-eyebrow">Join Project</span>
+                <h3 className="pd-modal-title">{project.title}</h3>
+                <p className="pd-modal-sub">Apply once and the project lead can review your note with role context.</p>
 
-              <div className="pd-modal-meta-row">
-                <span className="pd-modal-meta-pill">{project.rolesNeeded?.length || 0} roles listed</span>
-                <span className="pd-modal-meta-pill">Fast lead review</span>
-                <span className="pd-modal-meta-pill">Private application</span>
-              </div>
-            </div>
+                <div className="pd-modal-meta-row">
+                  <span className="pd-modal-meta-pill">{project.rolesNeeded?.length || 0} roles listed</span>
+                  <span className="pd-modal-meta-pill">{project.members?.length || 0} teammates</span>
+                  <span className="pd-modal-meta-pill">Private review</span>
+                </div>
 
-            <div className="pd-modal-body">
-              <label className="pd-label">Which role are you applying for?</label>
-              <select
-                className="pd-modal-input pd-modal-select"
-                value={applyRole}
-                onChange={(e) => setApplyRole(e.target.value)}
-              >
-                <option value="">Select a role...</option>
-                {project.rolesNeeded?.map((role, i) => (
-                  <option key={i} value={role}>{role}</option>
-                ))}
-                <option value="General Contributor">General Contributor</option>
-              </select>
+                <div className="pd-modal-hero-card">
+                  <div className="pd-modal-hero-stat">
+                    <span>Lead</span>
+                    <strong>{project.owner?.firstName} {project.owner?.lastName}</strong>
+                  </div>
+                  <div className="pd-modal-hero-stat">
+                    <span>Status</span>
+                    <strong>{project.status || 'Active'}</strong>
+                  </div>
+                  <div className="pd-modal-hero-stat">
+                    <span>Looking for</span>
+                    <strong>{project.rolesNeeded?.slice(0, 2).join(' • ') || 'Contributors'}</strong>
+                  </div>
+                </div>
 
-              <div className="pd-role-help-row">
-                {project.rolesNeeded?.slice(0, 4).map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    className={`pd-role-chip ${applyRole === role ? 'active' : ''}`}
-                    onClick={() => setApplyRole(role)}
+                <p className="pd-modal-side-copy">
+                  Tell them what you can contribute, your preferred stack, and how soon you can jump in.
+                </p>
+              </aside>
+
+              <section className="pd-modal-form-panel">
+                <div className="pd-modal-body">
+                  <label className="pd-label">Which role are you applying for?</label>
+                  <select
+                    className="pd-modal-input pd-modal-select"
+                    value={applyRole}
+                    onChange={(e) => setApplyRole(e.target.value)}
                   >
-                    {role}
+                    <option value="">Select a role...</option>
+                    {project.rolesNeeded?.map((role, i) => (
+                      <option key={i} value={role}>{role}</option>
+                    ))}
+                    <option value="General Contributor">General Contributor</option>
+                  </select>
+
+                  <div className="pd-role-help-row">
+                    {project.rolesNeeded?.slice(0, 4).map((role) => (
+                      <button
+                        key={role}
+                        type="button"
+                        className={`pd-role-chip ${applyRole === role ? 'active' : ''}`}
+                        onClick={() => setApplyRole(role)}
+                      >
+                        {role}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label className="pd-label">Why do you want to join?</label>
+                  <textarea
+                    className="pd-modal-input pd-modal-textarea"
+                    value={applyMessage}
+                    onChange={(e) => setApplyMessage(e.target.value)}
+                    placeholder="Share your relevant skills and experience briefly..."
+                    rows={4}
+                  />
+
+                  <div className="pd-modal-preview">
+                    <div className="pd-modal-preview-header">
+                      <span>Application preview</span>
+                      <span>{applyMessage.trim().length} chars</span>
+                    </div>
+                    <div className="pd-modal-preview-card">
+                      <div className="pd-modal-preview-line">
+                        <strong>Role</strong>
+                        <span>{applyRole || 'Select a role to preview it here'}</span>
+                      </div>
+                      <div className="pd-modal-preview-line">
+                        <strong>Message</strong>
+                        <span>
+                          {applyMessage.trim()
+                            ? applyMessage.trim().slice(0, 160)
+                            : 'Your note to the project lead will appear here before you send it.'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pd-modal-actions mt-6">
+                  <button
+                    className="pd-modal-btn secondary"
+                    onClick={() => setApplyModalOpen(false)}
+                    disabled={applying}
+                  >
+                    Cancel
                   </button>
-                ))}
-              </div>
-
-              <label className="pd-label">Why do you want to join?</label>
-              <textarea
-                className="pd-modal-input pd-modal-textarea"
-                value={applyMessage}
-                onChange={(e) => setApplyMessage(e.target.value)}
-                placeholder="Share your relevant skills and experience briefly..."
-                rows={4}
-              />
-
-              <p className="pd-modal-hint">Tip: mention the stack you use, what you can build, and how soon you can start.</p>
-
-              <div className="pd-modal-preview">
-                <div className="pd-modal-preview-header">
-                  <span>Application preview</span>
-                  <span>{applyMessage.trim().length} chars</span>
+                  <button
+                    className="pd-modal-btn primary"
+                    onClick={handleApply}
+                    disabled={applying}
+                  >
+                    {applying ? 'Sending...' : 'Send Application'}
+                  </button>
                 </div>
-                <div className="pd-modal-preview-card">
-                  <div className="pd-modal-preview-line">
-                    <strong>Role</strong>
-                    <span>{applyRole || 'Select a role to preview it here'}</span>
-                  </div>
-                  <div className="pd-modal-preview-line">
-                    <strong>Message</strong>
-                    <span>
-                      {applyMessage.trim()
-                        ? applyMessage.trim().slice(0, 160)
-                        : 'Your note to the project lead will appear here before you send it.'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pd-modal-actions mt-6">
-              <button
-                className="pd-modal-btn secondary"
-                onClick={() => setApplyModalOpen(false)}
-                disabled={applying}
-              >
-                Cancel
-              </button>
-              <button
-                className="pd-modal-btn primary"
-                onClick={handleApply}
-                disabled={applying}
-              >
-                {applying ? 'Sending...' : 'Send Application'}
-              </button>
+              </section>
             </div>
           </div>
         </div>

@@ -512,7 +512,7 @@
 
 .pd-modal {
   width: 100%;
-  max-width: 560px;
+  max-width: 920px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 247, 252, 0.94));
   border: 1px solid rgba(255, 255, 255, 0.7);
@@ -523,6 +523,83 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
   position: relative;
+}
+
+.pd-modal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  min-height: 540px;
+}
+
+.pd-modal-aside {
+  padding: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 42%),
+    linear-gradient(180deg, #111827, #1f2937 58%, #374151);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pd-modal-aside .pd-modal-eyebrow {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.94);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.pd-modal-aside .pd-modal-title {
+  color: white;
+  font-size: 2.15rem;
+  line-height: 1.05;
+}
+
+.pd-modal-aside .pd-modal-sub,
+.pd-modal-side-copy {
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.pd-modal-hero-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.pd-modal-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pd-modal-hero-stat span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.pd-modal-hero-stat strong {
+  font-size: 1rem;
+  color: white;
+  font-weight: 800;
+}
+
+.pd-modal-side-copy {
+  margin-top: auto;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.pd-modal-form-panel {
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94));
 }
 
 .pd-modal::before {
@@ -607,8 +684,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-top: 24px;
-  padding-bottom: 10px;
+  padding: 0;
 }
 
 .pd-modal-input {
@@ -684,7 +760,7 @@
   line-height: 1.5;
 }
 .pd-modal-preview {
-  margin-top: 10px;
+  margin-top: 8px;
   padding: 16px;
   border-radius: 20px;
   background:
@@ -728,8 +804,7 @@
 .pd-modal-actions {
   display: flex;
   gap: 12px;
-  padding-top: 8px;
-  padding-bottom: 32px;
+  padding: 0;
   justify-content: flex-end;
 }
 
@@ -779,6 +854,15 @@
     grid-template-columns: 1fr;
   }
 
+  .pd-modal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-modal-aside,
+  .pd-modal-form-panel {
+    padding: 24px;
+  }
+
   .pd-modal-hero,
   .pd-modal-body,
   .pd-modal-actions {
@@ -792,6 +876,10 @@
 
   .pd-modal-title {
     font-size: 1.6rem;
+  }
+
+  .pd-modal-aside .pd-modal-title {
+    font-size: 1.75rem;
   }
 
   .pd-card-header-row {
