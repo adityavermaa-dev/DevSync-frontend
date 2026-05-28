@@ -10,6 +10,8 @@ import toast from 'react-hot-toast';
 import { GoogleLogin } from '@react-oauth/google';
 import AnimatedEmoji from '../components/AnimatedEmoji';
 
+const PENDING_OAUTH_KEY = 'devsync-pending-oauth';
+
 const Login = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -44,6 +46,7 @@ const Login = () => {
         try {
             const res = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
             dispatch(addUser(res.data));
+            window.sessionStorage.removeItem(PENDING_OAUTH_KEY);
             navigate("/");
             return true;
         } catch {
@@ -153,9 +156,23 @@ const Login = () => {
         let authPopup = null;
         let popupWatcher = null;
 
+        const waitForAuthenticatedUser = async (maxAttempts = 6, delayMs = 500) => {
+            for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+                const hasUser = await fetchInitialUser();
+                if (hasUser) {
+                    return true;
+                }
+
+                await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+            }
+
+            return false;
+        };
+
         try {
             setIsLoading(true);
             setApiError("");
+            window.sessionStorage.setItem(PENDING_OAUTH_KEY, 'github');
 
             const githubAuthUrl = `${BASE_URL}/auth/github`;
             authPopup = window.open(githubAuthUrl, "devsync-github-auth", "width=520,height=720,left=120,top=80");
@@ -169,7 +186,7 @@ const Login = () => {
                 if (!authPopup || authPopup.closed) {
                     window.clearInterval(popupWatcher);
                     popupWatcher = null;
-                    fetchInitialUser().finally(() => setIsLoading(false));
+                    waitForAuthenticatedUser().finally(() => setIsLoading(false));
                     return;
                 }
             }, 500);
@@ -177,6 +194,8 @@ const Login = () => {
             if (popupWatcher) {
                 window.clearInterval(popupWatcher);
             }
+
+            window.sessionStorage.removeItem(PENDING_OAUTH_KEY);
 
             if (authPopup && !authPopup.closed) {
                 authPopup.close();
