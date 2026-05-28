@@ -8,6 +8,34 @@ import defaultAvatar from '../assests/images/default-user-image.png';
 import TaskBoard from '../components/TaskBoard';
 import './ProjectDetail.css';
 
+const getApplicant = (application) => (
+  application?.user ||
+  application?.fromUserId ||
+  application?.requestedBy ||
+  application?.applicant ||
+  application?.userId ||
+  application?.sender ||
+  application
+);
+
+const getApplicationId = (application) => application?._id || application?.applicationId || application?.id;
+
+const getPendingApplications = (project) => {
+  const candidates = [
+    project?.pendingApplications,
+    project?.applications,
+    project?.joinRequests,
+    project?.requests,
+  ];
+
+  const applications = candidates.find(Array.isArray) || [];
+
+  return applications.filter((application) => {
+    const status = String(application?.status || application?.state || '').toLowerCase();
+    return !status || status === 'pending' || status === 'open';
+  });
+};
+
 const ProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -74,12 +102,29 @@ const ProjectDetail = () => {
     setApplying(true);
     try {
       await projectAPI.applyToProject(projectId, applyRole, applyMessage);
+      const updatedProject = await projectAPI.getProject(projectId);
+      dispatch(setActiveProject(updatedProject));
       toast.success('Your application was sent successfully!');
       setApplyModalOpen(false);
+      setApplyRole('');
+      setApplyMessage('');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to submit application');
     } finally {
       setApplying(false);
+    }
+  };
+
+  const handleApplicationReview = async (applicationId, status) => {
+    if (!applicationId) return;
+
+    try {
+      await projectAPI.handleApplication(projectId, applicationId, status);
+      const updatedProject = await projectAPI.getProject(projectId);
+      dispatch(setActiveProject(updatedProject));
+      toast.success(status === 'accept' ? 'Application accepted' : 'Application rejected');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to update application');
     }
   };
 
@@ -109,6 +154,7 @@ const ProjectDetail = () => {
 
   const isOwner = user && project.owner && user._id === project.owner._id;
   const isMember = user && project.members?.some(m => m.user?._id === user._id);
+  const pendingApplications = isOwner ? getPendingApplications(project) : [];
 
   return (
     <div className="pd-page">
@@ -242,6 +288,67 @@ const ProjectDetail = () => {
               )}
             </div>
 
+            {isOwner && (
+              <div className="pd-card pd-applications-card">
+                <div className="pd-card-header-row">
+                  <div>
+                    <h3 className="pd-section-title">Pending Applications</h3>
+                    <p className="pd-card-subtitle">Review people who want to join this project.</p>
+                  </div>
+                  <span className="pd-counter-pill">{pendingApplications.length}</span>
+                </div>
+
+                {pendingApplications.length > 0 ? (
+                  <div className="pd-application-list">
+                    {pendingApplications.map((application, index) => {
+                      const applicant = getApplicant(application);
+                      const applicationId = getApplicationId(application);
+
+                      return (
+                        <div key={applicationId || index} className="pd-application-item">
+                          <div className="pd-application-user">
+                            <img
+                              src={applicant?.photoUrl || defaultAvatar}
+                              alt={`${applicant?.firstName || 'Applicant'} ${applicant?.lastName || ''}`}
+                              className="pd-application-avatar"
+                            />
+                            <div className="pd-application-copy">
+                              <div className="pd-application-name-row">
+                                <h4>{applicant?.firstName || 'Unknown'} {applicant?.lastName || ''}</h4>
+                                {application?.role && <span className="pd-application-role">{application.role}</span>}
+                              </div>
+                              <p className="pd-application-message">{application?.message || application?.coverMessage || 'No message provided.'}</p>
+                            </div>
+                          </div>
+
+                          <div className="pd-application-actions">
+                            <button
+                              type="button"
+                              className="pd-application-btn reject"
+                              onClick={() => handleApplicationReview(applicationId, 'reject')}
+                            >
+                              Reject
+                            </button>
+                            <button
+                              type="button"
+                              className="pd-application-btn accept"
+                              onClick={() => handleApplicationReview(applicationId, 'accept')}
+                            >
+                              Accept
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="pd-empty-panel">
+                    <span>No pending join requests right now.</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Manage Project Card (Owner Only) */}
             {isOwner && (
               <div className="pd-card pd-action-card">
@@ -306,13 +413,16 @@ const ProjectDetail = () => {
       {applyModalOpen && (
         <div className="pd-modal-overlay">
           <div className="pd-modal animate-fade-in">
-            <h3 className="pd-modal-title">Join Project</h3>
-            <p className="pd-modal-sub">Tell the lead how you can contribute to '{project.title}'.</p>
+            <div className="pd-modal-hero">
+              <span className="pd-modal-eyebrow">Join Project</span>
+              <h3 className="pd-modal-title">Tell the lead how you can contribute</h3>
+              <p className="pd-modal-sub">Your application will be sent directly to the project lead for review.</p>
+            </div>
 
             <div className="pd-modal-body">
-              <label className="cp-label">Which role are you applying for?</label>
+              <label className="pd-label">Which role are you applying for?</label>
               <select
-                className="cp-input cp-select mb-4"
+                className="pd-modal-input pd-modal-select"
                 value={applyRole}
                 onChange={(e) => setApplyRole(e.target.value)}
               >
@@ -323,26 +433,41 @@ const ProjectDetail = () => {
                 <option value="General Contributor">General Contributor</option>
               </select>
 
-              <label className="cp-label">Why do you want to join?</label>
+              <div className="pd-role-help-row">
+                {project.rolesNeeded?.slice(0, 4).map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    className={`pd-role-chip ${applyRole === role ? 'active' : ''}`}
+                    onClick={() => setApplyRole(role)}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+
+              <label className="pd-label">Why do you want to join?</label>
               <textarea
-                className="cp-input cp-textarea"
+                className="pd-modal-input pd-modal-textarea"
                 value={applyMessage}
                 onChange={(e) => setApplyMessage(e.target.value)}
                 placeholder="Share your relevant skills and experience briefly..."
                 rows={4}
               />
+
+              <p className="pd-modal-hint">Tip: mention the stack you use, what you can build, and how soon you can start.</p>
             </div>
 
             <div className="pd-modal-actions mt-6">
               <button
-                className="cp-btn cp-btn-cancel"
+                className="pd-modal-btn secondary"
                 onClick={() => setApplyModalOpen(false)}
                 disabled={applying}
               >
                 Cancel
               </button>
               <button
-                className="cp-btn cp-btn-save"
+                className="pd-modal-btn primary"
                 onClick={handleApply}
                 disabled={applying}
               >

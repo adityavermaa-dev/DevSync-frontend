@@ -228,6 +228,140 @@
   text-align: center;
 }
 
+.pd-card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pd-card-subtitle {
+  margin: 4px 0 0;
+  color: var(--dashboard-text-faint);
+  font-size: 0.95rem;
+}
+
+.pd-counter-pill {
+  min-width: 42px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-weight: 800;
+  text-align: center;
+}
+
+.pd-applications-card {
+  text-align: left;
+}
+
+.pd-application-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pd-application-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+}
+
+.pd-application-user {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.pd-application-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--dashboard-glass-border);
+}
+
+.pd-application-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-application-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pd-application-name-row h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dashboard-text-main);
+}
+
+.pd-application-role {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pd-application-message {
+  margin: 8px 0 0;
+  color: var(--dashboard-text-faint);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.pd-application-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.pd-application-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.pd-application-btn:hover {
+  transform: translateY(-1px);
+}
+
+.pd-application-btn.accept {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+}
+
+.pd-application-btn.reject {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.pd-empty-panel {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--dashboard-text-faint);
+  text-align: center;
+  border: 1px dashed var(--dashboard-glass-border-translucent);
+}
+
 .pd-label {
   font-size: 0.9rem;
   font-weight: 700;
@@ -382,6 +516,24 @@
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 }
 
+.pd-modal-hero {
+  margin-bottom: 20px;
+}
+
+.pd-modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
 .pd-modal-title {
   font-family: 'Outfit', sans-serif;
   font-size: 1.6rem;
@@ -395,13 +547,128 @@
   font-size: 0.95rem;
 }
 
+.pd-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-modal-input {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--dashboard-text-main);
+  padding: 14px 16px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.pd-modal-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+.pd-modal-select {
+  min-height: 50px;
+}
+
+.pd-modal-textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.pd-role-help-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pd-role-chip {
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-main);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pd-role-chip:hover,
+.pd-role-chip.active {
+  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+}
+
+.pd-modal-hint {
+  margin: 4px 0 0;
+  color: var(--dashboard-text-faint);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 .pd-modal-actions {
   display: flex;
   gap: 16px;
 }
 
+.pd-modal-btn {
+  flex: 1;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.pd-modal-btn:hover {
+  transform: translateY(-1px);
+}
+
+.pd-modal-btn.primary {
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  color: white;
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.24);
+}
+
+.pd-modal-btn.secondary {
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--dashboard-text-main);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+}
+
+.pd-modal-btn:disabled,
+.pd-application-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 @media (max-width: 768px) {
   .pd-body-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pd-card-header-row {
+    flex-direction: column;
+  }
+
+  .pd-application-actions {
+    justify-content: stretch;
+  }
+
+  .pd-application-btn {
+    flex: 1;
+  }
+
+  .pd-modal-actions {
+    flex-direction: column;
   }
 }
