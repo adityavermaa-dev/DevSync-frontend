@@ -40,6 +40,17 @@ const Login = () => {
         return text.includes('verify') && text.includes('email');
     };
 
+    const fetchInitialUser = useCallback(async () => {
+        try {
+            const res = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
+            dispatch(addUser(res.data));
+            navigate("/");
+            return true;
+        } catch {
+            return false;
+        }
+    }, [dispatch, navigate]);
+
     useEffect(() => {
         if (user) {
             return navigate("/");
@@ -52,15 +63,6 @@ const Login = () => {
             window.history.replaceState({}, document.title);
         }
 
-        const fetchInitialUser = () => {
-            axios.get(BASE_URL + "/profile/view", { withCredentials: true })
-                .then((res) => {
-                    dispatch(addUser(res.data));
-                    navigate("/");
-                })
-                .catch(() => { });
-        };
-        
         fetchInitialUser();
 
         const authChannel = new BroadcastChannel("devsync-auth");
@@ -73,7 +75,7 @@ const Login = () => {
         return () => {
             authChannel.close();
         };
-    }, [user, navigate, dispatch, location, showAuthModal]);
+    }, [user, navigate, dispatch, location, showAuthModal, fetchInitialUser]);
 
     const validate = () => {
         const newErrors = {};
@@ -167,25 +169,8 @@ const Login = () => {
                 if (!authPopup || authPopup.closed) {
                     window.clearInterval(popupWatcher);
                     popupWatcher = null;
-                    setIsLoading(false);
+                    fetchInitialUser().finally(() => setIsLoading(false));
                     return;
-                }
-
-                try {
-                    const popupLocation = authPopup.location;
-                    if (!popupLocation) {
-                        return;
-                    }
-
-                    const popupPath = popupLocation.pathname || "/";
-                    if (popupPath === "/" || popupPath === "/login") {
-                        window.clearInterval(popupWatcher);
-                        popupWatcher = null;
-                        authPopup.close();
-                        window.location.replace("/");
-                    }
-                } catch {
-                    // Ignore cross-origin access until the popup returns to our origin.
                 }
             }, 500);
         } catch (error) {
