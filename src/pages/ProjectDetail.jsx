@@ -417,6 +417,12 @@ const ProjectDetail = () => {
               <span className="pd-modal-eyebrow">Join Project</span>
               <h3 className="pd-modal-title">Tell the lead how you can contribute</h3>
               <p className="pd-modal-sub">Your application will be sent directly to the project lead for review.</p>
+
+              <div className="pd-modal-meta-row">
+                <span className="pd-modal-meta-pill">{project.rolesNeeded?.length || 0} roles listed</span>
+                <span className="pd-modal-meta-pill">Fast lead review</span>
+                <span className="pd-modal-meta-pill">Private application</span>
+              </div>
             </div>
 
             <div className="pd-modal-body">
@@ -456,6 +462,27 @@ const ProjectDetail = () => {
               />
 
               <p className="pd-modal-hint">Tip: mention the stack you use, what you can build, and how soon you can start.</p>
+
+              <div className="pd-modal-preview">
+                <div className="pd-modal-preview-header">
+                  <span>Application preview</span>
+                  <span>{applyMessage.trim().length} chars</span>
+                </div>
+                <div className="pd-modal-preview-card">
+                  <div className="pd-modal-preview-line">
+                    <strong>Role</strong>
+                    <span>{applyRole || 'Select a role to preview it here'}</span>
+                  </div>
+                  <div className="pd-modal-preview-line">
+                    <strong>Message</strong>
+                    <span>
+                      {applyMessage.trim()
+                        ? applyMessage.trim().slice(0, 160)
+                        : 'Your note to the project lead will appear here before you send it.'}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="pd-modal-actions mt-6">

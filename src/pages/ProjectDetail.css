@@ -497,23 +497,76 @@
 .pd-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
+  background:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.16), transparent 28%),
+    rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 18px;
 }
 
 .pd-modal {
   width: 100%;
-  max-width: 500px;
-  background: var(--dashboard-glass-bg);
-  border: 1px solid var(--dashboard-glass-border-translucent);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  max-width: 560px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 247, 252, 0.94));
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 30px;
+  padding: 0;
+  box-shadow:
+    0 28px 70px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  position: relative;
+}
+
+.pd-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #f59e0b);
+}
+
+.pd-modal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pd-modal-hero,
+.pd-modal-body,
+.pd-modal-actions {
+  padding-left: 34px;
+  padding-right: 34px;
+}
+
+.pd-modal-hero {
+  padding-top: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
+}
+.pd-modal-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.pd-modal-meta-pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.08);
+  color: #4338ca;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+}
 }
 
 .pd-modal-hero {
@@ -536,47 +589,66 @@
 
 .pd-modal-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 800;
-  margin: 0 0 8px;
+  margin: 0;
+  color: #0f172a;
+  letter-spacing: -0.04em;
 }
 
 .pd-modal-sub {
-  color: var(--dashboard-text-faint);
-  margin: 0 0 24px;
-  font-size: 0.95rem;
+  color: #64748b;
+  margin: 10px 0 0;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .pd-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  padding-top: 24px;
+  padding-bottom: 10px;
 }
 
 .pd-modal-input {
   width: 100%;
-  border-radius: 16px;
-  border: 1px solid var(--dashboard-glass-border-translucent);
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--dashboard-text-main);
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.88);
+  color: #0f172a;
   padding: 14px 16px;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .pd-modal-input:focus {
   border-color: rgba(99, 102, 241, 0.5);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+  background: #fff;
 }
 
 .pd-modal-select {
   min-height: 50px;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 22px) calc(50% - 3px),
+    calc(100% - 16px) calc(50% - 3px),
+    100% 0;
+  background-size: 6px 6px, 6px 6px, 2.5em 2.5em;
+  background-repeat: no-repeat;
+  padding-right: 46px;
 }
 
 .pd-modal-textarea {
   resize: vertical;
   min-height: 140px;
+  line-height: 1.65;
 }
 
 .pd-role-help-row {
@@ -606,21 +678,65 @@
 }
 
 .pd-modal-hint {
-  margin: 4px 0 0;
-  color: var(--dashboard-text-faint);
+  margin: 2px 0 0;
+  color: #64748b;
   font-size: 0.88rem;
   line-height: 1.5;
+}
+.pd-modal-preview {
+  margin-top: 10px;
+  padding: 16px;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.pd-modal-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+.pd-modal-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pd-modal-preview-line {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pd-modal-preview-line strong {
+  font-size: 0.84rem;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.pd-modal-preview-line span {
+  color: #334155;
+  line-height: 1.6;
 }
 
 .pd-modal-actions {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  padding-top: 8px;
+  padding-bottom: 32px;
+  justify-content: flex-end;
 }
 
 .pd-modal-btn {
-  flex: 1;
+  min-width: 150px;
   padding: 14px 18px;
-  border-radius: 14px;
+  border-radius: 16px;
   font-size: 1rem;
   font-weight: 700;
   border: none;
@@ -637,11 +753,18 @@
   color: white;
   box-shadow: 0 12px 24px rgba(99, 102, 241, 0.24);
 }
+.pd-modal-btn.primary:hover {
+  box-shadow: 0 16px 28px rgba(99, 102, 241, 0.3);
+}
+.pd-modal-btn.secondary:hover {
+  background: rgba(226, 232, 240, 0.95);
+}
 
 .pd-modal-btn.secondary {
-  background: rgba(255, 255, 255, 0.55);
-  color: var(--dashboard-text-main);
-  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: rgba(241, 245, 249, 0.95);
+  color: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .pd-modal-btn:disabled,
@@ -656,8 +779,27 @@
     grid-template-columns: 1fr;
   }
 
+  .pd-modal-hero,
+  .pd-modal-body,
+  .pd-modal-actions {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .pd-modal-hero {
+    padding-top: 28px;
+  }
+
+  .pd-modal-title {
+    font-size: 1.6rem;
+  }
+
   .pd-card-header-row {
     flex-direction: column;
+  }
+
+  .pd-modal-actions {
+    flex-direction: column-reverse;
   }
 
   .pd-application-actions {
@@ -668,7 +810,12 @@
     flex: 1;
   }
 
-  .pd-modal-actions {
+  .pd-modal-btn {
+    width: 100%;
+    min-width: 0;
+  }
+  .pd-modal-preview-header {
     flex-direction: column;
+    align-items: flex-start;
   }
 }
