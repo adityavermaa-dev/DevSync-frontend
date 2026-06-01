@@ -14,7 +14,7 @@ const VideoFeed = () => {
     const user = useSelector(store => store.user);
     const [loading, setLoading] = useState(true);
     
-    // Comments state
+    
     const [activeCommentsVideoId, setActiveCommentsVideoId] = useState(null);
     const [comments, setComments] = useState([]);
     const [loadingComments, setLoadingComments] = useState(false);
@@ -123,7 +123,7 @@ const VideoFeed = () => {
                     if (playPromise !== undefined) { playPromise.catch(e => console.log('Autoplay prevented', e)); }
                     handleView(video.dataset.id);
                     
-                    // Clear comments if switching videos
+                    
                     setActiveCommentsVideoId(null);
                 } else {
                     video.pause();
@@ -166,7 +166,7 @@ const VideoFeed = () => {
         <div className="video-feed">
             {videos.map((video, index) => (
                 <div key={video._id} className="video-item-split">
-                    {/* Left Column: Video */}
+                    {}
                     <div className="video-player-container" onClick={() => togglePlay(videoRefs.current[index])}>
                         <video
                             ref={(el) => (videoRefs.current[index] = el)}
@@ -175,7 +175,7 @@ const VideoFeed = () => {
                             loop
                             playsInline
                         />
-                        {/* Mobile Overlay (Only visible on small screens to mimic old layout) */}
+                        {}
                         <div className="mobile-overlay-actions">
                             <button className="mobile-action-btn" onClick={(e) => { e.stopPropagation(); handleLike(video._id); }}>
                                 {video.isLiked ? heartFilledIcon : heartOutlineIcon}
@@ -189,9 +189,9 @@ const VideoFeed = () => {
                         </div>
                     </div>
 
-                    {/* Right Column: Information Panel (Hidden on very small screens, integrated into modal logic normally, but here flex) */}
+                    {}
                     <div className="video-interaction-panel">
-                        {/* Header */}
+                        {}
                         <div className="interaction-header">
                             <div className="flex items-center gap-3 cursor-pointer" onClick={(e) => handleViewProfile(video.userId, e)}>
                                 <img
@@ -204,9 +204,9 @@ const VideoFeed = () => {
                             <button className="panel-more-btn">•••</button>
                         </div>
 
-                        {/* Middle: Scrollable Comments & Caption */}
+                        {}
                         <div className="interaction-body">
-                            {/* Caption Block */}
+                            {}
                             <div className="panel-caption-block">
                                 <img
                                     src={video.userId?.photoUrl || defaultAvatar}
@@ -223,7 +223,7 @@ const VideoFeed = () => {
                                     </span>
                                     {video.caption || 'No caption provided.'}
 
-                                    {/* Linked Project */}
+                                    {}
                                     {video.targetProject && (
                                         <div style={{ marginTop: '12px', marginBottom: '8px' }}>
                                             <div 
@@ -239,7 +239,7 @@ const VideoFeed = () => {
                                         </div>
                                     )}
 
-                                    {/* Code Snippet */}
+                                    {}
                                     {video.codeSnippet && (
                                         <div className="video-code-snippet" style={{ marginTop: '12px', backgroundColor: 'var(--dashboard-surface-alt)', padding: '12px', borderRadius: '12px', border: '1px solid var(--dashboard-border)' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -261,7 +261,7 @@ const VideoFeed = () => {
                             
                             <hr className="panel-divider" />
 
-                            {/* Comments Inline */}
+                            {}
                             <div className="panel-comments-list">
                                 {activeCommentsVideoId === video._id ? (
                                     loadingComments ? (
@@ -300,7 +300,7 @@ const VideoFeed = () => {
                             </div>
                         </div>
 
-                        {/* Footer: Actions & Input */}
+                        {}
                         <div className="interaction-footer">
                             <div className="panel-actions-row">
                                 <button className="panel-action-icon" onClick={() => handleLike(video._id)}>

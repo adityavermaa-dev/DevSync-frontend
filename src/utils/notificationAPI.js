@@ -9,7 +9,7 @@ const normalizeArrayResponse = (res, key) => {
 };
 
 export const notificationAPI = {
-  // Get all notifications for the logged-in user
+  
   async getNotifications() {
     const res = await axios.get(`${BASE_URL}/notifications`, {
       withCredentials: true,
@@ -17,7 +17,7 @@ export const notificationAPI = {
     return normalizeArrayResponse(res, "notifications");
   },
 
-  // Mark a single notification as read
+  
   async markAsRead(notificationId) {
     const res = await axios.patch(
       `${BASE_URL}/notifications/${notificationId}/read`,
@@ -27,7 +27,7 @@ export const notificationAPI = {
     return res.data;
   },
 
-  // Mark all notifications as read
+  
   async markAllAsRead() {
     const res = await axios.patch(
       `${BASE_URL}/notifications/read-all`,
@@ -37,7 +37,7 @@ export const notificationAPI = {
     return res.data;
   },
 
-  // Delete a notification
+  
   async deleteNotification(notificationId) {
     const res = await axios.delete(
       `${BASE_URL}/notifications/${notificationId}`,
@@ -46,7 +46,7 @@ export const notificationAPI = {
     return res.data;
   },
 
-  // Clear all notifications
+  
   async clearAll() {
     const res = await axios.delete(`${BASE_URL}/notifications`, {
       withCredentials: true,

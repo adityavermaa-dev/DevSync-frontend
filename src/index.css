@@ -4,40 +4,40 @@
   themes: dark --default;
 }
 
-/* ===== Minimal Design System – Google / Antigravity Style ===== */
+
 :root {
-  /* Core Colors - Dark Mode Default */
+  
   --bg-base: #18191a;
   --bg-surface: #242526;
   --bg-surface-elevated: #3a3b3c;
   --bg-surface-glass: rgba(36, 37, 38, 0.7);
 
-  /* Gradients & Accents */
+  
   --brand-color: #8ab4f8;
   --brand-gradient: linear-gradient(135deg, #8ab4f8 0%, #c58af9 100%);
   --brand-glow: rgba(138, 180, 248, 0.2);
 
-  /* Borders */
+  
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.15);
   
-  /* Text */
+  
   --text-pure: #ffffff;
   --text-primary: #e8eaed;
   --text-secondary: #9aa0a6;
   --text-muted: #5f6368;
 
-  /* Shadows */
+  
   --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
   --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.3);
 
-  /* Animation */
+  
   --fluid-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --font-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ── Light Theme ── */
+
 [data-theme="light"] {
   --bg-base: #ffffff;
   --bg-surface: #f8f9fa;
@@ -59,7 +59,7 @@
   --shadow-glass: 0 4px 20px rgba(0, 0, 0, 0.05);
   --shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
 
-  /* Landing Page Variables - Light */
+  
   --lp-bg: #ffffff;
   --lp-text: #1a1a1a;
   --lp-text-muted: #4b5563;
@@ -86,7 +86,7 @@
   --github-btn-bg: #24292f;
   --github-btn-hover: #1c2024;
 
-  /* Dashboard Core Variables */
+  
   --dashboard-glass-bg: rgba(255, 255, 255, 0.85);
   --dashboard-glass-border: #ffffff;
   --dashboard-glass-border-translucent: rgba(255, 255, 255, 0.4);
@@ -95,7 +95,7 @@
   --dashboard-surface: #f9fafb;
   --dashboard-surface-alt: #f3f4f6;
   --dashboard-border: #e5e7eb;
-  /* Float Variables Config - Light */
+  
   --float-shadow: inset -5px -5px 15px rgba(0,0,0,0.08), inset 5px 5px 15px rgba(255,255,255,0.7), 15px 15px 30px rgba(0,0,0,0.06);
   --float-text: rgba(0,0,0,0.5);
   --float-blue: #a9cdfa;
@@ -107,9 +107,9 @@
   --float-blue-sm: #bddefc;
 }
 
-/* Landing Page Variables - Dark (Aurora Profile) */
+
 .dark-theme, [data-theme="dark"] {
-  --lp-bg: #03030aa4; /* Starry dark */
+  --lp-bg: #03030aa4; 
   --lp-text: #f8fafc;
   --lp-text-muted: #82828c;
   --lp-circle-opacity: 0.15;
@@ -117,7 +117,7 @@
   --c-pink: #d946ef; 
   --c-yellow: #10b981; 
   
-  --nav-pill-bg: rgba(10, 10, 15, 0.85); /* Much darker */
+  --nav-pill-bg: rgba(10, 10, 15, 0.85); 
   --nav-pill-border: rgba(255, 255, 255, 0.03);
   --nav-pill-active-bg: rgba(255, 255, 255, 0.08);
   --nav-pill-active-text: #ffffff;
@@ -137,8 +137,8 @@
   --github-btn-bg: rgba(255, 255, 255, 0.05);
   --github-btn-hover: rgba(255, 255, 255, 0.08);
 
-  /* Dashboard Core Variables - Dark */
-  --dashboard-glass-bg: rgba(12, 12, 16, 0.85); /* Extra dark */
+  
+  --dashboard-glass-bg: rgba(12, 12, 16, 0.85); 
   --dashboard-glass-border: rgba(255, 255, 255, 0.05);
   --dashboard-glass-border-translucent: rgba(255, 255, 255, 0.03);
   --dashboard-text-main: #f8fafc;
@@ -147,7 +147,7 @@
   --dashboard-surface-alt: rgba(20, 20, 25, 1);
   --dashboard-border: rgba(255, 255, 255, 0.05);
 
-  /* Float Variables Config - Dark */
+  
   --float-shadow: inset -5px -5px 15px rgba(0,0,0,0.5), inset 2px 2px 10px rgba(255,255,255,0.2), 0 0 35px var(--float-glow);
   --float-text: rgba(255,255,255,0.85);
   --float-blue: #1e3a8a;
@@ -167,7 +167,7 @@
 }
 
 
-/* ── Force DaisyUI Dark Override ── */
+
 html, html[data-theme="dark"] {
   --b1: 24 25 26;
   --b2: 36 37 38;
@@ -200,7 +200,7 @@ html, html[data-theme="dark"] {
   color-scheme: light;
 }
 
-/* ── Base ── */
+
 * { 
   box-sizing: border-box; 
   scroll-behavior: smooth;
@@ -214,7 +214,7 @@ body,
 }
 
 html {
-  /* Smooth scroll + momentum for better mobile experience */
+  
   scroll-behavior: smooth;
 }
 
@@ -225,7 +225,7 @@ body {
 }
 
 body {
-  /* Prevent rubber-band scrolling */
+  
   overscroll-behavior: auto;
 }
 
@@ -235,7 +235,7 @@ body {
   flex-direction: column;
 }
 
-/* Optimize scrollable containers */
+
 .overflow-y-auto,
 [class*="scrollable"],
 .chat-messages,
@@ -266,7 +266,7 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ── Glassmorphism ── */
+
 .glass-panel {
   background: var(--bg-surface-glass);
   backdrop-filter: blur(24px);
@@ -276,7 +276,7 @@ body {
   box-shadow: var(--shadow-glass);
 }
 
-/* ── Minimal Premium Button ── */
+
 .btn-premium {
   background: var(--brand-gradient);
   color: #fff;
@@ -304,7 +304,7 @@ body {
   transform: translateY(0);
 }
 
-/* ── Animations ── */
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -320,8 +320,8 @@ body {
   animation: fadeInUp 0.8s var(--ease-smooth) forwards; 
 }
 
-/* ── Scroll & Performance Optimizations ── */
-/* Reduce motion for better accessibility & performance */
+
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -333,7 +333,7 @@ body {
   }
 }
 
-/* Enhanced scrollbar styling for better UX */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -353,23 +353,23 @@ body {
   background: rgba(156, 163, 175, 0.7);
 }
 
-/* Firefox scrollbar */
+
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
 }
 
-/* Prevent layout shift during scroll */
+
 html {
   scroll-padding-top: 80px;
 }
 
-/* Smooth transitions for route changes */
+
 main {
   animation: fadeInUp 0.3s var(--ease-smooth) forwards;
 }
 
-/* GPU acceleration for smooth scrolling */
+
 .overflow-y-auto,
 [class*="scrollable"],
 .chat-messages,

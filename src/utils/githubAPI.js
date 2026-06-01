@@ -25,7 +25,7 @@ const setStorageValue = (key, value) => {
   try {
     window.localStorage.setItem(key, value);
   } catch {
-    // ignore storage failures in private mode
+    
   }
 };
 
@@ -91,16 +91,16 @@ export const extractGithubUsername = (input) => {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  // If it's already just a username.
+  
   if (!trimmed.includes("/")) return trimmed;
 
   try {
-    // Handle full URL or path-like strings.
+    
     const url = trimmed.startsWith("http") ? new URL(trimmed) : new URL(`https://github.com/${trimmed.replace(/^\/+/, "")}`);
     const parts = url.pathname.split("/").filter(Boolean);
     return parts[0] || null;
   } catch {
-    // Fallback: last path segment.
+    
     const parts = trimmed.split("/").filter(Boolean);
     return parts[parts.length - 1] || null;
   }

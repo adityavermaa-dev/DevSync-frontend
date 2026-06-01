@@ -16,7 +16,7 @@ const BuildLogs = () => {
     const [loading, setLoading] = useState(true);
     const [isPosting, setIsPosting] = useState(false);
     
-    // Form state
+    
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [tags, setTags] = useState('');
@@ -56,11 +56,11 @@ const BuildLogs = () => {
 
             const res = await axios.post(BASE_URL + '/build-logs', payload, { withCredentials: true });
             
-            // Unshift new log to top
+            
             setLogs([res.data, ...logs]);
             toast.success('Log posted successfully!');
             
-            // Reset form
+            
             setTitle('');
             setContent('');
             setTags('');
@@ -76,7 +76,7 @@ const BuildLogs = () => {
         try {
             const res = await axios.post(BASE_URL + `/build-logs/${logId}/like`, {}, { withCredentials: true });
             
-            // Optimistically update
+            
             setLogs(logs.map(log => {
                 if (log._id === logId) {
                     return { ...log, likes: res.data.likes };
@@ -116,7 +116,7 @@ const BuildLogs = () => {
                 </p>
             </div>
 
-            {/* Post Creation Box */}
+            {}
             <div className="buildlog-create-card mb-10 bg-white/60 dark:bg-[#1E1E24]/60 backdrop-blur-xl border border-white/40 shadow-xl rounded-3xl p-6">
                 <div className="flex items-center gap-4 mb-4">
                     <img src={user?.photoUrl || defaultAvatar} alt="You" className="w-12 h-12 rounded-full border-2 border-purple-500 object-cover" />
@@ -160,7 +160,7 @@ const BuildLogs = () => {
                 </form>
             </div>
 
-            {/* Feed Section */}
+            {}
             <div className="buildlog-feed space-y-6">
                 {loading ? (
                     <div className="flex justify-center py-10">
@@ -180,7 +180,7 @@ const BuildLogs = () => {
                         return (
                             <div key={log._id} className="buildlog-card bg-white/80 dark:bg-[#1A1A1F]/80 backdrop-blur-xl border border-white/30 dark:border-gray-800 shadow-md rounded-3xl p-6 transition-all hover:shadow-xl">
                                 
-                                {/* Header */}
+                                {}
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-3">
                                         <img src={log.author?.photoUrl || defaultAvatar} alt={log.author?.firstName} className="w-10 h-10 rounded-full object-cover" />
@@ -206,10 +206,10 @@ const BuildLogs = () => {
                                     )}
                                 </div>
 
-                                {/* Title */}
+                                {}
                                 <h3 className="text-xl font-bold feed-text-main mb-3">{log.title}</h3>
 
-                                {/* Markdown Content */}
+                                {}
                                 <div className="buildlog-content prose prose-sm dark:prose-invert max-w-none feed-text-main opacity-90 mb-5 text-[15px]">
                                     <ReactMarkdown 
                                         remarkPlugins={[remarkGfm]}
@@ -237,7 +237,7 @@ const BuildLogs = () => {
                                     </ReactMarkdown>
                                 </div>
 
-                                {/* Tags */}
+                                {}
                                 {log.tags && log.tags.length > 0 && (
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {log.tags.map((tag, idx) => (
@@ -248,7 +248,7 @@ const BuildLogs = () => {
                                     </div>
                                 )}
 
-                                {/* Card Footer Actions */}
+                                {}
                                 <div className="border-t border-gray-100 dark:border-gray-800 pt-4 mt-auto flex items-center justify-between">
                                     <button 
                                         onClick={() => handleToggleLike(log._id)}
@@ -260,7 +260,7 @@ const BuildLogs = () => {
                                         {log.likes.length}
                                     </button>
 
-                                    {/* Copy link option - could be enhanced */}
+                                    {}
                                     <button 
                                         className="text-gray-400 hover:text-purple-500 transition-colors p-2"
                                         title="Share Log"

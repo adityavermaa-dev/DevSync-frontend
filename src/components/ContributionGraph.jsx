@@ -180,7 +180,7 @@ const ContributionGraph = () => {
   }, [pastYearDates, activityMap]);
 
   const initialSnake = useMemo(() => {
-    // Start near the top-right, then chase activity cells.
+    
     const head = toCellIndex(GRID_COLS - 5, 1);
     return [head, toCellIndex(GRID_COLS - 6, 1), toCellIndex(GRID_COLS - 7, 1)];
   }, []);
@@ -306,7 +306,7 @@ const ContributionGraph = () => {
       <span className="cg-corner br" />
 
       <div className="cg-console-head">
-        <h3>ROYAL_ARSENAL_OS // v2.0</h3>
+        <h3>ROYAL_ARSENAL_OS 
         <span>SYSTEM: {systemStatus || 'ACTIVE'}</span>
       </div>
 

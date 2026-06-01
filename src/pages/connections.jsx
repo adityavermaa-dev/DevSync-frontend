@@ -39,7 +39,7 @@ const Connections = () => {
         ? connections.filter((user) => Boolean(user?._id))
         : [];
 
-    /* ── Loading ── */
+    
     if (loading) {
         return (
             <div className="connections-page">
@@ -50,7 +50,7 @@ const Connections = () => {
         );
     }
 
-    /* ── Empty ── */
+    
     if (!validConnections || validConnections.length === 0) {
         return (
             <div className="connections-page">

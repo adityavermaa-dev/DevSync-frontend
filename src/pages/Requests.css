@@ -1,4 +1,4 @@
-/* Premium DevSync Requests CSS - Light Theme */
+
 
 .requests-page {
   padding: 40px 20px 60px;
@@ -59,7 +59,7 @@
   pointer-events: none;
 }
 
-/* Action Overrides for Requests (to blend beautifully with the new Light Theme UserListItem) */
+
 .request-card-wrap .feed-btn-pass {
   background: var(--dashboard-glass-border);
   color: #ef4444;
@@ -90,7 +90,7 @@
   box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
 
-/* Loading & Empty States */
+
 .requests-loading, .requests-empty {
   display: flex;
   flex-direction: column;

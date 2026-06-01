@@ -130,9 +130,9 @@ const ProjectDetail = () => {
 
   const startProjectChat = () => {
     if (!project) return;
-    // Assuming backend auto-creates a group chat for the project,
-    // or we navigate to existing group thread.
-    // For now, redirect to /chat indicating group context
+    
+    
+    
     navigate(`/chat?project=${project._id}`);
   };
 
@@ -160,7 +160,7 @@ const ProjectDetail = () => {
     <div className="pd-page">
       <div className="pd-container">
 
-        {/* Header Block */}
+        {}
         <div className="pd-header">
           <button className="pd-back-btn" onClick={() => navigate('/projects')}>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -189,13 +189,13 @@ const ProjectDetail = () => {
           </div>
         </div>
 
-        {/* Content Body */}
+        {}
         <div className="pd-body-grid">
 
-          {/* Main Column */}
+          {}
           <div className="pd-main-col">
 
-            {/* Tabs for Project Members */}
+            {}
             {(isOwner || isMember) && (
               <div className="pd-tabs-wrapper">
                 <button 
@@ -247,10 +247,10 @@ const ProjectDetail = () => {
             )}
           </div>
 
-          {/* Sidebar Column */}
+          {}
           <div className="pd-side-col">
 
-            {/* Action Card */}
+            {}
             <div className="pd-card pd-action-card">
               <h3 className="pd-section-title">Collaboration</h3>
 
@@ -349,7 +349,7 @@ const ProjectDetail = () => {
               </div>
             )}
 
-            {/* Manage Project Card (Owner Only) */}
+            {}
             {isOwner && (
               <div className="pd-card pd-action-card">
                 <h3 className="pd-section-title">Manage Project</h3>
@@ -376,7 +376,7 @@ const ProjectDetail = () => {
               </div>
             )}
 
-            {/* Members Card */}
+            {}
             <div className="pd-card">
               <h3 className="pd-section-title">
                 Team Members
@@ -384,14 +384,14 @@ const ProjectDetail = () => {
               </h3>
 
               <div className="pd-member-list">
-                {/* Lead is always listed */}
+                {}
                 <div className="pd-member-item" onClick={() => handleOpenMemberProfile(project.owner)}>
                   <img src={project.owner?.photoUrl || defaultAvatar} alt="owner" />
                   <span>{project.owner?.firstName}</span>
                   <span className="pd-lead-badge">Lead</span>
                 </div>
 
-                {/* Other members */}
+                {}
                 {project.members?.map(member => {
                   const mUser = member.user;
                   if (!mUser || mUser._id === project.owner?._id) return null;
@@ -409,7 +409,7 @@ const ProjectDetail = () => {
         </div>
       </div>
 
-      {/* Apply Modal */}
+      {}
       {applyModalOpen && (
         <div className="pd-modal-overlay">
           <div className="pd-modal animate-fade-in">

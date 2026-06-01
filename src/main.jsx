@@ -4,7 +4,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import './index.css'
 import App from './App.jsx'
 
-// Apply saved theme immediately to prevent flash
+
 const safeStorageGet = (key) => {
   try {
     return localStorage.getItem(key);
@@ -18,13 +18,13 @@ if (savedTheme === 'light') {
   try {
     document.documentElement.setAttribute('data-theme', 'light');
   } catch {
-    // ignore
+    
   }
 }
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!googleClientId) {
-  // Keep the app usable on localhost even if OAuth env vars aren't configured.
+  
   console.warn('[DevSync] Missing VITE_GOOGLE_CLIENT_ID; Google login will be disabled until you add it to a local .env file.');
 }
 

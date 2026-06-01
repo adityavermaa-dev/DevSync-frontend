@@ -154,7 +154,7 @@
   line-height: 1.3;
 }
 
-/* Priority tags */
+
 .tb-pri {
   font-size: 0.64rem;
   text-transform: uppercase;
@@ -339,13 +339,13 @@
   cursor: not-allowed;
 }
 
-/* Drag over states */
+
 .tb-column.drag-over {
   background: color-mix(in srgb, var(--dashboard-surface-alt) 84%, var(--auth-btn-bg) 16%);
   border: 1px dashed color-mix(in srgb, var(--dashboard-border) 46%, var(--auth-btn-bg) 54%);
 }
 
-/* Form Styles */
+
 .tb-form-wrap {
   margin-bottom: 14px;
   padding: 16px;

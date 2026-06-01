@@ -1,6 +1,6 @@
-/* ===== Policy & Static Pages – Deep Space ===== */
 
-/* ── Page Container ── */
+
+
 .policy-page {
   min-height: calc(100vh - 80px);
   background: transparent;
@@ -22,7 +22,7 @@
   animation: fadeInUp 0.5s var(--ease-smooth);
 }
 
-/* ── Header ── */
+
 .policy-title {
   font-family: 'Outfit', sans-serif;
   font-size: 2rem;
@@ -42,7 +42,7 @@
   border-bottom: 1px solid var(--border-strong);
 }
 
-/* ── Content Typography ── */
+
 .policy-content {
   color: var(--text-primary);
   line-height: 1.7;
@@ -91,7 +91,7 @@
   text-decoration: underline;
 }
 
-/* ── Contact Pages Specific ── */
+
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -181,7 +181,7 @@
   box-shadow: 0 8px 25px var(--brand-glow);
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 600px) {
   .policy-container { padding: 28px 20px; }
   .policy-title { font-size: 1.6rem; }

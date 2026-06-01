@@ -34,7 +34,7 @@ const VerifyEmailHandler = () => {
           verified = true;
           break;
         } catch {
-          // Try the next known backend path.
+          
         }
       }
 

@@ -109,7 +109,7 @@ const VideoUpload = () => {
     return (
         <div className="video-upload-container">
             <div className="video-upload-card">
-                {/* Header */}
+                {}
                 <div className="video-upload-header">
                     <h2 className="video-upload-title">
                         <span className="video-upload-title-icon">
@@ -122,9 +122,9 @@ const VideoUpload = () => {
                     <p className="video-upload-subtitle">Share a short video with the DevSync community</p>
                 </div>
 
-                {/* Body */}
+                {}
                 <div className="video-upload-body">
-                    {/* Dropzone */}
+                    {}
                     <div
                         className={`file-input-wrapper ${videoFile ? 'has-file' : ''} ${dragActive ? 'drag-active' : ''}`}
                         onClick={() => fileInputRef.current?.click()}
@@ -135,39 +135,7 @@ const VideoUpload = () => {
                     >
                         <input
                             type="file"
-                            accept="video/*"
-                            onChange={handleFileChange}
-                            ref={fileInputRef}
-                        />
-                        {!videoFile ? (
-                            <>
-                                <div className="file-input-icon-wrap">
-                                    <svg className="file-input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.748 3.748 0 0118 19.5H6.75z" />
-                                    </svg>
-                                </div>
-                                <span className="file-input-label">
-                                    <strong>Click to upload</strong> or drag and drop
-                                </span>
-                                <span className="file-input-hint">MP4, WebM, MOV up to 100MB</span>
-                            </>
-                        ) : (
-                            <div className="selected-file-info">
-                                <div className="selected-file-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div className="selected-file-details">
-                                    <span className="selected-file">{videoFile.name}</span>
-                                    <span className="selected-file-size">{fileSize}</span>
-                                    <span className="selected-file-change">Click to change</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Caption */}
+                            accept="video}
                     <div className="video-caption-group">
                         <label className="video-caption-label">Caption</label>
                         <textarea
@@ -182,7 +150,7 @@ const VideoUpload = () => {
                         </div>
                     </div>
 
-                    {/* Code Snippet & Link Project */}
+                    {}
                     <div className="video-extra-inputs">
                         <div className="video-caption-group">
                             <label className="video-caption-label">
@@ -222,7 +190,7 @@ const VideoUpload = () => {
                         </div>
                     </div>
 
-                    {/* Submit */}
+                    {}
                     <button
                         className="upload-submit-btn"
                         onClick={handleUpload}

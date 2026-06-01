@@ -1,7 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════
-   Notifications.css — DevSync Notification Center
-   Glassmorphic design matching the dashboard aesthetic
-═══════════════════════════════════════════════════════════════ */
+
 
 .notifications-page {
   padding: 2rem 1.5rem 2rem 1.5rem;
@@ -9,7 +6,7 @@
   margin: 0 auto;
 }
 
-/* ── Header ── */
+
 .notif-header {
   display: flex;
   align-items: center;
@@ -92,7 +89,7 @@
   height: 14px;
 }
 
-/* ── Filter Tabs ── */
+
 .notif-filter-tabs {
   display: flex;
   gap: 0.5rem;
@@ -145,7 +142,7 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* ── Notification List ── */
+
 .notif-list {
   display: flex;
   flex-direction: column;
@@ -161,7 +158,7 @@
   padding: 0.75rem 0 0.25rem 0.5rem;
 }
 
-/* ── Single Notification Item ── */
+
 .notif-item {
   display: flex;
   align-items: flex-start;
@@ -217,7 +214,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Icon column */
+
 .notif-icon {
   width: 42px;
   height: 42px;
@@ -254,7 +251,7 @@
   color: #ec4899;
 }
 
-/* Content column */
+
 .notif-content {
   flex: 1;
   min-width: 0;
@@ -312,7 +309,7 @@
   color: #f59e0b;
 }
 
-/* Dismiss button */
+
 .notif-dismiss {
   width: 28px;
   height: 28px;
@@ -343,7 +340,7 @@
   height: 14px;
 }
 
-/* ── Empty State ── */
+
 .notif-empty {
   display: flex;
   flex-direction: column;
@@ -378,7 +375,7 @@
   margin: 0;
 }
 
-/* ── Loading skeleton ── */
+
 .notif-skeleton {
   display: flex;
   align-items: flex-start;
@@ -419,7 +416,7 @@
   50% { opacity: 0.8; }
 }
 
-/* ── Responsive ── */
+
 @media (max-width: 768px) {
   .notifications-page {
     padding: 1rem 1rem 5rem 1rem;

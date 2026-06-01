@@ -105,8 +105,8 @@ const Onboarding = () => {
   };
 
   const formatUpdatePayload = () => {
-    // If we wanted to store role we could, right now DevSync uses about + skills.
-    // Let's prepend the role to "about" if about is empty or just update it
+    
+    
     const enhancedAbout = formData.about.trim() 
       ? formData.about 
       : `I am a ${formData.role} looking to collaborate on exciting projects!`;
@@ -165,7 +165,7 @@ const Onboarding = () => {
 
       let res;
       try {
-        // Attempt 1: backend expects githubUrl
+        
         const payloadUrl = buildProfileFormData(updateData, 'url');
         console.log('Onboarding payload attempt 1 keys:', getFormDataKeys(payloadUrl));
         res = await axios.patch(
@@ -177,7 +177,7 @@ const Onboarding = () => {
         if (!isInvalidFieldError(error)) throw error;
 
         try {
-          // Attempt 2: backend expects githubUsername
+          
           const payloadUsername = buildProfileFormData(updateData, 'username');
           console.log('Onboarding payload attempt 2 keys:', getFormDataKeys(payloadUsername));
           res = await axios.patch(
@@ -188,7 +188,7 @@ const Onboarding = () => {
         } catch (secondError) {
           if (!isInvalidFieldError(secondError)) throw secondError;
 
-          // Attempt 3: proceed without github field to unblock onboarding
+          
           const payloadNoGithub = buildProfileFormData(updateData, 'none');
           console.log('Onboarding payload attempt 3 keys:', getFormDataKeys(payloadNoGithub));
           res = await axios.patch(
@@ -203,7 +203,7 @@ const Onboarding = () => {
         throw new Error('Profile update did not return a valid response');
       }
 
-      // Fetch the canonical profile shape before redirecting.
+      
       const profileRes = await axios.get(BASE_URL + '/profile/view', { withCredentials: true });
       const refreshedUser = profileRes?.data?.data || profileRes?.data;
 
@@ -231,7 +231,7 @@ const Onboarding = () => {
       }
 
       toast.success('Profile completed! 🎉');
-      navigate('/'); // Go to Hub/Feed
+      navigate('/'); 
     } catch (error) {
       console.error('Onboarding update error:', error);
       const details = error?.response?.data;
@@ -244,18 +244,18 @@ const Onboarding = () => {
 
   return (
     <div className="onboarding-page min-h-screen flex items-center justify-center -mt-4 w-full relative z-20 px-4 py-8">
-      {/* Background blurs */}
+      {}
       <div className="absolute top-1/4 left-1/4 bg-purple-500/20 rounded-full pointer-events-none" style={{ width: 500, height: 500, filter: 'blur(120px)' }} />
       <div className="absolute bottom-1/4 right-1/4 bg-blue-500/20 rounded-full pointer-events-none" style={{ width: 400, height: 400, filter: 'blur(100px)' }} />
 
       <div className="onboarding-card w-full max-w-2xl backdrop-blur-2xl shadow-2xl rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden">
         
-        {/* Progress Bar */}
+        {}
         <div className="absolute top-0 left-0 w-full h-1.5 onboarding-progress-track">
           <div className="h-full bg-linear-to-r from-purple-500 to-blue-500 transition-all duration-500 ease-out" style={{ width: `${(step / 3) * 100}%` }} />
         </div>
 
-        {/* Header */}
+        {}
         <div className="text-center mb-8">
            <div className="inline-flex justify-center items-center w-20 h-20 rounded-3xl onboarding-logo-badge shadow-lg mb-6 mx-auto animate-float">
              <img src={logo} alt="DevSync" className="w-12 h-12" />
@@ -266,7 +266,7 @@ const Onboarding = () => {
           <p className="onboarding-subtext font-medium">Let's set up your profile to find the best matches.</p>
         </div>
 
-        {/* --- STEP 1: ROLE --- */}
+        {}
         {step === 1 && (
           <div className="onboarding-step animation-fade-in">
             <h2 className="text-xl font-bold onboarding-title mb-4 text-center">What best describes you?</h2>
@@ -287,7 +287,7 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* --- STEP 2: SKILLS --- */}
+        {}
         {step === 2 && (
           <div className="onboarding-step animation-fade-in">
             <h2 className="text-xl font-bold onboarding-title mb-2 text-center">Select your top skills</h2>
@@ -316,7 +316,7 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* --- STEP 3: DETAILS --- */}
+        {}
         {step === 3 && (
           <div className="onboarding-step animation-fade-in">
             <h2 className="text-xl font-bold onboarding-title mb-6 text-center">Final touches</h2>

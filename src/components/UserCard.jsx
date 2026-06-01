@@ -38,7 +38,7 @@ const UserCard = ({ user, actions, showEmail = false, variant = 'default' }) => 
 
     return (
         <div className={cardClassName}>
-            {/* ── Photo ── */}
+            {}
             <div className="user-card-photo">
                 <img
                     src={displayPhoto}
@@ -66,7 +66,7 @@ const UserCard = ({ user, actions, showEmail = false, variant = 'default' }) => 
                 </div>
             </div>
 
-            {/* ── Body ── */}
+            {}
             <div className="user-card-body">
                 <div className="user-card-meta-row">
                     {genderLabel && <span className="user-card-pill">{genderLabel}</span>}
@@ -94,7 +94,7 @@ const UserCard = ({ user, actions, showEmail = false, variant = 'default' }) => 
                 )}
             </div>
 
-            {/* ── Actions slot ── */}
+            {}
             {actions && <div className="user-card-actions">{actions}</div>}
         </div>
     );

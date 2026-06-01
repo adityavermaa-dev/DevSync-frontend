@@ -1,4 +1,4 @@
-/* Premium Glassmorphic UserListItem CSS */
+
 
 .user-list-item {
   display: flex;
@@ -93,7 +93,7 @@
   margin-left: 16px;
 }
 
-/* Base style for Chat button inside UserListItem */
+
 .user-list-btn {
   padding: 8px 18px;
   border-radius: 14px;

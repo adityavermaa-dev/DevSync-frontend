@@ -8,7 +8,7 @@ import ThemeProvider from "./components/ThemeProvider"
 import Body from "./Body"
 import Login from "./pages/Login"
 
-// Lazy Loaded Routes
+
 const About = lazy(() => import("./pages/About"));
 const Community = lazy(() => import("./pages/Community"));
 const Profile = lazy(() => import("./pages/Profile"));

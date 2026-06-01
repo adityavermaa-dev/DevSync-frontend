@@ -1,4 +1,4 @@
-/* ===== VideoFeed (Reels) - Instagram Split Layout ===== */
+
 
 .video-feed {
     height: calc(100dvh - 16px);
@@ -17,19 +17,19 @@
     display: none;
 }
 
-/* ── Split Layout Card ── */
+
 .video-item-split {
     height: calc(100dvh - 96px);
     min-height: 500px;
     width: 100%;
-    max-width: 950px; /* Expansive wide desktop card */
+    max-width: 950px; 
     margin: 40px auto;
     scroll-snap-align: center;
     scroll-snap-stop: always;
     display: flex;
     flex-direction: row;
     
-    /* Massive Premium Glass Card Styling */
+    
     background: var(--dashboard-glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -44,9 +44,9 @@
     box-shadow: 0 50px 100px rgba(0, 0, 0, 0.35);
 }
 
-/* ── Left Column: Video Container ── */
+
 .video-player-container {
-    flex: 1.1; /* slightly dominating width */
+    flex: 1.1; 
     max-width: 55%;
     position: relative;
     background: #000;
@@ -54,29 +54,29 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border-right: 1px solid var(--dashboard-glass-border-translucent); /* Divider */
+    border-right: 1px solid var(--dashboard-glass-border-translucent); 
 }
 
 .video-player-container video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Fill container completely to eliminate black bars */
+    object-fit: cover; 
 }
 
-/* Mobile Actions Overlay (Hidden on Desktop) */
+
 .mobile-overlay-actions {
     display: none;
 }
 
-/* ── Right Column: Information Panel ── */
+
 .video-interaction-panel {
     flex: 0.9;
     display: flex;
     flex-direction: column;
-    background: var(--dashboard-glass-bg); /* Extremely readable panel */
+    background: var(--dashboard-glass-bg); 
 }
 
-/* Panel Header */
+
 .interaction-header {
     display: flex;
     justify-content: space-between;
@@ -115,7 +115,7 @@
     color: var(--dashboard-text-main);
 }
 
-/* Panel Body (Scrollable Middle) */
+
 .interaction-body {
     flex: 1;
     overflow-y: auto;
@@ -124,7 +124,7 @@
     flex-direction: column;
     scrollbar-width: thin;
     scrollbar-color: rgba(0,0,0,0.1) transparent;
-    /* Smooth momentum scrolling */
+    
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     scroll-behavior: smooth;
@@ -162,7 +162,7 @@
     margin: 16px 0;
 }
 
-/* Panel Comments Inline */
+
 .panel-comments-list {
     display: flex;
     flex-direction: column;
@@ -196,7 +196,7 @@
     margin-top: 20px;
 }
 
-/* Panel Footer (Fixed Bottom) */
+
 .interaction-footer {
     padding: 16px 20px;
     border-top: 1px solid var(--dashboard-glass-border-translucent);
@@ -252,7 +252,7 @@
     color: var(--dashboard-text-faint);
 }
 
-/* State Handlers */
+
 .reels-loading, .no-reels {
     display: flex;
     flex-direction: column;
@@ -274,7 +274,7 @@
     backdrop-filter: blur(20px);
 }
 
-/* ═══ RESPONSIVE (Fallback to Overlays) ═══ */
+
 @media (max-width: 900px) {
     .video-feed {
         height: calc(100dvh - 70px);
@@ -283,7 +283,7 @@
 
     .video-item-split {
         flex-direction: column;
-        height: calc(100dvh - 70px); /* Fill mobile screen height */
+        height: calc(100dvh - 70px); 
         max-width: 100%;
         border-radius: 0;
         border: none;
@@ -299,10 +299,10 @@
     }
     
     .video-player-container video {
-        object-fit: cover; /* Cover mobile screens entirely */
+        object-fit: cover; 
     }
 
-    /* Restore mobile floating action buttons over video */
+    
     .mobile-overlay-actions {
         display: flex;
         flex-direction: column;
@@ -333,6 +333,6 @@
     }
 
     .video-interaction-panel {
-        display: none; /* Hide desktop panel entirely */
+        display: none; 
     }
 }

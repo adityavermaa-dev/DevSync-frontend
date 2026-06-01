@@ -16,7 +16,7 @@ const Projects = () => {
   const fetchProjects = useCallback(async () => {
     dispatch(setLoadingProjects(true));
     try {
-      // In a real app, we would pass query params to the API
+      
       const data = await projectAPI.getProjects();
       dispatch(setProjects(data));
     } catch (err) {
@@ -55,7 +55,7 @@ const Projects = () => {
     <div className="projects-page">
       <div className="projects-container">
         
-        {/* Header & Controls */}
+        {}
         <div className="projects-header-section">
           <div>
             <h1 className="projects-title">Project Hub</h1>
@@ -91,7 +91,7 @@ const Projects = () => {
           </select>
         </div>
 
-        {/* Project Grid */}
+        {}
         <div className="projects-grid">
           {filteredProjects.length > 0 ? (
             filteredProjects.map((project) => (

@@ -1,4 +1,4 @@
-/* ===== Project Detail Page ===== */
+
 
 .pd-page {
   min-height: calc(100vh - 80px);
@@ -15,7 +15,7 @@
   max-width: 1000px;
 }
 
-/* Header */
+
 .pd-header {
   background: var(--dashboard-glass-bg);
   backdrop-filter: blur(24px);
@@ -108,14 +108,14 @@
   letter-spacing: 0.5px;
 }
 
-/* Grid Layout */
+
 .pd-body-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 24px;
 }
 
-/* Tabs */
+
 .pd-tabs-wrapper {
   display: flex;
   gap: 8px;
@@ -151,7 +151,7 @@
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
-/* Cards shared */
+
 .pd-card {
   background: var(--dashboard-glass-bg);
   backdrop-filter: blur(24px);
@@ -199,7 +199,7 @@
   border-color: var(--dashboard-text-faint);
 }
 
-/* Tech Stack */
+
 .pd-tech-warp {
   display: flex;
   flex-wrap: wrap;
@@ -223,7 +223,7 @@
   font-size: 0.95rem;
 }
 
-/* Sidebar action card */
+
 .pd-action-card {
   text-align: center;
 }
@@ -443,7 +443,7 @@
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
 }
 
-/* Members */
+
 .pd-member-count {
   font-size: 0.9rem;
   color: var(--dashboard-text-faint);
@@ -493,7 +493,7 @@
   text-transform: uppercase;
 }
 
-/* Modal */
+
 .pd-modal-overlay {
   position: fixed;
   inset: 0;

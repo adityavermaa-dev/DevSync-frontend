@@ -10,7 +10,7 @@ const VideoCallModal = ({
     onAccept,
     onDecline,
     onEndCall,
-    callStatus, // 'calling', 'connected', 'ended'
+    callStatus, 
 }) => {
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
@@ -52,7 +52,7 @@ const VideoCallModal = ({
     return (
         <div style={styles.overlay}>
             <div style={styles.modal}>
-                {/* Header / Status */}
+                {}
                 <div style={styles.header}>
                     <h3 style={styles.title}>
                         {isIncoming && callStatus === 'calling' ? `Incoming call from ${callerName}...` : ''}
@@ -61,7 +61,7 @@ const VideoCallModal = ({
                     </h3>
                 </div>
 
-                {/* Video Streams Grid */}
+                {}
                 <div style={styles.videoGrid}>
                     <div style={styles.remoteVideoWrapper}>
                         {remoteStream ? (
@@ -98,7 +98,7 @@ const VideoCallModal = ({
                     </div>
                 </div>
 
-                {/* Controls */}
+                {}
                 <div style={styles.controls}>
                     {callStatus === 'calling' && isIncoming && (
                         <>
@@ -221,7 +221,7 @@ const styles = {
         width: '100%',
         height: '100%',
         objectFit: 'cover',
-        transform: 'scaleX(-1)', // mirror self
+        transform: 'scaleX(-1)', 
     },
     localPlaceholder: {
         position: 'absolute',

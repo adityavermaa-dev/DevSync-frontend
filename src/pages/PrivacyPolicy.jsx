@@ -1,5 +1,5 @@
 import React from 'react';
-import './Policy.css'; // We'll create a shared Policy.css
+import './Policy.css'; 
 
 const PrivacyPolicy = () => {
     return (

@@ -20,7 +20,7 @@ const TaskBoard = ({ projectId, members }) => {
     assignee: ''
   });
 
-  // Form State
+  
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -96,7 +96,7 @@ const TaskBoard = ({ projectId, members }) => {
   };
 
   const handleStatusChange = async (taskId, newStatus) => {
-    // Optimistic update
+    
     const previousTasks = [...tasks];
     setTasks((prev) => prev.map((task) => (task._id === taskId ? { ...task, status: newStatus } : task)));
 
@@ -189,7 +189,7 @@ const TaskBoard = ({ projectId, members }) => {
     }
   };
 
-  // Drag and Drop Logic
+  
   const handleDragStart = (e, task) => {
     setDraggedItem(task);
     e.dataTransfer.effectAllowed = 'move';

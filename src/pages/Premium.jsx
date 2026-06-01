@@ -112,7 +112,7 @@ const Premium = () => {
     return (
         <div className="premium-page">
             <div className="premium-container">
-                {/* Header */}
+                {}
                 <div className="premium-header">
                     <div className="premium-header-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
@@ -130,7 +130,7 @@ const Premium = () => {
                     </p>
                 </div>
 
-                {/* Already Premium Banner */}
+                {}
                 {isUserPremium && (
                     <div className="premium-active-banner">
                         <div className="premium-active-icon">
@@ -145,9 +145,9 @@ const Premium = () => {
                     </div>
                 )}
 
-                {/* Pricing Cards */}
+                {}
                 <div className="premium-card-wrapper">
-                    {/* Verified Badge Card */}
+                    {}
                     <div className="premium-card featured">
                         <div className="premium-card-top">
                             <div className="premium-card-icon badge-icon">
@@ -239,7 +239,7 @@ const Premium = () => {
                         </div>
                     </div>
 
-                    {/* Pro Plan Card */}
+                    {}
                     <div className="premium-card">
                         <div className="premium-card-top">
                             <div className="premium-card-icon pro-icon">
@@ -321,7 +321,7 @@ const Premium = () => {
                     </div>
                 </div>
 
-                {/* Trust Signals */}
+                {}
                 <div className="premium-trust">
                     <div className="trust-item">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">

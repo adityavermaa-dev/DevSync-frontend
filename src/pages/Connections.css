@@ -1,4 +1,4 @@
-/* Premium DevSync Connections CSS - Light Theme */
+
 
 .connections-page {
   padding: 40px 20px 60px;
@@ -52,7 +52,7 @@
   animation: fadeInUp 0.5s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Loading & Empty States */
+
 .connections-loading, .connections-empty {
   display: flex;
   flex-direction: column;

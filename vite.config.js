@@ -3,12 +3,12 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
+
 export default defineConfig({
   server: {
     proxy: {
-      // Keep frontend calls same-origin in dev (prevents CORS issues).
-      // Backend routes are expected to be mounted at `/` (no `/api` prefix).
+      
+      
       '/api': {
         target: 'http://localhost:9999',
         changeOrigin: true,

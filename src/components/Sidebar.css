@@ -1,4 +1,4 @@
-/* Sidebar.css */
+
 .app-sidebar {
     position: fixed;
     inset: 0 auto 0 0;
@@ -408,7 +408,7 @@
     width: 100%;
 }
 
-/* ── Mobile Responsive Override ── */
+
 @media (max-width: 768px) {
     .app-sidebar {
         inset: auto 0 0 0;

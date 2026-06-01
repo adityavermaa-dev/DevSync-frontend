@@ -1,4 +1,4 @@
-/* ===== User Profile Page – Deep Space ===== */
+
 
 @keyframes userprofile-fade-in {
   from { opacity: 0; transform: translateY(16px); }
@@ -120,7 +120,7 @@
   .userprofile-page { padding: 20px 12px 60px; }
 }
 
-/* User Profile Github Integration */
+
 
 .userprofile-content {
   display: grid;

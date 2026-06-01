@@ -23,13 +23,13 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
     
-    // Auth Modal visibility
+    
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const mobileMenuRef = useRef(null);
     const hamburgerBtnRef = useRef(null);
 
-    // Emoji Happiness Hover state
+    
     const [isHoveringCTA, setIsHoveringCTA] = useState(false);
 
     const dispatch = useDispatch();
@@ -59,10 +59,10 @@ const Login = () => {
             return navigate("/");
         }
         
-        // Check for modal state passed via routing
+        
         if (location.state?.openModal && !showAuthModal) {
             setShowAuthModal(true);
-            // clear the state from history so it doesn't accidentally reopen on page refresh
+            
             window.history.replaceState({}, document.title);
         }
 
@@ -231,7 +231,7 @@ const Login = () => {
                 signupRes?.data?.emailSent === true ||
                 signupMsg.includes('verification email sent');
 
-            // Fallback: trigger resend endpoint if signup response does not confirm an email send.
+            
             if (!backendConfirmedVerificationEmail) {
                 try {
                     await axios.post(
@@ -291,10 +291,10 @@ const Login = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isMobileMenuOpen]);
 
-    // Mouse parallax effect
+    
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const handleMouseMove = useCallback((e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 40; // -20 to +20 range
+        const x = (e.clientX / window.innerWidth - 0.5) * 40; 
         const y = (e.clientY / window.innerHeight - 0.5) * 40;
         setMousePos({ x, y });
     }, []);
@@ -305,7 +305,7 @@ const Login = () => {
             onMouseMove={handleMouseMove}
             style={{ '--mx': `${mousePos.x}px`, '--my': `${mousePos.y}px` }}
         >
-            {/* Soft ambient background circles */}
+            {}
             <div className="landing-bg-circle circle-blue" />
             <div className="landing-bg-circle circle-pink" />
             <div className="landing-bg-circle circle-yellow" />
@@ -353,7 +353,7 @@ const Login = () => {
                     </div>
                 )}
 
-                {/* Empty div for flex spacing alignment */}
+                {}
                 <div className="landing-nav-spacer"></div>
             </nav>
 
@@ -382,7 +382,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                {/* Floating 3D Elements */}
+                {}
                 <div className="floating-item float-1 code-block block-green">
                     <span>{`</>`}</span>
                 </div>
@@ -393,10 +393,10 @@ const Login = () => {
                     <span>{`{}`}</span>
                 </div>
                 <div className="floating-item float-4 code-block block-green-light">
-                    <span>{`//`}</span>
+                    <span>{`
                 </div>
                 <div className="floating-item float-5 code-block block-yellow-bottom">
-                    <span>{`//`}</span>
+                    <span>{`
                 </div>
                 <div className="floating-item float-6 code-block block-purple-bottom">
                     <span>{`;`}</span>
@@ -405,13 +405,13 @@ const Login = () => {
                     <span>{`{}`}</span>
                 </div>
                 
-                {/* 3D Emoji Avatar */}
+                {}
                 <div className="floating-item emoji-avatar float-slow">
                     <AnimatedEmoji mousePos={mousePos} isHappy={isHoveringCTA} />
                 </div>
             </main>
 
-            {/* Authentication Modal */}
+            {}
             {showAuthModal && (
                 <div className="auth-modal-overlay" onClick={closeModal}>
                     <div className="auth-modal" onClick={(e) => e.stopPropagation()}>

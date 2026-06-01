@@ -1,4 +1,4 @@
-/* ===== Tinder-Style User Card ===== */
+
 .user-card {
   width: 100%;
   max-width: 400px;
@@ -176,7 +176,7 @@
   background: color-mix(in srgb, var(--dashboard-surface) 96%, #fff 4%);
 }
 
-/* Profile page variant: cleaner, less swipe-card aesthetic */
+
 .user-card--profile {
   max-width: 100%;
   max-height: none;

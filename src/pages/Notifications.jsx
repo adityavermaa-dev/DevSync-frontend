@@ -13,7 +13,7 @@ import {
 } from "../redux/notificationSlice";
 import "./Notifications.css";
 
-/* ── Icon map for notification types ── */
+
 const TYPE_CONFIG = {
   project: { emoji: "🚀", label: "Project", cssClass: "project" },
   project_application: { emoji: "📋", label: "Project", cssClass: "project" },
@@ -29,7 +29,7 @@ const TYPE_CONFIG = {
 
 const getTypeConfig = (type) => TYPE_CONFIG[type] || TYPE_CONFIG.default;
 
-/* ── Time formatting ── */
+
 const timeAgo = (dateStr) => {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -50,7 +50,7 @@ const isYesterday = (dateStr) => {
   return new Date(dateStr).toDateString() === d.toDateString();
 };
 
-/* ── Tabs ── */
+
 const TABS = [
   { key: "all", label: "All" },
   { key: "unread", label: "Unread" },
@@ -65,7 +65,7 @@ const Notifications = () => {
   const { list, loading, unreadCount } = useSelector((s) => s.notifications);
   const [activeTab, setActiveTab] = useState("all");
 
-  /* ── Fetch on mount ── */
+  
   const fetchNotifications = useCallback(async () => {
     dispatch(setLoadingNotifications(true));
     try {
@@ -82,7 +82,7 @@ const Notifications = () => {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  /* ── Actions ── */
+  
   const handleMarkAllRead = async () => {
     try {
       await notificationAPI.markAllAsRead();
@@ -114,15 +114,15 @@ const Notifications = () => {
   };
 
   const handleClick = async (notif) => {
-    // Mark as read
+    
     if (!notif.read) {
       try {
         await notificationAPI.markAsRead(notif._id);
         dispatch(markNotificationRead(notif._id));
-      } catch { /* silent */ }
+      } catch {  }
     }
 
-    // Navigate based on type
+    
     const type = notif.type || "";
     if (type.startsWith("project") && notif.projectId) {
       navigate(`/projects/${notif.projectId}`);
@@ -133,14 +133,14 @@ const Notifications = () => {
     }
   };
 
-  /* ── Filter logic ── */
+  
   const filtered = useMemo(() => {
     if (activeTab === "all") return list;
     if (activeTab === "unread") return list.filter((n) => !n.read);
     return list.filter((n) => (n.type || "").startsWith(activeTab));
   }, [list, activeTab]);
 
-  /* ── Group by day ── */
+  
   const grouped = useMemo(() => {
     const groups = [];
     let currentLabel = "";
@@ -161,7 +161,7 @@ const Notifications = () => {
     return groups;
   }, [filtered]);
 
-  /* ── Tab counts ── */
+  
   const tabCounts = useMemo(() => ({
     all: list.length,
     unread: unreadCount,
@@ -172,7 +172,7 @@ const Notifications = () => {
 
   return (
     <div className="notifications-page">
-      {/* ── Header ── */}
+      {}
       <div className="notif-header">
         <div className="notif-header-left">
           <div className="notif-header-icon">
@@ -208,7 +208,7 @@ const Notifications = () => {
         </div>
       </div>
 
-      {/* ── Filter tabs ── */}
+      {}
       <div className="notif-filter-tabs">
         {TABS.map((tab) => (
           <button
@@ -224,7 +224,7 @@ const Notifications = () => {
         ))}
       </div>
 
-      {/* ── List ── */}
+      {}
       <div className="notif-list">
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (

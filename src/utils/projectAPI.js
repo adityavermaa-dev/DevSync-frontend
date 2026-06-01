@@ -15,7 +15,7 @@ const normalizeObjectResponse = (res, key) => {
 };
 
 export const projectAPI = {
-  // Get all projects (public feed)
+  
   async getProjects(params = {}) {
     const res = await axios.get(`${BASE_URL}/projects`, {
       params,
@@ -24,7 +24,7 @@ export const projectAPI = {
     return normalizeArrayResponse(res, "projects");
   },
 
-  // Get single project
+  
   async getProject(projectId) {
     const res = await axios.get(`${BASE_URL}/projects/${projectId}`, {
       withCredentials: true,
@@ -32,7 +32,7 @@ export const projectAPI = {
     return normalizeObjectResponse(res, "project");
   },
 
-  // Create new project
+  
   async createProject(projectData) {
     const res = await axios.post(`${BASE_URL}/project`, projectData, {
       withCredentials: true,
@@ -40,7 +40,7 @@ export const projectAPI = {
     return res.data;
   },
 
-  // Update project
+  
   async updateProject(projectId, updateData) {
     const res = await axios.patch(`${BASE_URL}/projects/${projectId}`, updateData, {
       withCredentials: true,
@@ -48,7 +48,7 @@ export const projectAPI = {
     return res.data;
   },
 
-  // Delete project
+  
   async deleteProject(projectId) {
     const res = await axios.delete(`${BASE_URL}/projects/${projectId}`, {
       withCredentials: true,
@@ -56,7 +56,7 @@ export const projectAPI = {
     return normalizeObjectResponse(res, "project");
   },
 
-  // Apply to join a project
+  
   async applyToProject(projectId, role, message) {
     const res = await axios.post(
       `${BASE_URL}/projects/${projectId}/join`,
@@ -66,9 +66,9 @@ export const projectAPI = {
     return res.data;
   },
 
-  // Project admin: accept/reject application
+  
   async handleApplication(projectId, applicationId, status) {
-    // status should be 'accept' or 'reject'
+    
     const res = await axios.post(
       `${BASE_URL}/projects/${projectId}/request/${applicationId}/respond`,
       { action: status },

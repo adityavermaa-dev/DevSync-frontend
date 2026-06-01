@@ -124,8 +124,8 @@ const Profile = () => {
     const [coverPhotoFile, setCoverPhotoFile] = useState(null);
     const [coverPhotoPreview, setCoverPhotoPreview] = useState('');
 
-    // Tabs Data
-    const [activeTab, setActiveTab] = useState('my_videos'); // 'my_videos' | 'liked_videos' | 'projects' | 'github' | 'activity'
+    
+    const [activeTab, setActiveTab] = useState('my_videos'); 
     const [myVideos, setMyVideos] = useState([]);
     const [likedVideos, setLikedVideos] = useState([]);
     const [myProjects, setMyProjects] = useState([]);
@@ -134,7 +134,7 @@ const Profile = () => {
     const [githubStats, setGithubStats] = useState(null);
     const [loadingData, setLoadingData] = useState(false);
 
-    // Modal
+    
     const [videoToDelete, setVideoToDelete] = useState(null);
     const [deletingVideo, setDeletingVideo] = useState(false);
 
@@ -389,12 +389,12 @@ const Profile = () => {
     const userPhotoUrl = getUserPhotoUrl(user);
     const userCoverPhotoUrl = getUserCoverPhotoUrl(user);
 
-    /* ── View Mode ── */
+    
     if (!isEditing) {
         return (
             <div className="profile-page">
                 <div className="profile-card-view">
-                    {/* Hero Cover */}
+                    {}
                     <div
                         className="profile-hero"
                         style={(userCoverPhotoUrl || coverPhotoPreview)
@@ -414,7 +414,7 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/* Avatar & Info */}
+                    {}
                     <div className="profile-info-section">
                         <div className="profile-avatar-wrap">
                             <img
@@ -464,7 +464,7 @@ const Profile = () => {
                         )}
                     </div>
 
-                    {/* Tabs */}
+                    {}
                     <div className="profile-tabs">
                         <button 
                             className={`profile-tab ${activeTab === 'projects' ? 'active' : ''}`}
@@ -511,7 +511,7 @@ const Profile = () => {
                         )}
                     </div>
 
-                    {/* Content Grid */}
+                    {}
                     <div className="profile-content-wrap">
                         {loadingData ? (
                             <div className="profile-loading"><span className="profile-spinner" style={{borderColor: 'rgba(0,0,0,0.1)', borderTopColor: '#8b5cf6'}} /></div>
@@ -674,7 +674,7 @@ const Profile = () => {
 
                 </div>
 
-                {/* Delete Video Modal */}
+                {}
                 {videoToDelete && (
                     <div className="profile-modal-overlay">
                         <div className="profile-modal">
@@ -695,11 +695,11 @@ const Profile = () => {
         );
     }
 
-    /* ── Edit Mode ── */
+    
     return (
         <div className="profile-page">
             <div className="profile-edit-layout">
-                {/* Edit Form */}
+                {}
                 <div className="profile-edit-header">
                     <h2 className="profile-edit-title">Edit Profile</h2>
                     <button className="profile-edit-close" onClick={handleCancel}>
@@ -711,105 +711,7 @@ const Profile = () => {
                     <div className="profile-field">
                         <label className="profile-field-label">Profile Photo</label>
                         <label className="profile-photo-upload">
-                            <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
-                            <div className="profile-photo-dropzone">
-                                {photoPreview ? (
-                                    <img src={photoPreview} alt="" className="profile-photo-thumb" />
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg>
-                                )}
-                                <span>Click to change photo</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div className="profile-field">
-                        <label className="profile-field-label">Cover Photo</label>
-                        <label className="profile-photo-upload">
-                            <input type="file" accept="image/*" onChange={handleCoverPhotoChange} style={{ display: 'none' }} />
-                            <div className="profile-photo-dropzone" style={{ minHeight: '180px', borderRadius: '14px' }}>
-                                {coverPhotoPreview ? (
-                                    <img
-                                        src={coverPhotoPreview}
-                                        alt=""
-                                        className="profile-photo-thumb"
-                                        style={{ width: '100%', height: '160px', borderRadius: '12px', objectFit: 'cover' }}
-                                    />
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" /></svg>
-                                )}
-                                <span>Click to change cover photo</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div className="profile-field-row">
-                        <div className="profile-field">
-                            <label className="profile-field-label">First Name</label>
-                            <input className="profile-input" name="firstName" value={form.firstName} onChange={handleChange} placeholder="John" />
-                        </div>
-                        <div className="profile-field">
-                            <label className="profile-field-label">Last Name</label>
-                            <input className="profile-input" name="lastName" value={form.lastName} onChange={handleChange} placeholder="Doe" />
-                        </div>
-                    </div>
-
-                    <div className="profile-field-row">
-                        <div className="profile-field">
-                            <label className="profile-field-label">Age</label>
-                            <input className="profile-input" name="age" type="number" min="13" max="120" value={form.age} onChange={handleChange} placeholder="25" />
-                        </div>
-                        <div className="profile-field">
-                            <label className="profile-field-label">Gender</label>
-                            <select className="profile-input profile-select" name="gender" value={form.gender} onChange={handleChange}>
-                                <option value="">Select</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="profile-field">
-                        <label className="profile-field-label">About</label>
-                        <textarea className="profile-input profile-textarea" name="about" value={form.about} onChange={handleChange} placeholder="Tell the world about yourself..." rows={3} />
-                    </div>
-
-                    <div className="profile-field">
-                        <label className="profile-field-label">Skills</label>
-                        <div className="profile-skills-edit-wrap">
-                            {form.skills.map((skill, idx) => (
-                                <span key={idx} className="profile-skill-chip editable" onClick={() => handleRemoveSkill(skill)} title="Click to remove">
-                                    {skill}
-                                    <span className="profile-skill-remove">×</span>
-                                </span>
-                            ))}
-                        </div>
-                        <div className="profile-skill-add-row">
-                            <input className="profile-input" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={handleSkillKeyDown} placeholder="React, Python..." style={{ flex: 1 }} />
-                            <button type="button" className="profile-skill-add-btn" onClick={handleAddSkill}>+ Add</button>
-                        </div>
-                    </div>
-
-                    <div className="profile-field">
-                        <label className="profile-field-label">GitHub Username or URL (Optional)</label>
-                        <input className="profile-input" type="text" name="githubUrl" value={form.githubUrl} onChange={handleChange} placeholder="username or https://github.com/username" />
-                    </div>
-                </div>
-
-                <div className="profile-edit-actions">
-                    <button className="profile-btn profile-btn-cancel" onClick={handleCancel} disabled={saving}>Cancel</button>
-                    <button className="profile-btn profile-btn-save" onClick={handleSave} disabled={saving}>
-                        {saving && <span className="profile-spinner" />}
-                        {saving ? 'Saving...' : 'Save Changes'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-/* ── Icons ── */
+                            <input type="file" accept="image
 const editIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />

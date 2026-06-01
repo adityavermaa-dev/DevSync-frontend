@@ -34,14 +34,14 @@ const Requests = () => {
     }, [fetchRequests]);
 
     const handleReview = async (status, requestId, e) => {
-        e.stopPropagation(); // don't trigger row click
+        e.stopPropagation(); 
         try {
             await axios.post(
                 `${BASE_URL}/request/review/${status}/${requestId}`,
                 {},
                 { withCredentials: true }
             );
-            // Animate out then remove
+            
             toast.success(status === 'accepted' ? 'Request accepted! 🎉' : 'Request rejected');
             setRemovingId(requestId);
             setTimeout(() => {
@@ -58,7 +58,7 @@ const Requests = () => {
         navigate(`/user/${user._id}`, { state: { user } });
     };
 
-    /* ── Loading ── */
+    
     if (loading) {
         return (
             <div className="requests-page">
@@ -69,7 +69,7 @@ const Requests = () => {
         );
     }
 
-    /* ── Empty ── */
+    
     if (!requests || requests.length === 0) {
         return (
             <div className="requests-page">

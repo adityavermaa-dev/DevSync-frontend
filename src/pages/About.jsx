@@ -109,12 +109,12 @@ const About = () => {
                     </p>
                 </div>
                 
-                {/* Float elements just for aesthetic */}
+                {}
                 <div className="floating-item float-2 code-block block-blue">
                     <span>{`{}`}</span>
                 </div>
                 <div className="floating-item float-4 code-block block-green-light">
-                    <span>{`//`}</span>
+                    <span>{`
                 </div>
             </main>
         </div>

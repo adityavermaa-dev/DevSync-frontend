@@ -33,7 +33,7 @@ const Feed = () => {
     const [removingReqId, setRemovingReqId] = useState(null);
     const [recommendations, setRecommendations] = useState({ matchedDevelopers: [], matchedProjects: [] });
 
-    // Refs for smooth DOM manipulation
+    
     const cardRef = useRef(null);
     const likeStampRef = useRef(null);
     const nopeStampRef = useRef(null);
@@ -53,7 +53,7 @@ const Feed = () => {
             dispatch(addFeed(res.data?.feed || res.data?.data || []));
         } catch (error) {
             console.error('Feed fetch error:', error);
-            // toast.error('Failed to load feed');
+            
         } finally {
             setLoading(false);
         }
@@ -111,7 +111,7 @@ const Feed = () => {
                 {},
                 { withCredentials: true }
             );
-            // Optionally refetch connections/requests in background if mutual match happens
+            
             if (status === 'interested') {
                 axios.get(BASE_URL + '/user/connections', { withCredentials: true })
                      .then(res => dispatch(addConnections(res.data?.data || [])));
@@ -132,7 +132,7 @@ const Feed = () => {
             );
             toast.success(status === 'accepted' ? 'Request accepted! 🎉' : 'Request rejected');
             
-            // Refetch connections globally so the new connection immediately jumps into the left sidebar!
+            
             if (status === 'accepted') {
                 axios.get(BASE_URL + '/user/connections', { withCredentials: true })
                      .then(res => dispatch(addConnections(res.data?.data || [])));
@@ -149,7 +149,7 @@ const Feed = () => {
         }
     };
 
-    // ── Apply transform directly to DOM (60fps) ──
+    
     const applyTransform = useCallback((x, y) => {
         if (!cardRef.current) return;
         const rotation = x * 0.05;
@@ -290,7 +290,7 @@ const Feed = () => {
         };
     }, []);
 
-    /* ── Render Main Feed Content ── */
+    
     const renderFeedState = () => {
         if (loading) {
             return (
@@ -503,7 +503,7 @@ const Feed = () => {
     );
 }
 
-/* ── Icons for Main Deck ── */
+
 const passIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />

@@ -48,22 +48,22 @@ const Chat = () => {
   const [isPeerTyping, setIsPeerTyping] = useState(false);
   const [lastSeenMessageId, setLastSeenMessageId] = useState(null);
   const [showMembersPanel, setShowMembersPanel] = useState(false);
-  const [sidebarTab, setSidebarTab] = useState("direct"); // "direct" or "projects"
+  const [sidebarTab, setSidebarTab] = useState("direct"); 
 
-  // GitHub (for direct chats)
+  
   const [githubEvents, setGithubEvents] = useState([]);
   const [githubRepos, setGithubRepos] = useState([]);
   const [githubLoading, setGithubLoading] = useState(false);
   const [githubError, setGithubError] = useState(null);
 
-  // Video Call State
+  
   const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
   const [isIncoming, setIsIncoming] = useState(false);
   const [isOutgoing, setIsOutgoing] = useState(false);
   const [callerName, setCallerName] = useState("");
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
-  const [callStatus, setCallStatus] = useState(null); // 'calling', 'connected'
+  const [callStatus, setCallStatus] = useState(null); 
 
   const peerRef = useRef(null);
   const currentCallRef = useRef(null);
@@ -87,7 +87,7 @@ const Chat = () => {
 
   useEffect(() => { activeChatIdRef.current = activeChatId; }, [activeChatId]);
 
-  // Auto-scroll to bottom
+  
   const scrollToBottom = useCallback(() => {
     const el = messagesContainerRef.current;
     if (!el) return;
@@ -96,7 +96,7 @@ const Chat = () => {
 
   useEffect(() => { scrollToBottom(); }, [messages, scrollToBottom]);
 
-  // Auto-resize composer textarea
+  
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
@@ -121,7 +121,7 @@ const Chat = () => {
     currentCallRef.current = null;
   }, []);
 
-  // Socket connection
+  
   useEffect(() => {
     if (!currentUserId) return;
     const socket = createSocketConnection();
@@ -156,7 +156,7 @@ const Chat = () => {
       setMessages((prev) => prev.filter((m) => m._id !== messageId));
     });
 
-    // Typing indicators (event names may need to match backend)
+    
     socket.on("typing", ({ chatId, userId } = {}) => {
       if (chatId !== activeChatIdRef.current) return;
       if (userId && userId === currentUserId) return;
@@ -175,12 +175,12 @@ const Chat = () => {
       }
     });
 
-    // Initialize PeerJS for Video Calling
+    
     const peer = new Peer(currentUserId);
     peerRef.current = peer;
 
     peer.on('call', (call) => {
-      // Handle incoming call
+      
       setIsVideoCallOpen(true);
       setIsIncoming(true);
       setCallStatus('calling');
@@ -213,7 +213,7 @@ const Chat = () => {
     };
   }, [activeChatId]);
 
-  // Load chats
+  
   const loadChats = useCallback(async () => {
     try {
       const data = await chatAPI.getChats();
@@ -242,7 +242,7 @@ const Chat = () => {
 
   useEffect(() => { if (currentUserId) loadChats(); }, [currentUserId, loadChats]);
 
-  // On refresh/first load, keep the conversation list pinned to top
+  
   useEffect(() => {
     if (didResetSidebarScrollRef.current) return;
     if (!conversationsRef.current) return;
@@ -251,7 +251,7 @@ const Chat = () => {
     didResetSidebarScrollRef.current = true;
   }, [chats?.length]);
 
-  // Load messages
+  
   const loadMessages = useCallback(async (chatId) => {
     try {
       const data = await chatAPI.getMessages(chatId);
@@ -280,7 +280,7 @@ const Chat = () => {
     });
   };
 
-  // Active chat + peer derived state
+  
   const activeChat = useMemo(() => chats.find((c) => c._id === activeChatId), [activeChatId, chats]);
   const isGroupChat = useMemo(
     () => activeChat?.isGroup || (activeChat?.participants?.length > 2),
@@ -298,7 +298,7 @@ const Chat = () => {
   );
   const groupName = activeChat?.name || activeChat?.projectName || 'Group Chat';
 
-  // Fetch GitHub activity for the peer (direct messages only)
+  
   useEffect(() => {
     if (!peerGithubUsername || isGroupChat) {
       setGithubEvents([]);
@@ -321,7 +321,7 @@ const Chat = () => {
         setGithubRepos(Array.isArray(repos) ? repos : []);
       })
       .catch((err) => {
-        // Ignore cancellation
+        
         if (controller.signal.aborted) return;
         console.error("Failed to load GitHub data", err);
         setGithubError("GitHub activity unavailable");
@@ -359,7 +359,7 @@ const Chat = () => {
     socketRef.current?.emit("markSeen", { chatId, messageId });
   }, []);
 
-  // Mark latest incoming message as seen when viewing the thread
+  
   useEffect(() => {
     if (!activeChatId || !peer?._id) return;
     const latestIncoming = [...messages]
@@ -374,7 +374,7 @@ const Chat = () => {
     }
   }, [activeChatId, markSeen, messages, peer?._id]);
 
-  // Send
+  
   const sendMessage = async () => {
     const trimmed = text.trim();
     if (!trimmed || !activeChatId) return;
@@ -439,7 +439,7 @@ const Chat = () => {
     }
   };
 
-  // Edit
+  
   const startEdit = (msg) => {
     setEditingId(msg._id);
     setEditText(msg.text);
@@ -463,7 +463,7 @@ const Chat = () => {
     } catch { toast.error("Failed to edit message"); }
   };
 
-  // Delete
+  
   const confirmDelete = (msgId) => { setDeleteConfirmId(msgId); setEditingId(null); };
 
   const executeDelete = async (msgId) => {
@@ -476,7 +476,7 @@ const Chat = () => {
     } catch { toast.error("Failed to delete message"); }
   };
 
-  // Video Call Actions
+  
   const openMediaStream = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -541,15 +541,15 @@ const Chat = () => {
     emitTyping();
   };
 
-  // Filter chats
+  
   const filteredChats = chats.filter((chat) => {
     const isGroup = chat.isGroup || chat.participants?.length > 2;
     
-    // Tab filter
+    
     if (sidebarTab === "direct" && isGroup) return false;
     if (sidebarTab === "projects" && !isGroup) return false;
 
-    // Search filter
+    
     if (isGroup) {
       const name = (chat.name || chat.projectName || "").toLowerCase();
       return name.includes(searchQuery.toLowerCase());
@@ -560,7 +560,7 @@ const Chat = () => {
     }
   });
 
-  // Group messages by day
+  
   const groupedMessages = [];
   let lastDay = "";
   messages.forEach((m) => {
@@ -579,7 +579,7 @@ const Chat = () => {
     <div className="chat-page">
       <div className={`chat-shell ${!activeChatId ? 'no-active' : ''}`}>
 
-        {/* ── SIDEBAR ── */}
+        {}
         <aside className="chat-sidebar">
           <div className="chat-sidebar-header">
             <h2 className="chat-sidebar-title">Messages</h2>
@@ -642,11 +642,11 @@ const Chat = () => {
           </div>
         </aside>
 
-        {/* ── THREAD ── */}
+        {}
         <section className="chat-thread">
           {activeChatId && (peer || isGroupChat) ? (
             <>
-              {/* Header */}
+              {}
               <div className="chat-thread-header">
                 {isGroupChat ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
@@ -745,10 +745,10 @@ const Chat = () => {
                 )}
               </div>
 
-              {/* Thread body + optional members panel */}
+              {}
               <div className={isGroupChat ? 'chat-thread-with-panel' : ''} style={isGroupChat ? { display: 'flex', flex: 1, minHeight: 0 } : { display: 'contents' }}>
                 <div className={isGroupChat ? 'chat-thread-main' : ''} style={isGroupChat ? {} : { display: 'contents' }}>
-                  {/* Messages */}
+                  {}
                   <div className="chat-messages" ref={messagesContainerRef}>
                     {groupedMessages.map((item) => {
                       if (item.type === "divider") {
@@ -758,7 +758,7 @@ const Chat = () => {
                       const m = item.message;
                       const isMine = m.senderId === currentUserId || m.senderId?._id === currentUserId;
 
-                      // For group chats, resolve sender info
+                      
                       let senderAvatar, senderName;
                       if (isGroupChat) {
                         const senderId = typeof m.senderId === 'object' ? m.senderId?._id : m.senderId;
@@ -779,7 +779,7 @@ const Chat = () => {
                           )}
 
                           <div className="chat-msg-content">
-                            {/* Sender name label for group chats */}
+                            {}
                             {isGroupChat && senderName && (
                               <span className="chat-msg-sender-name">{senderName}</span>
                             )}
@@ -855,7 +855,7 @@ const Chat = () => {
                               </>
                             )}
 
-                            {/* Hover actions for own messages */}
+                            {}
                             {isMine && !editingId && !deleteConfirmId && !m._optimisticPending && !m._optimisticFailed && (
                               <div className="chat-msg-hover-actions">
                                 <button className="chat-hover-btn" onClick={() => startEdit(m)} title="Edit">
@@ -872,7 +872,7 @@ const Chat = () => {
                     })}
                   </div>
 
-                  {/* Composer */}
+                  {}
                   <div className="chat-composer">
                     <div className="chat-input-wrap">
                       <textarea ref={inputRef} className="chat-input" value={text} onChange={handleComposerChange} onKeyDown={handleKeyDown} placeholder={isGroupChat ? `Message ${groupName}...` : "Type a message..."} rows={1} />
@@ -883,7 +883,7 @@ const Chat = () => {
                   </div>
                 </div>
 
-                {/* Members Panel (Group only) */}
+                {}
                 {isGroupChat && showMembersPanel && (
                   <div className="chat-members-panel">
                     <div className="chat-members-panel-header">

@@ -1,4 +1,4 @@
-/* ===== Create Project Page ===== */
+
 
 .create-project-page {
   min-height: calc(100vh - 80px);
@@ -146,7 +146,7 @@
   cursor: pointer;
 }
 
-/* Tags / Arrays */
+
 .cp-tags-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -212,7 +212,7 @@
   color: #a78bfa;
 }
 
-/* Footer Actions */
+
 .cp-actions {
   display: flex;
   gap: 16px;
@@ -267,7 +267,7 @@
   color: var(--dashboard-text-main);
 }
 
-/* Responsive */
+
 @media (max-width: 640px) {
   .create-project-page { padding: 20px 12px 80px; }
   .create-project-layout { border-radius: 24px; }

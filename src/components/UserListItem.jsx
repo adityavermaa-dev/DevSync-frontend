@@ -7,7 +7,7 @@ const UserListItem = ({ user, actions, onClick }) => {
 
     const { firstName, lastName, photoUrl, about, skills } = user;
 
-    // Construct a brief bio from about or skills
+    
     let bioText = about;
     if (!bioText && skills && skills.length > 0) {
         bioText = skills.join(' • ');

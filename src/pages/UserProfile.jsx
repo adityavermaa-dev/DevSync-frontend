@@ -182,7 +182,7 @@ const UserProfile = () => {
                     resolvedUser = mergeUserData(resolvedUser, candidateUser);
                 }
             } catch {
-                // Keep route-state fallback when direct user lookup is unavailable.
+                
             }
 
             if (!cancelled) {

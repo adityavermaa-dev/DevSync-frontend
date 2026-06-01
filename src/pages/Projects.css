@@ -1,7 +1,7 @@
-/* ===== Projects Hub ===== */
+
 
 .projects-page {
-  min-height: calc(100dvh - 80px); /* Account for mobile nav */
+  min-height: calc(100dvh - 80px); 
   padding: 40px 20px 80px;
   display: flex;
   justify-content: center;
@@ -19,7 +19,7 @@
   max-width: 1200px;
 }
 
-/* Header */
+
 .projects-header-section {
   display: flex;
   justify-content: space-between;
@@ -69,7 +69,7 @@
   background: var(--auth-btn-hover);
 }
 
-/* Controls */
+
 .projects-controls {
   display: flex;
   gap: 16px;
@@ -141,7 +141,7 @@
   border-color: #8b5cf6;
 }
 
-/* Grid */
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -294,7 +294,7 @@
   font-size: 0.9rem;
 }
 
-/* Empty State */
+
 .projects-empty {
   grid-column: 1 / -1;
   display: flex;
@@ -346,7 +346,7 @@
   transform: translateY(-2px);
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .projects-page { padding: 20px 16px 80px; }
   .projects-header-section { margin-bottom: 24px; }

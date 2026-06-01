@@ -6,7 +6,7 @@ const ContactUs = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // In a real app, you would handle the form submission here (e.g., API call)
+        
         setStatus('Thank you for contacting us! We will get back to you shortly.');
         e.target.reset();
 
@@ -22,7 +22,7 @@ const ContactUs = () => {
                 <p className="policy-date">Last updated: {new Date().toLocaleDateString()}</p>
 
                 <div className="contact-grid mt-8">
-                    {/* Contact Information */}
+                    {}
                     <div>
                         <h2 className="text-2xl font-semibold mb-4 text-[var(--text-primary)]">Get in Touch</h2>
                         <p className="mb-6 text-[var(--text-secondary)]">Have questions about DevSync? We are here to help. Reach out to us through any of the following channels or use the contact form.</p>
@@ -53,7 +53,7 @@ const ContactUs = () => {
                         </div>
                     </div>
 
-                    {/* Contact Form */}
+                    {}
                     <div className="contact-form-card">
                         <h2 className="text-2xl font-semibold mb-6 text-[var(--text-primary)]">Send us a Message</h2>
                         <form onSubmit={handleSubmit} className="contact-form">

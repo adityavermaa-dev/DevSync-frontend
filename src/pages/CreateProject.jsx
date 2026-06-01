@@ -29,7 +29,7 @@ const CreateProject = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // Tech Stack Methods
+  
   const handleAddTech = () => {
     const tech = newTech.trim();
     if (tech && !form.techStack.includes(tech)) {
@@ -46,7 +46,7 @@ const CreateProject = () => {
     setForm(prev => ({ ...prev, techStack: prev.techStack.filter(t => t !== techToRemove) }));
   };
 
-  // Roles Needed Methods
+  
   const handleAddRole = () => {
     const role = newRole.trim();
     if (role && !form.rolesNeeded.includes(role)) {
@@ -71,7 +71,7 @@ const CreateProject = () => {
 
     setSaving(true);
     try {
-      // Clean up empty maxMembers before sending
+      
       const payload = { ...form };
       if (payload.maxMembers) payload.maxMembers = parseInt(payload.maxMembers, 10);
       else delete payload.maxMembers;
@@ -82,7 +82,7 @@ const CreateProject = () => {
         toast.success('Project created successfully!');
         navigate(`/projects/${newProj._id}`);
       } else {
-         // Fallback if backend doesn't return full object
+         
          toast.success('Project created!');
          navigate('/projects');
       }

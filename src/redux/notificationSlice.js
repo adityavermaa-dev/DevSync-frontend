@@ -16,7 +16,7 @@ const notificationSlice = createSlice({
       state.loading = action.payload;
     },
     addNotification(state, action) {
-      // Prepend (newest first)
+      
       state.list.unshift(action.payload);
       if (!action.payload.read) state.unreadCount += 1;
     },
