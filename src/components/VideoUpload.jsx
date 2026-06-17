@@ -27,7 +27,7 @@ const VideoUpload = () => {
         }
     }, [user]);
 
-    const fileSize = useMemo(() => {
+    const _fileSize = useMemo(() => {
         if (!videoFile) return '';
         const mb = (videoFile.size / (1024 * 1024)).toFixed(1);
         return `${mb} MB`;
@@ -135,7 +135,19 @@ const VideoUpload = () => {
                     >
                         <input
                             type="file"
-                            accept="video}
+                            accept="video/*"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
+                        <div className="upload-placeholder">
+                            {videoFile ? (
+                                <span className="video-file-name">🎬 {videoFile.name}</span>
+                            ) : (
+                                <span>Click or drag a video here (Max 50MB)</span>
+                            )}
+                        </div>
+                    </div>
                     <div className="video-caption-group">
                         <label className="video-caption-label">Caption</label>
                         <textarea

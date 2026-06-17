@@ -17,8 +17,8 @@ const savedTheme = safeStorageGet('devSync-theme');
 if (savedTheme === 'light') {
   try {
     document.documentElement.setAttribute('data-theme', 'light');
-  } catch {
-    
+  } catch (error) {
+    console.error("Failed to set theme:", error);
   }
 }
 

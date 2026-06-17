@@ -393,10 +393,10 @@ const Login = () => {
                     <span>{`{}`}</span>
                 </div>
                 <div className="floating-item float-4 code-block block-green-light">
-                    <span>{`
+                    <span>{`</>`}</span>
                 </div>
                 <div className="floating-item float-5 code-block block-yellow-bottom">
-                    <span>{`
+                    <span>{`()`}</span>
                 </div>
                 <div className="floating-item float-6 code-block block-purple-bottom">
                     <span>{`;`}</span>

@@ -100,4 +100,4 @@ const UserCard = ({ user, actions, showEmail = false, variant = 'default' }) => 
     );
 };
 
-export default UserCard;
+export default React.memo(UserCard);

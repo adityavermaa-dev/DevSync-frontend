@@ -24,8 +24,8 @@ const setStorageValue = (key, value) => {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(key, value);
-  } catch {
-    
+  } catch (error) {
+    console.error("Failed to set localStorage", error);
   }
 };
 

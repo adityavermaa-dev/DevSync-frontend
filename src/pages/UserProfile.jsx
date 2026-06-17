@@ -90,34 +90,7 @@ const mergeUserData = (baseUser, incomingUser) => {
     return merged;
 };
 
-const findMatchingUserInList = (list, targetUserId) => {
-    for (const item of list) {
-        const candidates = [
-            item,
-            item?.user,
-            item?.userId,
-            item?.member,
-            item?.memberId,
-            item?.fromUserId,
-            item?.toUserId,
-            item?.owner,
-        ];
 
-        if (Array.isArray(item?.members)) {
-            item.members.forEach((member) => {
-                candidates.push(member?.user || member);
-            });
-        }
-
-        for (const candidate of candidates) {
-            const normalizedUser = normalizeUserPayload(candidate);
-            if (normalizedUser?._id && idEquals(normalizedUser._id, targetUserId)) {
-                return normalizedUser;
-            }
-        }
-    }
-    return null;
-};
 
 const UserProfile = () => {
     const location = useLocation();
@@ -181,8 +154,8 @@ const UserProfile = () => {
                 if (candidateUser?._id && idEquals(candidateUser._id, userId)) {
                     resolvedUser = mergeUserData(resolvedUser, candidateUser);
                 }
-            } catch {
-                
+            } catch (error) {
+                console.error("Error fetching user data", error);
             }
 
             if (!cancelled) {

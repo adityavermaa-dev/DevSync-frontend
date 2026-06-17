@@ -306,7 +306,7 @@ const ContributionGraph = () => {
       <span className="cg-corner br" />
 
       <div className="cg-console-head">
-        <h3>ROYAL_ARSENAL_OS 
+        <h3>ROYAL_ARSENAL_OS</h3>
         <span>SYSTEM: {systemStatus || 'ACTIVE'}</span>
       </div>
 

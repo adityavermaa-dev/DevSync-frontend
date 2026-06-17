@@ -112,7 +112,7 @@ const Profile = () => {
     const navigate = useNavigate();
 
     const [isEditing, setIsEditing] = useState(false);
-    const [saving, setSaving] = useState(false);
+    const [_saving, setSaving] = useState(false);
     const [newSkill, setNewSkill] = useState('');
 
     const [form, setForm] = useState({
@@ -120,7 +120,7 @@ const Profile = () => {
     });
 
     const [profileImageFile, setProfileImageFile] = useState(null);
-    const [photoPreview, setPhotoPreview] = useState('');
+    const [_photoPreview, setPhotoPreview] = useState('');
     const [coverPhotoFile, setCoverPhotoFile] = useState(null);
     const [coverPhotoPreview, setCoverPhotoPreview] = useState('');
 
@@ -220,7 +220,7 @@ const Profile = () => {
         fetchGithub();
     }, [user, isEditing]);
 
-    const handleChange = (e) => {
+    const _handleChange = (e) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
     };
@@ -233,7 +233,7 @@ const Profile = () => {
         }
     };
 
-    const handleCoverPhotoChange = (e) => {
+    const _handleCoverPhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setCoverPhotoFile(file);
@@ -249,11 +249,11 @@ const Profile = () => {
         }
     };
 
-    const handleSkillKeyDown = (e) => {
+    const _handleSkillKeyDown = (e) => {
         if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); }
     };
 
-    const handleRemoveSkill = (skillToRemove) => {
+    const _handleRemoveSkill = (skillToRemove) => {
         setForm(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
     };
 
@@ -269,7 +269,7 @@ const Profile = () => {
         }
     };
 
-    const handleSave = async () => {
+    const _handleSave = async () => {
         setSaving(true);
         try {
             const githubUsername = extractGithubUsername(form.githubUrl);
@@ -711,7 +711,14 @@ const Profile = () => {
                     <div className="profile-field">
                         <label className="profile-field-label">Profile Photo</label>
                         <label className="profile-photo-upload">
-                            <input type="file" accept="image
+                            <input type="file" accept="image/*" onChange={handleFileChange} />
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 const editIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />

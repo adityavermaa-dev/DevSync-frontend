@@ -34,7 +34,7 @@ const VerifyEmailHandler = () => {
           verified = true;
           break;
         } catch {
-          
+          // Ignore, proceed to next candidate
         }
       }
 

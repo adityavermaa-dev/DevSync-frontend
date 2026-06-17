@@ -119,7 +119,7 @@ const Notifications = () => {
       try {
         await notificationAPI.markAsRead(notif._id);
         dispatch(markNotificationRead(notif._id));
-      } catch {  }
+      } catch (error) { console.error("Failed to mark notification as read", error); }
     }
 
     
@@ -271,7 +271,7 @@ const Notifications = () => {
                 </div>
 
                 <div className="notif-content">
-                  <p className="notif-text" dangerouslySetInnerHTML={{ __html: n.message || n.text || "New notification" }} />
+                  <p className="notif-text" dangerouslySetInnerHTML={{ __html: n.title ? `<strong>${n.title}</strong>${n.body ? '<br/>' + n.body : ''}` : n.message || n.text || "New notification" }} />
                   <div className="notif-meta">
                     <span className="notif-time">{timeAgo(n.createdAt)}</span>
                     <span className={`notif-type-badge ${config.cssClass}`}>

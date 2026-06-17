@@ -15,6 +15,11 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/socket.io': {
+        target: 'ws://localhost:9999',
+        ws: true,
+        changeOrigin: true,
+      },
     },
   },
   plugins: [
