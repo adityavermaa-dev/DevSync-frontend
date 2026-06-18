@@ -143,10 +143,59 @@ const Login = () => {
     const handleGitHubLogin = () => {
         setIsLoading(true);
         setApiError("");
-        // Full-page redirect — the standard OAuth pattern.
-        // Backend /auth/github → GitHub authorization → backend callback
-        // (exchanges code, sets cookie) → frontend /auth/github/callback
-        window.location.href = `${BASE_URL}/auth/github`;
+
+        const width = 500;
+        const height = 600;
+        const left = window.screenX + (window.outerWidth - width) / 2;
+        const top = window.screenY + (window.outerHeight - height) / 2;
+        
+        const popup = window.open(
+            `${BASE_URL}/auth/github`,
+            "devsync_github_auth",
+            `width=${width},height=${height},left=${left},top=${top}`
+        );
+
+        if (!popup) {
+            toast.error("Please allow popups for GitHub login");
+            setIsLoading(false);
+            return;
+        }
+
+        const messageListener = async (event) => {
+            if (event.data === "devsync_github_auth_success") {
+                window.removeEventListener("message", messageListener);
+                try {
+                    const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
+                    dispatch(addUser(profileRes.data));
+                    toast.success('GitHub login successful!');
+                    navigate("/");
+                } catch (error) {
+                    setApiError("Failed to fetch profile after GitHub login");
+                    toast.error("Failed to fetch profile after GitHub login");
+                } finally {
+                    setIsLoading(false);
+                }
+            } else if (event.data === "devsync_github_auth_error") {
+                window.removeEventListener("message", messageListener);
+                setApiError("GitHub authentication failed");
+                toast.error("GitHub authentication failed");
+                setIsLoading(false);
+            }
+        };
+
+        window.addEventListener("message", messageListener);
+
+        // Fallback polling to clear loading state if user closes popup manually
+        const popupWatcher = setInterval(() => {
+            if (popup.closed) {
+                clearInterval(popupWatcher);
+                // Wait a tiny bit to see if the message listener caught it first
+                setTimeout(() => {
+                    window.removeEventListener("message", messageListener);
+                    setIsLoading(false);
+                }, 500);
+            }
+        }, 500);
     };
 
     const handleSignUp = async () => {
