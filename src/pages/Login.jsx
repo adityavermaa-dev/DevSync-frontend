@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { GoogleLogin } from '@react-oauth/google';
 import AnimatedEmoji from '../components/AnimatedEmoji';
 
-const PENDING_OAUTH_KEY = 'devsync-pending-oauth';
+
 
 const Login = () => {
     const [firstName, setFirstName] = useState("");
@@ -46,7 +46,6 @@ const Login = () => {
         try {
             const res = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
             dispatch(addUser(res.data));
-            window.sessionStorage.removeItem(PENDING_OAUTH_KEY);
             navigate("/");
             return true;
         } catch {
@@ -67,17 +66,6 @@ const Login = () => {
         }
 
         fetchInitialUser();
-
-        const authChannel = new BroadcastChannel("devsync-auth");
-        authChannel.onmessage = (event) => {
-            if (event.data?.type === "LOGIN_SUCCESS") {
-                fetchInitialUser();
-            }
-        };
-
-        return () => {
-            authChannel.close();
-        };
     }, [user, navigate, dispatch, location, showAuthModal, fetchInitialUser]);
 
     const validate = () => {
@@ -152,65 +140,13 @@ const Login = () => {
         }
     };
 
-    const handleGitHubLogin = async () => {
-        let authPopup = null;
-        let popupWatcher = null;
-
-        const waitForAuthenticatedUser = async (maxAttempts = 6, delayMs = 500) => {
-            for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-                const hasUser = await fetchInitialUser();
-                if (hasUser) {
-                    return true;
-                }
-
-                await new Promise((resolve) => window.setTimeout(resolve, delayMs));
-            }
-
-            return false;
-        };
-
-        try {
-            setIsLoading(true);
-            setApiError("");
-            window.sessionStorage.setItem(PENDING_OAUTH_KEY, 'github');
-
-            const githubAuthUrl = `${BASE_URL}/auth/github`;
-            authPopup = window.open(githubAuthUrl, "devsync-github-auth", "width=520,height=720,left=120,top=80");
-
-            if (!authPopup) {
-                window.location.assign(githubAuthUrl);
-                return;
-            }
-
-            popupWatcher = window.setInterval(() => {
-                if (!authPopup || authPopup.closed) {
-                    window.clearInterval(popupWatcher);
-                    popupWatcher = null;
-                    waitForAuthenticatedUser().finally(() => setIsLoading(false));
-                    return;
-                }
-            }, 500);
-        } catch (error) {
-            if (popupWatcher) {
-                window.clearInterval(popupWatcher);
-            }
-
-            window.sessionStorage.removeItem(PENDING_OAUTH_KEY);
-
-            if (authPopup && !authPopup.closed) {
-                authPopup.close();
-            }
-
-            const msg =
-                error?.response?.data?.message ||
-                error?.response?.data ||
-                error?.message ||
-                "GitHub login failed.";
-            const errorMsg = typeof msg === "string" ? msg : "GitHub login failed.";
-            setApiError(errorMsg);
-            toast.error(errorMsg);
-            setIsLoading(false);
-        }
+    const handleGitHubLogin = () => {
+        setIsLoading(true);
+        setApiError("");
+        // Full-page redirect — the standard OAuth pattern.
+        // Backend /auth/github → GitHub authorization → backend callback
+        // (exchanges code, sets cookie) → frontend /auth/github/callback
+        window.location.href = `${BASE_URL}/auth/github`;
     };
 
     const handleSignUp = async () => {

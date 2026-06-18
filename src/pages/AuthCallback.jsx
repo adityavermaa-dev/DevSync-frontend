@@ -1,49 +1,23 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { addUser } from "../redux/userSlice";
 import { BASE_URL } from "../constants/commonData";
 
-const processedCodes = new Set();
-
 const AuthCallback = ({ provider = "Authentication" }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
         let isMounted = true;
 
         const completeAuth = async () => {
             try {
-                const searchParams = new URLSearchParams(location.search);
-                const githubCode = searchParams.get("code");
-                const githubError = searchParams.get("error");
-
-                if (provider === "GitHub") {
-                    if (githubError) {
-                        throw new Error(githubError);
-                    }
-
-                    if (githubCode) {
-                        if (processedCodes.has(githubCode)) {
-                            return;
-                        }
-                        processedCodes.add(githubCode);
-
-                        try {
-                            await axios.get(
-                                `${BASE_URL}/auth/github/callback${location.search}`,
-                                { withCredentials: true }
-                            );
-                        } catch (err) {
-                            console.warn("GitHub callback code exchange failed. This may be due to React Strict Mode double invocation:", err);
-                        }
-                    }
-                }
-
+                // For GitHub: the backend has already exchanged the code and set
+                // the auth cookie before redirecting here.  We just need to fetch
+                // the profile and signal the opener window.
                 const profileRes = await axios.get(`${BASE_URL}/profile/view`, {
                     withCredentials: true,
                 });
@@ -55,20 +29,23 @@ const AuthCallback = ({ provider = "Authentication" }) => {
                 dispatch(addUser(profileRes.data));
                 toast.success(`${provider} login successful.`);
 
+                // Notify the opener / parent tab via BroadcastChannel
                 const authChannel = new BroadcastChannel("devsync-auth");
                 authChannel.postMessage({ type: "LOGIN_SUCCESS" });
                 authChannel.close();
 
+                // If we were opened as a popup, close ourselves
                 if (window.opener && !window.opener.closed) {
-                    window.opener.location.replace("/");
                     window.close();
                     return;
                 }
-                
+
                 if (window.name === "devsync-github-auth") {
                     window.close();
+                    return;
                 }
 
+                // Fallback: not a popup, navigate to home
                 navigate("/", { replace: true });
             } catch {
                 if (!isMounted) {
@@ -90,7 +67,7 @@ const AuthCallback = ({ provider = "Authentication" }) => {
         return () => {
             isMounted = false;
         };
-    }, [dispatch, location.search, navigate, provider]);
+    }, [dispatch, navigate, provider]);
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#f9fafb] px-6 dark:bg-[#0D0D12]">
