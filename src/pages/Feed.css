@@ -93,8 +93,8 @@
 
 .tinder-matches,
 .tinder-list-card {
-  border: 1px solid oklch(var(--bc) / 0.1);
-  background: oklch(var(--b1) / 0.85);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: var(--dashboard-glass-bg);
   border-radius: 20px;
   transition: all 0.3s ease;
 }
@@ -122,7 +122,7 @@
 .tinder-list-head h3 {
   margin: 0;
   font-size: 0.95rem;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   font-weight: 700;
 }
 
@@ -145,8 +145,8 @@
 
 .tinder-pill {
   min-width: 145px;
-  border: 1px solid oklch(var(--bc) / 0.1);
-  background: oklch(var(--b2) / 1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: var(--dashboard-surface-alt);
   border-radius: 14px;
   padding: 0.5rem;
   display: flex;
@@ -175,7 +175,7 @@
 
 .tinder-pill p {
   margin: 0;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   font-size: 0.8rem;
   font-weight: 700;
   white-space: nowrap;
@@ -185,11 +185,11 @@
 
 .tinder-pill small {
   font-size: 0.7rem;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
 }
 
 .tinder-pill-project {
-  background: color-mix(in srgb, oklch(var(--b2) / 1) 86%, #ecfeff 14%);
+  background: color-mix(in srgb, var(--dashboard-surface-alt) 86%, #ecfeff 14%);
 }
 
 .tinder-lists {
@@ -223,8 +223,8 @@
   gap: 0.55rem;
   border-radius: 12px;
   padding: 0.5rem;
-  border: 1px solid oklch(var(--bc) / 0.1);
-  background: oklch(var(--b2) / 1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: var(--dashboard-surface-alt);
   cursor: pointer;
 }
 
@@ -237,7 +237,7 @@
 
 .tinder-list-item p {
   margin: 0;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   font-size: 0.8rem;
   font-weight: 700;
   white-space: nowrap;
@@ -246,7 +246,7 @@
 }
 
 .tinder-list-item small {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-size: 0.69rem;
 }
 
@@ -269,8 +269,8 @@
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  border: 1px solid oklch(var(--bc) / 0.1);
-  background: oklch(var(--b1) / 1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: var(--dashboard-surface);
   font-weight: 700;
   cursor: pointer;
 }
@@ -278,8 +278,8 @@
 .tinder-empty-text {
   margin: 0;
   border-radius: 12px;
-  background: oklch(var(--b2) / 1);
-  color: oklch(var(--bc) / 0.6);
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-faint);
   padding: 0.68rem;
   font-size: 0.78rem;
 }
@@ -312,9 +312,9 @@
   padding: 0.4rem 0.8rem;
   font-size: 0.72rem;
   font-weight: 600;
-  color: oklch(var(--bc) / 1);
-  border: 1px solid oklch(var(--bc) / 0.1);
-  background: color-mix(in srgb, oklch(var(--b1) / 1) 92%, white 8%);
+  color: var(--dashboard-text-main);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: color-mix(in srgb, var(--dashboard-surface) 92%, white 8%);
 }
 
 
@@ -369,7 +369,7 @@
   transform: rotate(-15deg);
   text-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-  background: oklch(var(--b1) / 0.85) !important;
+  background: var(--dashboard-glass-bg) !important;
 }
 
 .feed-stamp-like {
@@ -454,7 +454,7 @@
 .feed-spinner {
   width: 60px;
   height: 60px;
-  border: 6px solid oklch(var(--b2) / 1);
+  border: 6px solid var(--dashboard-surface-alt);
   border-top-color: #8b5cf6;
   border-radius: 50%;
   animation: feed-spin 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
@@ -472,9 +472,9 @@
   gap: 20px;
   padding: 60px 50px;
   text-align: center;
-  background: oklch(var(--b1) / 0.85);
+  background: var(--dashboard-glass-bg);
   backdrop-filter: blur(16px);
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
   border-radius: 36px;
   box-shadow: 0 30px 60px rgba(0,0,0,0.08);
   max-width: 450px;
@@ -502,7 +502,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 2.6rem;
   font-weight: 900;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   margin: 0;
   letter-spacing: -0.02em;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -511,7 +511,7 @@
 .feed-empty-text {
   font-size: 1.15rem;
   font-weight: 500;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   line-height: 1.6;
 }
 
@@ -531,8 +531,8 @@
 
 
 .feed-sidebar-improved {
-  background: oklch(var(--b1) / 0.85) !important;
-  border: 1px solid oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-glass-bg) !important;
+  border: 1px solid var(--dashboard-glass-border-translucent) !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
   transition: all 0.3s ease;
 }
@@ -542,49 +542,49 @@
 }
 
 .feed-sidebar-header-improved {
-  background: linear-gradient(135deg, oklch(var(--b1) / 1) 0%, oklch(var(--b1) / 0.85) 100%) !important;
-  border-bottom: 1px solid oklch(var(--bc) / 0.1) !important;
+  background: linear-gradient(135deg, var(--dashboard-surface) 0%, var(--dashboard-glass-bg) 100%) !important;
+  border-bottom: 1px solid var(--dashboard-glass-border-translucent) !important;
   box-shadow: 0 2px 12px rgba(0,0,0,0.05) !important;
 }
 
 .feed-sidebar-item-improved {
-  background: oklch(var(--b2) / 1) !important;
-  border: 1px solid oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-surface-alt) !important;
+  border: 1px solid var(--dashboard-glass-border-translucent) !important;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
   transition: all 0.2s ease;
 }
 
 .feed-sidebar-item-improved:hover {
-  background: oklch(var(--b1) / 0.85) !important;
-  border-color: oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-glass-bg) !important;
+  border-color: var(--dashboard-border) !important;
   box-shadow: 0 8px 22px rgba(0,0,0,0.1) !important;
   transform: translateY(-1px);
 }
 
 .feed-text-main {
-  color: oklch(var(--bc) / 1) !important;
+  color: var(--dashboard-text-main) !important;
 }
 .feed-text-faint {
-  color: oklch(var(--bc) / 0.6) !important;
+  color: var(--dashboard-text-faint) !important;
 }
 
 
 .feed-sidebar {
-  background: oklch(var(--b1) / 0.85) !important;
-  border: 1px solid oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-glass-bg) !important;
+  border: 1px solid var(--dashboard-glass-border-translucent) !important;
   box-shadow: 0 15px 50px rgba(0,0,0,0.2) !important;
 }
 .feed-sidebar-header {
-  background: oklch(var(--b1) / 1) !important;
-  border-bottom: 1px solid oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-surface) !important;
+  border-bottom: 1px solid var(--dashboard-glass-border-translucent) !important;
 }
 .feed-sidebar-item {
-  background: oklch(var(--bc) / 0.15) !important;
-  border: 1px solid oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-glass-border) !important;
+  border: 1px solid var(--dashboard-glass-border-translucent) !important;
   box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
 }
 .feed-sidebar-item:hover {
-  background: oklch(var(--b2) / 1) !important;
-  border-color: oklch(var(--bc) / 0.1) !important;
+  background: var(--dashboard-surface-alt) !important;
+  border-color: var(--dashboard-border) !important;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
 }

@@ -5,7 +5,7 @@
   padding: 40px 20px 80px;
   display: flex;
   justify-content: center;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .projects-subtitle {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-size: 1.1rem;
   margin: 8px 0 0 0;
 }
@@ -80,8 +80,8 @@
 .projects-search {
   flex: 1;
   min-width: 250px;
-  background: oklch(var(--bc) / 0.15);
-  border: 1px solid oklch(var(--bc) / 0.1);
+  background: var(--dashboard-glass-border);
+  border: 1px solid var(--dashboard-border);
   border-radius: 16px;
   padding: 12px 20px;
   display: flex;
@@ -93,11 +93,11 @@
 .projects-search:focus-within {
   border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: oklch(var(--b2) / 1);
+  background: var(--dashboard-surface);
 }
 
 .projects-search svg {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   width: 20px;
   height: 20px;
 }
@@ -106,7 +106,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 500;
@@ -114,15 +114,15 @@
 }
 
 .projects-search input::placeholder {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
 }
 
 .projects-filter {
   padding: 12px 24px;
   border-radius: 16px;
-  background: oklch(var(--bc) / 0.15);
-  border: 1px solid oklch(var(--bc) / 0.1);
-  color: oklch(var(--bc) / 1);
+  background: var(--dashboard-glass-border);
+  border: 1px solid var(--dashboard-border);
+  color: var(--dashboard-text-main);
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 600;
@@ -149,10 +149,10 @@
 }
 
 .project-card {
-  background: oklch(var(--b1) / 0.85);
+  background: var(--dashboard-glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
   border-radius: 24px;
   padding: 24px;
   display: flex;
@@ -204,18 +204,18 @@
 
 .project-owner {
   font-size: 0.9rem;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   margin: 0;
 }
 .project-owner span {
   font-weight: 600;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
 }
 
 .project-desc {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: oklch(var(--bc) / 0.8);
+  color: var(--dashboard-text-secondary);
   margin: 0 0 20px 0;
   flex-grow: 1;
 }
@@ -237,12 +237,12 @@
 .project-tech-pill {
   padding: 4px 12px;
   border-radius: 8px;
-  background: oklch(var(--b3) / 1);
-  color: oklch(var(--bc) / 1);
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-main);
   font-size: 0.8rem;
   font-weight: 600;
   font-family: 'JetBrains Mono', monospace;
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
 }
 
 .project-tech-pill.extra {
@@ -256,7 +256,7 @@
   justify-content: space-between;
   align-items: flex-end;
   padding-top: 16px;
-  border-top: 1px solid oklch(var(--bc) / 0.1);
+  border-top: 1px solid var(--dashboard-glass-border-translucent);
 }
 
 .project-roles {
@@ -270,7 +270,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
 }
 
 .roles-text {
@@ -289,7 +289,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -302,8 +302,8 @@
   align-items: center;
   justify-content: center;
   padding: 64px 20px;
-  background: oklch(var(--b1) / 0.85);
-  border: 1px dashed oklch(var(--bc) / 0.1);
+  background: var(--dashboard-glass-bg);
+  border: 1px dashed var(--dashboard-border);
   border-radius: 32px;
   text-align: center;
 }
@@ -318,11 +318,11 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.8rem;
   margin: 0 0 12px;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
 }
 
 .projects-empty p {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-size: 1.1rem;
   max-width: 400px;
   margin: 0 0 24px;

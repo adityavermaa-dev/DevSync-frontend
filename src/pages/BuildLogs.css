@@ -5,36 +5,36 @@
 .buildlogs-container,
 .buildlogs-container .feed-text-main,
 .buildlogs-container .feed-text-faint {
-    color: oklch(var(--bc) / 1);
+    color: var(--dashboard-text-main);
 }
 
 .buildlogs-container .feed-text-faint {
-    color: oklch(var(--bc) / 0.6);
+    color: var(--dashboard-text-faint);
 }
 
 .buildlogs-container .buildlog-create-card,
 .buildlogs-container .buildlog-card,
 .buildlogs-container .buildlog-feed > div {
-    background: oklch(var(--b1) / 0.85) !important;
-    border-color: oklch(var(--bc) / 0.1) !important;
-    color: oklch(var(--bc) / 1);
+    background: var(--dashboard-glass-bg) !important;
+    border-color: var(--dashboard-glass-border-translucent) !important;
+    color: var(--dashboard-text-main);
 }
 
 .buildlogs-container .buildlog-input,
 .buildlogs-container .buildlog-textarea {
-    background: color-mix(in srgb, oklch(var(--b2) / 1) 84%, transparent 16%) !important;
-    color: oklch(var(--bc) / 1) !important;
-    border: 1px solid oklch(var(--bc) / 0.1) !important;
+    background: color-mix(in srgb, var(--dashboard-surface) 84%, transparent 16%) !important;
+    color: var(--dashboard-text-main) !important;
+    border: 1px solid var(--dashboard-glass-border-translucent) !important;
 }
 
 .buildlogs-container .buildlog-input::placeholder,
 .buildlogs-container .buildlog-textarea::placeholder {
-    color: oklch(var(--bc) / 0.6);
+    color: var(--dashboard-text-faint);
     opacity: 0.7;
 }
 
 .buildlogs-container .buildlog-content code {
-    background: color-mix(in srgb, oklch(var(--b3) / 1) 86%, transparent 14%);
+    background: color-mix(in srgb, var(--dashboard-surface-alt) 86%, transparent 14%);
     color: #7c3aed;
 }
 
@@ -68,7 +68,7 @@
 
 [data-theme="light"] .buildlogs-container .text-gray-500,
 [data-theme="light"] .buildlogs-container .text-gray-400 {
-    color: oklch(var(--bc) / 0.6) !important;
+    color: var(--dashboard-text-faint) !important;
 }
 
 [data-theme="light"] .buildlogs-container .bg-white\/40,

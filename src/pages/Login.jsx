@@ -162,10 +162,8 @@ const Login = () => {
         }
 
         const messageListener = async (event) => {
-            if (event.origin !== window.location.origin) return;
             if (event.data === "devsync_github_auth_success") {
                 window.removeEventListener("message", messageListener);
-                clearInterval(popupWatcher);
                 try {
                     const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
                     dispatch(addUser(profileRes.data));
@@ -179,7 +177,6 @@ const Login = () => {
                 }
             } else if (event.data === "devsync_github_auth_error") {
                 window.removeEventListener("message", messageListener);
-                clearInterval(popupWatcher);
                 setApiError("GitHub authentication failed");
                 toast.error("GitHub authentication failed");
                 setIsLoading(false);
@@ -188,9 +185,11 @@ const Login = () => {
 
         window.addEventListener("message", messageListener);
 
+        // Fallback polling to clear loading state if user closes popup manually
         const popupWatcher = setInterval(() => {
             if (popup.closed) {
                 clearInterval(popupWatcher);
+                // Wait a tiny bit to see if the message listener caught it first
                 setTimeout(() => {
                     window.removeEventListener("message", messageListener);
                     setIsLoading(false);

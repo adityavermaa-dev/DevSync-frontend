@@ -437,7 +437,7 @@
 .auth-modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: oklch(var(--bc) / 0.1);
+    background: var(--dashboard-glass-border-translucent);
     backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
@@ -570,7 +570,7 @@
 }
 
 .auth-field input:focus {
-    background: oklch(var(--bc) / 0.15);
+    background: var(--dashboard-glass-border);
     border-color: #8b5cf6;
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }

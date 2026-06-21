@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   animation: fadeUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
@@ -17,10 +17,10 @@
 
 
 .pd-header {
-  background: oklch(var(--b1) / 0.85);
+  background: var(--dashboard-glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
   border-radius: 32px;
   padding: 32px 40px;
   margin-bottom: 24px;
@@ -78,7 +78,7 @@
   align-items: center;
   gap: 12px;
   padding-top: 20px;
-  border-top: 1px solid oklch(var(--bc) / 0.1);
+  border-top: 1px solid var(--dashboard-glass-border-translucent);
 }
 
 .pd-owner-avatar {
@@ -86,7 +86,7 @@
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid oklch(var(--bc) / 0.15);
+  border: 2px solid var(--dashboard-glass-border);
 }
 
 .pd-owner-info {
@@ -102,7 +102,7 @@
 
 .pd-owner-label {
   font-size: 0.8rem;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -120,16 +120,16 @@
   display: flex;
   gap: 8px;
   margin-bottom: 24px;
-  background: oklch(var(--b1) / 0.85);
+  background: var(--dashboard-glass-bg);
   padding: 6px;
   border-radius: 999px;
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
   width: fit-content;
 }
 
 .pd-tab-btn {
   background: transparent;
-  color: oklch(var(--bc) / 0.8);
+  color: var(--dashboard-text-secondary);
   border: none;
   padding: 10px 24px;
   border-radius: 999px;
@@ -142,7 +142,7 @@
 
 .pd-tab-btn:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
 }
 
 .pd-tab-btn.active {
@@ -153,9 +153,9 @@
 
 
 .pd-card {
-  background: oklch(var(--b1) / 0.85);
+  background: var(--dashboard-glass-bg);
   backdrop-filter: blur(24px);
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
   border-radius: 24px;
   padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
@@ -167,15 +167,15 @@
   font-size: 1.25rem;
   font-weight: 800;
   margin: 0 0 16px;
-  color: oklch(var(--bc) / 1);
-  border-bottom: 1px solid oklch(var(--bc) / 0.1);
+  color: var(--dashboard-text-main);
+  border-bottom: 1px solid var(--dashboard-glass-border-translucent);
   padding-bottom: 12px;
 }
 
 .pd-description {
   font-size: 1.05rem;
   line-height: 1.7;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   white-space: pre-wrap;
   margin: 0 0 20px 0;
 }
@@ -184,19 +184,19 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: oklch(var(--b3) / 1);
-  color: oklch(var(--bc) / 1);
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-main);
   padding: 10px 20px;
   border-radius: 12px;
   text-decoration: none;
   font-weight: 600;
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-border);
   transition: all 0.2s;
 }
 
 .pd-repo-link:hover {
-  background: oklch(var(--b2) / 1);
-  border-color: oklch(var(--bc) / 0.6);
+  background: var(--dashboard-surface);
+  border-color: var(--dashboard-text-faint);
 }
 
 
@@ -218,7 +218,7 @@
 }
 
 .pd-empty-text {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-style: italic;
   font-size: 0.95rem;
 }
@@ -237,7 +237,7 @@
 
 .pd-card-subtitle {
   margin: 4px 0 0;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-size: 0.95rem;
 }
 
@@ -267,8 +267,8 @@
   gap: 14px;
   padding: 16px;
   border-radius: 18px;
-  background: oklch(var(--b3) / 1);
-  border: 1px solid oklch(var(--bc) / 0.1);
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-glass-border-translucent);
 }
 
 .pd-application-user {
@@ -283,7 +283,7 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  border: 2px solid oklch(var(--bc) / 0.15);
+  border: 2px solid var(--dashboard-glass-border);
 }
 
 .pd-application-copy {
@@ -302,7 +302,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 800;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
 }
 
 .pd-application-role {
@@ -316,7 +316,7 @@
 
 .pd-application-message {
   margin: 8px 0 0;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   line-height: 1.6;
   white-space: pre-wrap;
 }
@@ -357,15 +357,15 @@
   padding: 18px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.35);
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   text-align: center;
-  border: 1px dashed oklch(var(--bc) / 0.1);
+  border: 1px dashed var(--dashboard-glass-border-translucent);
 }
 
 .pd-label {
   font-size: 0.9rem;
   font-weight: 700;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
 }
 
 .mb-2 { margin-bottom: 8px; }
@@ -392,7 +392,7 @@
 
 .pd-action-divider {
   height: 1px;
-  background: oklch(var(--bc) / 0.1);
+  background: var(--dashboard-glass-border-translucent);
   margin: 20px 0;
 }
 
@@ -417,8 +417,8 @@
 }
 
 .pd-primary-btn:disabled {
-  background: oklch(var(--bc) / 0.1);
-  color: oklch(var(--bc) / 0.6);
+  background: var(--dashboard-border);
+  color: var(--dashboard-text-faint);
   box-shadow: none;
   cursor: not-allowed;
   transform: none;
@@ -428,14 +428,14 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 16px;
-  background: oklch(var(--b3) / 1);
+  background: var(--dashboard-surface-alt);
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid oklch(var(--bc) / 0.1);
+  border: 1px solid var(--dashboard-border);
 }
 
 .status-dot.online {
@@ -446,7 +446,7 @@
 
 .pd-member-count {
   font-size: 0.9rem;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-weight: 600;
   margin-left: 8px;
 }
@@ -468,7 +468,7 @@
 }
 
 .pd-member-item:hover {
-  background: oklch(var(--b3) / 1);
+  background: var(--dashboard-surface-alt);
 }
 
 .pd-member-item img {
@@ -733,9 +733,9 @@
 }
 
 .pd-role-chip {
-  border: 1px solid oklch(var(--bc) / 0.1);
-  background: oklch(var(--b3) / 1);
-  color: oklch(var(--bc) / 1);
+  border: 1px solid var(--dashboard-glass-border-translucent);
+  background: var(--dashboard-surface-alt);
+  color: var(--dashboard-text-main);
   border-radius: 999px;
   padding: 8px 12px;
   font-size: 0.88rem;

@@ -35,10 +35,10 @@
 
 
 .video-upload-card {
-  background: oklch(var(--b1) / 0.85);
+  background: var(--dashboard-glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 4px solid oklch(var(--bc) / 0.15);
+  border: 4px solid var(--dashboard-glass-border);
   border-radius: 32px;
   padding: 0;
   width: 100%;
@@ -58,7 +58,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.85rem;
   font-weight: 800;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   margin: 0 0 6px;
   letter-spacing: -0.5px;
   display: flex;
@@ -84,7 +84,7 @@
 }
 
 .video-upload-subtitle {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-size: 0.95rem;
   font-weight: 500;
   margin: 0;
@@ -155,7 +155,7 @@
   width: 72px;
   height: 72px;
   border-radius: 22px;
-  background: oklch(var(--bc) / 0.1);
+  background: var(--dashboard-glass-border-translucent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +171,7 @@
 
 .file-input-label {
   cursor: pointer;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -183,7 +183,7 @@
 
 .file-input-hint {
   font-size: 0.8rem;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   font-weight: 400;
 }
 
@@ -199,7 +199,7 @@
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: oklch(var(--bc) / 0.1);
+  background: var(--dashboard-glass-border-translucent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,7 +220,7 @@
 }
 
 .selected-file {
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   font-weight: 700;
   word-break: break-all;
   text-align: left;
@@ -252,17 +252,17 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   margin-bottom: 10px;
 }
 
 .video-caption-input {
   width: 100%;
-  background: oklch(var(--b2) / 1);
-  border: 2px solid oklch(var(--bc) / 0.1);
+  background: var(--dashboard-surface);
+  border: 2px solid var(--dashboard-border);
   border-radius: 16px;
   padding: 16px 18px;
-  color: oklch(var(--bc) / 1);
+  color: var(--dashboard-text-main);
   min-height: 110px;
   resize: vertical;
   font-family: inherit;
@@ -273,11 +273,11 @@
 }
 
 .video-caption-input::placeholder {
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
 }
 
 .video-caption-input:focus {
-  background: oklch(var(--bc) / 0.15);
+  background: var(--dashboard-glass-border);
   border-color: #8b5cf6;
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
 }
@@ -285,7 +285,7 @@
 .caption-char-count {
   text-align: right;
   font-size: 0.78rem;
-  color: oklch(var(--bc) / 0.6);
+  color: var(--dashboard-text-faint);
   margin-top: 6px;
   font-weight: 500;
 }
@@ -343,7 +343,7 @@
 .upload-progress-bar {
   width: 100%;
   height: 4px;
-  background: oklch(var(--bc) / 0.1);
+  background: var(--dashboard-border);
   border-radius: 4px;
   margin-top: 16px;
   overflow: hidden;
