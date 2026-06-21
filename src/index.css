@@ -220,7 +220,6 @@ html {
 
 html,
 body {
-  background-color: var(--bg-base);
   scroll-behavior: smooth;
 }
 
@@ -247,8 +246,6 @@ body {
 }
 
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
   font-family: var(--font-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -262,9 +259,9 @@ body {
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-track { background: oklch(var(--b1) / 1); }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar-thumb:hover { background: oklch(var(--bc) / 0.6); }
 
 
 .glass-panel {

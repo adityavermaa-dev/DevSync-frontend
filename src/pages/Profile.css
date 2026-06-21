@@ -42,7 +42,7 @@
   align-items: flex-start;
   justify-content: center;
   padding: 40px 20px 0px;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
 }
 
 .profile-loading {
@@ -54,10 +54,10 @@
 .profile-card-view {
   width: 100%;
   max-width: 800px;
-  background: var(--dashboard-glass-bg);
+  background: oklch(var(--b1) / 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 4px solid var(--dashboard-glass-border);
+  border: 4px solid oklch(var(--bc) / 0.15);
   border-radius: 32px;
   overflow: hidden;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
@@ -85,7 +85,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 20% 50%, var(--dashboard-glass-border-translucent) 0%, transparent 50%);
+  background-image: radial-gradient(circle at 20% 50%, oklch(var(--bc) / 0.1) 0%, transparent 50%);
 }
 
 .profile-header-actions {
@@ -135,7 +135,7 @@
   height: 128px;
   border-radius: 50%;
   padding: 4px;
-  background: var(--dashboard-glass-border);
+  background: oklch(var(--bc) / 0.15);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   margin-bottom: 16px;
 }
@@ -145,20 +145,20 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--dashboard-surface-alt);
+  background: oklch(var(--b3) / 1);
 }
 
 .profile-name {
   font-family: 'Outfit', sans-serif;
   font-size: 2rem;
   font-weight: 800;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   margin: 0 0 8px;
   letter-spacing: -0.5px;
 }
 
 .profile-bio {
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 1rem;
   line-height: 1.6;
   max-width: 480px;
@@ -171,7 +171,7 @@
   justify-content: center;
   gap: 8px;
   margin: 0 0 18px;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   text-decoration: none;
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
@@ -186,7 +186,7 @@
 }
 
 .profile-github-link:hover {
-  color: color-mix(in srgb, var(--auth-btn-bg) 62%, var(--dashboard-text-main));
+  color: color-mix(in srgb, var(--auth-btn-bg) 62%, oklch(var(--bc) / 1));
   transform: translateY(-1px);
 }
 
@@ -270,10 +270,10 @@
 
 .profile-intent-option {
   padding: 12px 16px;
-  background: var(--dashboard-surface-alt);
-  border: 2px solid var(--dashboard-border);
+  background: oklch(var(--b3) / 1);
+  border: 2px solid oklch(var(--bc) / 0.1);
   border-radius: 12px;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
@@ -283,7 +283,7 @@
 }
 
 .profile-intent-option:hover {
-  background: var(--dashboard-surface);
+  background: oklch(var(--b2) / 1);
   border-color: #8b5cf6;
 }
 
@@ -316,7 +316,7 @@
   padding: 10px 24px;
   border: none;
   background: transparent;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
   font-weight: 600;
@@ -331,7 +331,7 @@
 }
 
 .profile-tab:hover {
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   background: rgba(0, 0, 0, 0.03);
 }
 
@@ -359,14 +359,14 @@
   justify-content: center;
   text-align: center;
   padding: 20px;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .profile-empty-state h3 {
   margin: 8px 0 6px;
   font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
 }
 
 .profile-empty-state p {
@@ -387,7 +387,7 @@
 .profile-video-item {
   position: relative;
   aspect-ratio: 9/16;
-  background: var(--dashboard-surface-alt);
+  background: oklch(var(--b3) / 1);
   overflow: hidden;
   cursor: pointer;
 }
@@ -463,7 +463,7 @@
 .profile-empty-videos {
   padding: 60px 20px;
   text-align: center;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
@@ -485,7 +485,7 @@
 }
 
 .profile-modal {
-  background: var(--dashboard-glass-border);
+  background: oklch(var(--bc) / 0.15);
   border-radius: 24px;
   padding: 30px;
   width: 90%;
@@ -498,11 +498,11 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.5rem;
   margin: 0 0 12px;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
 }
 
 .profile-modal p {
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   margin: 0 0 24px;
 }
 
@@ -522,12 +522,12 @@
 }
 
 .profile-modal-cancel {
-  background: var(--dashboard-surface-alt);
-  color: var(--dashboard-text-faint);
+  background: oklch(var(--b3) / 1);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .profile-modal-cancel:hover {
-  background: var(--dashboard-border);
+  background: oklch(var(--bc) / 0.1);
 }
 
 .profile-modal-confirm {
@@ -543,9 +543,9 @@
 .profile-edit-layout {
   width: 100%;
   max-width: 600px;
-  background: var(--dashboard-glass-bg);
+  background: oklch(var(--b1) / 0.85);
   backdrop-filter: blur(24px);
-  border: 1px solid var(--dashboard-glass-border-translucent);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 32px;
   overflow: hidden;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.05);
@@ -564,14 +564,14 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   margin: 0;
 }
 
 .profile-edit-close {
-  background: var(--dashboard-surface-alt);
+  background: oklch(var(--b3) / 1);
   border: none;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
@@ -580,8 +580,8 @@
 }
 
 .profile-edit-close:hover {
-  background: var(--dashboard-border);
-  color: var(--dashboard-text-main);
+  background: oklch(var(--bc) / 0.1);
+  color: oklch(var(--bc) / 1);
   transform: rotate(90deg);
 }
 
@@ -607,8 +607,8 @@
   padding: 30px;
   border: 2px dashed #d1d5db;
   border-radius: 20px;
-  background: var(--dashboard-surface);
-  color: var(--dashboard-text-faint);
+  background: oklch(var(--b2) / 1);
+  color: oklch(var(--bc) / 0.6);
   transition: all 0.2s ease;
   font-size: 0.9rem;
   font-weight: 500;
@@ -624,7 +624,7 @@
   width: 80px; height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--dashboard-glass-border);
+  border: 3px solid oklch(var(--bc) / 0.15);
 
   
   .profile-cover-upload {
@@ -641,8 +641,8 @@
     padding: 40px;
     border: 2px dashed #d1d5db;
     border-radius: 20px;
-    background: var(--dashboard-surface);
-    color: var(--dashboard-text-faint);
+    background: oklch(var(--b2) / 1);
+    color: oklch(var(--bc) / 0.6);
     transition: all 0.2s ease;
     font-size: 0.9rem;
     font-weight: 500;
@@ -661,7 +661,7 @@
     height: 120px;
     border-radius: 12px;
     object-fit: cover;
-    border: 3px solid var(--dashboard-glass-border);
+    border: 3px solid oklch(var(--bc) / 0.15);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -680,18 +680,18 @@
   display: block;
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   margin-bottom: 8px;
 }
 
 .profile-input {
   width: 100%;
-  background: var(--dashboard-glass-border);
-  border: 2px solid var(--dashboard-border);
+  background: oklch(var(--bc) / 0.15);
+  border: 2px solid oklch(var(--bc) / 0.1);
   border-radius: 12px;
   padding: 14px 16px;
   font-size: 0.95rem;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   transition: all 0.2s ease;
   outline: none;
   font-family: inherit;
@@ -731,8 +731,8 @@
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 500;
-  background: var(--dashboard-surface-alt);
-  color: var(--dashboard-text-faint);
+  background: oklch(var(--b3) / 1);
+  color: oklch(var(--bc) / 0.6);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -744,7 +744,7 @@
 .profile-skill-remove {
   font-size: 1.1rem;
   font-weight: 400;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   transition: color 0.2s;
 }
 
@@ -763,8 +763,8 @@
 .profile-skill-add-btn {
   padding: 0 20px;
   border-radius: 12px;
-  background: var(--dashboard-glass-border);
-  color: var(--dashboard-text-main);
+  background: oklch(var(--bc) / 0.15);
+  color: oklch(var(--bc) / 1);
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -773,7 +773,7 @@
 }
 
 .profile-skill-add-btn:hover {
-  background: var(--dashboard-surface);
+  background: oklch(var(--b2) / 1);
 }
 
 
@@ -782,7 +782,7 @@
   gap: 16px;
   padding: 24px 30px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: var(--dashboard-surface);
+  background: oklch(var(--b2) / 1);
 }
 
 .profile-btn {
@@ -819,13 +819,13 @@
 }
 
 .profile-btn-cancel {
-  background: var(--dashboard-glass-border);
-  border: 2px solid var(--dashboard-border);
-  color: var(--dashboard-text-faint);
+  background: oklch(var(--bc) / 0.15);
+  border: 2px solid oklch(var(--bc) / 0.1);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .profile-btn-cancel:hover {
-  background: var(--dashboard-surface);
+  background: oklch(var(--b2) / 1);
   border-color: #d1d5db;
 }
 
@@ -850,8 +850,8 @@
 }
 
 .profile-proj-card {
-  background: var(--dashboard-surface-alt);
-  border: 1px solid var(--dashboard-border);
+  background: oklch(var(--b3) / 1);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 16px;
   padding: 20px;
   cursor: pointer;
@@ -865,7 +865,7 @@
 .profile-proj-card:hover {
   transform: translateY(-6px) scale(1.02);
   border-color: #8b5cf6;
-  background: var(--dashboard-surface);
+  background: oklch(var(--b2) / 1);
   box-shadow: 0 16px 32px rgba(139, 92, 246, 0.12);
 }
 
@@ -873,7 +873,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   margin: 0;
 }
 
@@ -894,17 +894,17 @@
   gap: 8px;
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid var(--dashboard-border);
+  border-top: 1px solid oklch(var(--bc) / 0.1);
 }
 
 .proj-techs span {
   font-size: 0.75rem;
   font-family: 'JetBrains Mono', monospace;
-  background: var(--dashboard-glass-border);
-  color: var(--dashboard-text-faint);
+  background: oklch(var(--bc) / 0.15);
+  color: oklch(var(--bc) / 0.6);
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1px solid var(--dashboard-border);
+  border: 1px solid oklch(var(--bc) / 0.1);
 }
 
 
@@ -926,8 +926,8 @@
 }
 
 .profile-legacy-card {
-  background: linear-gradient(160deg, color-mix(in srgb, var(--dashboard-surface-alt) 78%, transparent), color-mix(in srgb, var(--dashboard-surface) 86%, transparent));
-  border: 1px solid color-mix(in srgb, var(--auth-btn-bg) 32%, var(--dashboard-border));
+  background: linear-gradient(160deg, color-mix(in srgb, oklch(var(--b3) / 1) 78%, transparent), color-mix(in srgb, oklch(var(--b2) / 1) 86%, transparent));
+  border: 1px solid color-mix(in srgb, var(--auth-btn-bg) 32%, oklch(var(--bc) / 0.1));
   border-radius: 20px;
   padding: 18px;
   min-height: 230px;
@@ -940,7 +940,7 @@
   font-size: 0.86rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: color-mix(in srgb, var(--auth-btn-bg) 60%, var(--dashboard-text-main));
+  color: color-mix(in srgb, var(--auth-btn-bg) 60%, oklch(var(--bc) / 1));
   font-weight: 800;
   text-align: center;
 }
@@ -948,7 +948,7 @@
 .profile-legacy-title {
   margin: 14px 0 10px;
   text-align: center;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   font-family: 'Outfit', sans-serif;
   font-size: 1.45rem;
 }
@@ -958,7 +958,7 @@
   text-align: center;
   font-family: 'Outfit', sans-serif;
   font-size: clamp(2.3rem, 4vw, 3.2rem);
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   text-shadow: 0 0 22px color-mix(in srgb, var(--auth-btn-bg) 34%, transparent);
   line-height: 1;
 }
@@ -967,9 +967,9 @@
   margin: 16px auto 0;
   width: fit-content;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--auth-btn-bg) 40%, var(--dashboard-border));
+  border: 1px solid color-mix(in srgb, var(--auth-btn-bg) 40%, oklch(var(--bc) / 0.1));
   padding: 5px 12px;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.79rem;
 }
 
@@ -982,7 +982,7 @@
 
 .profile-streak-crown {
   font-size: 1.25rem;
-  color: color-mix(in srgb, var(--auth-btn-bg) 55%, var(--dashboard-text-main));
+  color: color-mix(in srgb, var(--auth-btn-bg) 55%, oklch(var(--bc) / 1));
   margin-bottom: 6px;
 }
 
@@ -1023,13 +1023,13 @@
   font-size: 3rem;
   font-weight: 800;
   line-height: 1;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   animation: streakCountPop 520ms ease-out 120ms both;
 }
 
 .profile-legacy-muted {
   margin: 6px 0 0;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.82rem;
   text-align: center;
 }
@@ -1037,24 +1037,24 @@
 .profile-longest-strip {
   margin-top: 14px;
   width: 100%;
-  border: 1px solid var(--dashboard-border);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 12px;
   padding: 10px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: color-mix(in srgb, var(--dashboard-surface) 70%, transparent);
+  background: color-mix(in srgb, oklch(var(--b2) / 1) 70%, transparent);
 }
 
 .profile-longest-strip strong {
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .profile-longest-strip span {
-  color: color-mix(in srgb, var(--auth-btn-bg) 60%, var(--dashboard-text-main));
+  color: color-mix(in srgb, var(--auth-btn-bg) 60%, oklch(var(--bc) / 1));
   font-family: 'Outfit', sans-serif;
   font-size: 2rem;
   line-height: 1;
@@ -1078,20 +1078,20 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 10px;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   font-weight: 700;
   font-size: 0.9rem;
 }
 
 .profile-arsenal-head strong {
-  color: color-mix(in srgb, var(--auth-btn-bg) 65%, var(--dashboard-text-main));
+  color: color-mix(in srgb, var(--auth-btn-bg) 65%, oklch(var(--bc) / 1));
 }
 
 .profile-arsenal-bar-track {
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--dashboard-border) 70%, transparent);
+  background: color-mix(in srgb, oklch(var(--bc) / 0.1) 70%, transparent);
   overflow: hidden;
 }
 
@@ -1116,7 +1116,7 @@
   width: 100%;
   margin: 0;
   font-size: 0.78rem;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   text-align: right;
   font-weight: 600;
 }
@@ -1124,8 +1124,8 @@
 .profile-github-heatmap {
   width: 100%;
   max-width: 760px;
-  background: var(--dashboard-surface-alt);
-  border: 1px solid var(--dashboard-border);
+  background: oklch(var(--b3) / 1);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -1147,8 +1147,8 @@
 }
 
 .profile-repo-card {
-  background: linear-gradient(145deg, var(--dashboard-surface-alt), var(--dashboard-surface));
-  border: 1px solid var(--dashboard-border);
+  background: linear-gradient(145deg, oklch(var(--b3) / 1), oklch(var(--b2) / 1));
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 16px;
   padding: 16px;
   text-decoration: none;
@@ -1176,7 +1176,7 @@
 
 .profile-repo-desc {
   font-size: 0.9rem;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   margin: 0 0 16px;
   line-height: 1.5;
   display: -webkit-box;
@@ -1193,7 +1193,7 @@
   gap: 12px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   margin-top: auto;
 }
 

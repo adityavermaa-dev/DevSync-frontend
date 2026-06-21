@@ -49,7 +49,7 @@
   bottom: 10%;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--dashboard-text-main) 10%, transparent),
+    color-mix(in srgb, oklch(var(--bc) / 1) 10%, transparent),
     transparent
   );
 }
@@ -64,7 +64,7 @@
   margin: 0 auto 20px;
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: oklch(var(--bc) / 0.8);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -85,7 +85,7 @@
   letter-spacing: 0.11em;
   font-size: 0.72rem;
   font-weight: 800;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .userprofile-title {
@@ -94,14 +94,14 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   font-weight: 800;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   font-family: 'Outfit', sans-serif;
 }
 
 .userprofile-subtitle {
   margin: 8px 0 0;
   max-width: 620px;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.96rem;
   font-weight: 600;
 }
@@ -152,10 +152,10 @@
 }
 
 .up-github-section {
-  background: var(--dashboard-glass-bg);
+  background: oklch(var(--b1) / 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--dashboard-glass-border-translucent);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 24px;
   padding: 22px;
   box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
@@ -174,13 +174,13 @@
   font-family: 'Outfit', sans-serif;
   font-size: clamp(1.02rem, 1.3vw, 1.18rem);
   font-weight: 700;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   margin: 0 0 20px 0;
 }
 
 .up-section-subtitle {
   margin: -12px 0 14px;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -189,8 +189,8 @@
   display: flex;
   justify-content: center;
   margin-bottom: 24px;
-  background: var(--dashboard-surface-alt);
-  border: 1px solid var(--dashboard-border);
+  background: oklch(var(--b3) / 1);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
@@ -210,7 +210,7 @@
 
 .up-activity-title {
   margin: 0;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   font-weight: 800;
   font-family: 'Outfit', sans-serif;
 }
@@ -223,7 +223,7 @@
 }
 
 .up-activity-item {
-  color: var(--dashboard-text-secondary);
+  color: oklch(var(--bc) / 0.8);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -231,7 +231,7 @@
 .up-activity-empty {
   margin-top: 10px;
   margin-bottom: 0;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-weight: 600;
 }
 
@@ -248,8 +248,8 @@
 }
 
 .up-repo-card {
-  background: var(--dashboard-surface-alt);
-  border: 1px solid var(--dashboard-border);
+  background: oklch(var(--b3) / 1);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 16px;
   padding: 16px;
   text-decoration: none;
@@ -261,19 +261,19 @@
 
 .up-repo-card:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--auth-btn-bg) 45%, var(--dashboard-border) 55%);
+  border-color: color-mix(in srgb, var(--auth-btn-bg) 45%, oklch(var(--bc) / 0.1) 55%);
   box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
 }
 
 .up-repo-name {
-  color: color-mix(in srgb, var(--auth-btn-bg) 76%, var(--dashboard-text-main) 24%);
+  color: color-mix(in srgb, var(--auth-btn-bg) 76%, oklch(var(--bc) / 1) 24%);
   font-weight: 700;
   margin: 0 0 8px 0;
   font-size: 1.05rem;
 }
 
 .up-repo-desc {
-  color: var(--dashboard-text-secondary);
+  color: oklch(var(--bc) / 0.8);
   font-size: 0.85rem;
   margin: 0 0 16px 0;
   display: -webkit-box;
@@ -293,30 +293,30 @@
 }
 
 .up-repo-stars {
-  color: color-mix(in srgb, #f59e0b 82%, var(--dashboard-text-main) 18%);
+  color: color-mix(in srgb, #f59e0b 82%, oklch(var(--bc) / 1) 18%);
 }
 
 .up-repo-forks {
-  color: color-mix(in srgb, #10b981 78%, var(--dashboard-text-main) 22%);
+  color: color-mix(in srgb, #10b981 78%, oklch(var(--bc) / 1) 22%);
 }
 
 .up-repo-lang {
   margin-left: auto;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .up-github-loading, .up-github-empty {
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.95rem;
   text-align: center;
   padding: 20px;
 }
 
 .up-devsync-section {
-  background: var(--dashboard-glass-bg);
+  background: oklch(var(--b1) / 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--dashboard-glass-border-translucent);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 24px;
   padding: 22px;
   box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
@@ -335,8 +335,8 @@
 }
 
 .up-stat-card {
-  background: var(--dashboard-surface-alt);
-  border: 1px solid var(--dashboard-border);
+  background: oklch(var(--b3) / 1);
+  border: 1px solid oklch(var(--bc) / 0.1);
   border-radius: 14px;
   padding: 16px;
   display: flex;
@@ -366,18 +366,18 @@
 .up-stat-value {
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   line-height: 1;
 }
 
 .up-stat-label {
   font-size: 0.84rem;
   font-weight: 600;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .up-devsync-empty {
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.95rem;
   text-align: center;
   padding: 10px 0;

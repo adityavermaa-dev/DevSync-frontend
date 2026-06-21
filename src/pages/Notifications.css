@@ -41,13 +41,13 @@
   font-size: 1.75rem;
   font-weight: 800;
   letter-spacing: -0.5px;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   margin: 0;
 }
 
 .notif-header-count {
   font-size: 0.85rem;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-weight: 500;
 }
 
@@ -59,10 +59,10 @@
 .notif-action-btn {
   padding: 0.55rem 1.1rem;
   border-radius: 12px;
-  border: 1px solid var(--dashboard-border);
-  background: var(--dashboard-glass-bg);
+  border: 1px solid oklch(var(--bc) / 0.1);
+  background: oklch(var(--b1) / 0.85);
   backdrop-filter: blur(12px);
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -73,9 +73,9 @@
 }
 
 .notif-action-btn:hover {
-  color: var(--dashboard-text-main);
-  background: var(--dashboard-surface-alt);
-  border-color: var(--dashboard-glass-border);
+  color: oklch(var(--bc) / 1);
+  background: oklch(var(--b3) / 1);
+  border-color: oklch(var(--bc) / 0.15);
 }
 
 .notif-action-btn.danger:hover {
@@ -105,9 +105,9 @@
 .notif-tab {
   padding: 0.5rem 1rem;
   border-radius: 100px;
-  border: 1px solid var(--dashboard-border);
+  border: 1px solid oklch(var(--bc) / 0.1);
   background: transparent;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -119,8 +119,8 @@
 }
 
 .notif-tab:hover {
-  color: var(--dashboard-text-main);
-  background: var(--dashboard-surface-alt);
+  color: oklch(var(--bc) / 1);
+  background: oklch(var(--b3) / 1);
 }
 
 .notif-tab.active {
@@ -154,7 +154,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   padding: 0.75rem 0 0.25rem 0.5rem;
 }
 
@@ -165,9 +165,9 @@
   gap: 0.9rem;
   padding: 1rem 1.1rem;
   border-radius: 16px;
-  background: var(--dashboard-glass-bg);
+  background: oklch(var(--b1) / 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--dashboard-border);
+  border: 1px solid oklch(var(--bc) / 0.1);
   cursor: pointer;
   transition: all 0.25s ease;
   position: relative;
@@ -199,8 +199,8 @@
 }
 
 .notif-item.unread {
-  background: var(--dashboard-surface-alt);
-  border-color: var(--dashboard-glass-border);
+  background: oklch(var(--b3) / 1);
+  border-color: oklch(var(--bc) / 0.15);
 }
 
 .notif-item.unread::before {
@@ -208,8 +208,8 @@
 }
 
 .notif-item:hover {
-  background: var(--dashboard-surface-alt);
-  border-color: var(--dashboard-glass-border);
+  background: oklch(var(--b3) / 1);
+  border-color: oklch(var(--bc) / 0.15);
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
@@ -259,7 +259,7 @@
 
 .notif-text {
   font-size: 0.88rem;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   line-height: 1.45;
   margin: 0;
 }
@@ -277,7 +277,7 @@
 
 .notif-time {
   font-size: 0.75rem;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
 }
 
 .notif-type-badge {
@@ -316,7 +316,7 @@
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -365,13 +365,13 @@
 .notif-empty h3 {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--dashboard-text-main);
+  color: oklch(var(--bc) / 1);
   margin: 0 0 0.4rem 0;
 }
 
 .notif-empty p {
   font-size: 0.88rem;
-  color: var(--dashboard-text-faint);
+  color: oklch(var(--bc) / 0.6);
   margin: 0;
 }
 
@@ -382,15 +382,15 @@
   gap: 0.9rem;
   padding: 1rem 1.1rem;
   border-radius: 16px;
-  background: var(--dashboard-glass-bg);
-  border: 1px solid var(--dashboard-border);
+  background: oklch(var(--b1) / 0.85);
+  border: 1px solid oklch(var(--bc) / 0.1);
 }
 
 .notif-skeleton-icon {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: var(--dashboard-surface-alt);
+  background: oklch(var(--b3) / 1);
   animation: skeletonPulse 1.5s ease-in-out infinite;
 }
 
@@ -404,7 +404,7 @@
 .notif-skeleton-line {
   height: 12px;
   border-radius: 6px;
-  background: var(--dashboard-surface-alt);
+  background: oklch(var(--b3) / 1);
   animation: skeletonPulse 1.5s ease-in-out infinite;
 }
 
