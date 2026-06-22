@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import './Login.css';
-import logo from '../assests/images/logo.png';
+import logo from '../assests/images/logo.svg';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUser } from '../redux/userSlice';
@@ -168,7 +168,7 @@ const Login = () => {
                     const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
                     dispatch(addUser(profileRes.data));
                     toast.success('GitHub login successful!');
-                    navigate("/");
+                    navigate("/profile");
                 } catch (error) {
                     setApiError("Failed to fetch profile after GitHub login");
                     toast.error("Failed to fetch profile after GitHub login");
@@ -296,9 +296,9 @@ const Login = () => {
             <div className="landing-bg-circle circle-yellow" />
 
             <nav className="landing-navbar-container">
-                <div className="landing-logo" style={{ cursor: 'pointer' }}>
+                <div className="landing-logo flex items-center gap-2" style={{ cursor: 'pointer' }}>
                     <img src={logo} alt="DevSync logo" />
-                    <span>DevSync</span>
+                    <span className="brand-logo-text flex items-center"><img src="/devsync-wordmark.png" alt="DevSync" className="h-32 object-contain ml-0 pl-0" style={{ transform: 'translateY(2px)' }} /></span>
                 </div>
 
                 <button

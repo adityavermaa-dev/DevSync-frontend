@@ -83,7 +83,7 @@ const Premium = () => {
                 currency: currency,
                 name: "DevSync",
                 description: "Premium Membership",
-                image: "https://www.devsync.com/logo.png",
+                image: "https://www.devsync.com/logo.svg",
                 order_id: orderId,
                 notes: notes,
                 prefill: {

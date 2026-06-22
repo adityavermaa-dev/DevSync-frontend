@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { BASE_URL } from '../constants/commonData';
 import { addUser } from '../redux/userSlice';
 import { extractGithubUsername, persistGithubUsername } from '../utils/githubAPI';
-import logo from '../assests/images/logo.png';
+import logo from '../assests/images/logo.svg';
 import AnimatedEmoji from '../components/AnimatedEmoji';
 import './Onboarding.css';
 
@@ -281,7 +281,7 @@ const Onboarding = () => {
                 </button>
               ))}
             </div>
-            <button onClick={nextStep} className="w-full py-4 rounded-xl text-white font-bold text-lg bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]">
+            <button onClick={nextStep} className="w-full py-4 rounded-full text-white font-bold text-lg bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]">
               Continue
             </button>
           </div>
@@ -306,10 +306,10 @@ const Onboarding = () => {
             </div>
             
             <div className="flex gap-4">
-              <button onClick={() => setStep(1)} className="w-1/3 py-4 rounded-xl font-bold border-2 onboarding-secondary-btn transition-all">
+              <button onClick={() => setStep(1)} className="w-1/3 py-4 rounded-full font-bold border-2 onboarding-secondary-btn transition-all">
                 Back
               </button>
-              <button onClick={nextStep} className="w-2/3 py-4 rounded-xl text-white font-bold text-lg bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/30 transition-all">
+              <button onClick={nextStep} className="w-2/3 py-4 rounded-full text-white font-bold text-lg bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/30 transition-all">
                 Continue
               </button>
             </div>
@@ -328,7 +328,7 @@ const Onboarding = () => {
                   <span className="absolute left-4 top-3.5 text-gray-400 font-medium">github.com/</span>
                   <input 
                     type="text" 
-                    className="w-full onboarding-input rounded-xl py-3 pr-4 outline-none font-bold transition-all"
+                    className="w-full onboarding-input rounded-full py-3 pr-4 outline-none font-bold transition-all"
                     style={{ paddingLeft: 105 }}
                     placeholder="username"
                     value={formData.githubUsername}
@@ -340,7 +340,7 @@ const Onboarding = () => {
               <div>
                 <label className="block text-sm font-bold onboarding-title mb-2">About You (Optional)</label>
                 <textarea 
-                  className="w-full onboarding-input rounded-xl p-4 outline-none resize-none transition-all"
+                  className="w-full onboarding-input rounded-full p-4 outline-none resize-none transition-all"
                   style={{ minHeight: 100 }}
                   placeholder={`I am a ${formData.role} building awesome things...`}
                   value={formData.about}
@@ -350,10 +350,10 @@ const Onboarding = () => {
             </div>
             
             <div className="flex gap-4">
-              <button onClick={() => setStep(2)} className="w-1/3 py-4 rounded-xl font-bold border-2 onboarding-secondary-btn transition-all">
+              <button onClick={() => setStep(2)} className="w-1/3 py-4 rounded-full font-bold border-2 onboarding-secondary-btn transition-all">
                 Back
               </button>
-              <button onClick={submitOnboarding} disabled={loading} className={`w-2/3 py-4 rounded-xl text-white font-bold text-lg bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/30 transition-all ${loading ? 'opacity-70 scale-95' : 'hover:scale-[1.02]'}`}>
+              <button onClick={submitOnboarding} disabled={loading} className={`w-2/3 py-4 rounded-full text-white font-bold text-lg bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/30 transition-all ${loading ? 'opacity-70 scale-95' : 'hover:scale-[1.02]'}`}>
                 {loading ? 'Saving...' : 'Enter Hub 🚀'}
               </button>
             </div>

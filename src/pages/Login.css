@@ -82,13 +82,13 @@
 .landing-logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0;
     font-weight: 700;
     font-size: clamp(1.1rem, 2vw, 1.5rem);
     flex: 1;
 }
 
-.landing-logo img {
+.landing-logo > img {
     height: 38px;
     width: 38px;
 }

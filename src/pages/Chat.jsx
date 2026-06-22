@@ -920,7 +920,7 @@ const Chat = () => {
               <p className="text-gray-500 font-medium max-w-sm mb-8 text-[15px] leading-relaxed">Select a chat from the sidebar to start messaging, or browse the Hub to find new teams and projects.</p>
               <button 
                 onClick={() => navigate('/projects')}
-                className="px-8 py-3.5 rounded-xl font-bold text-white bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/20 hover:scale-105 transition-all flex items-center gap-3"
+                className="px-8 py-3.5 rounded-full font-bold text-white bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/20 hover:scale-105 transition-all flex items-center gap-3"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" /></svg>
                 Explore Projects

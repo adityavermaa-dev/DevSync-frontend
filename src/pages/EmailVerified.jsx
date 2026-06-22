@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assests/images/logo.png';
+import logo from '../assests/images/logo.svg';
 import './Login.css';
 
 const EmailVerified = () => {
@@ -23,7 +23,7 @@ const EmailVerified = () => {
             <nav className="landing-navbar-container">
                 <div className="landing-logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/login')}>
                     <img src={logo} alt="DevSync logo" />
-                    <span>DevSync</span>
+                    <span className="brand-logo-text flex items-center"><img src="/devsync-wordmark.png" alt="DevSync" className="h-8 object-contain" style={{ transform: 'translateY(2px)' }} /></span>
                 </div>
             </nav>
 

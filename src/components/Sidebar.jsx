@@ -8,7 +8,7 @@ import { removeConnections } from '../redux/connectionSlice';
 import { removeFeed } from '../redux/feedSlice';
 import { removeRequests } from '../redux/requestSlice';
 import { removeReels } from '../redux/reelsSlice';
-import logo from '../assests/images/logo.png';
+import logo from '../assests/images/logo.svg';
 import userIcon from '../assests/images/default-user-image.png';
 import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
@@ -59,8 +59,8 @@ const Sidebar = () => {
         return (
             <div className="fixed top-0 left-0 w-full p-4 z-50 pointer-events-none">
                 <Link to="/" className="flex items-center gap-2 text-white no-underline w-max pointer-events-auto">
-                    <img src={logo} alt="DevSync" className="w-10 h-10 rounded-xl" />
-                    <span className="text-2xl font-bold">DevSync</span>
+                    <img src={logo} alt="DevSync" className="w-10 h-10 rounded-full" />
+                    <span className="brand-logo-text flex items-center"><img src="/devsync-wordmark.png" alt="DevSync" className="h-8 object-contain" style={{ transform: 'translateY(2px)' }} /></span>
                 </Link>
             </div>
         );
@@ -70,9 +70,9 @@ const Sidebar = () => {
         <aside className="app-sidebar">
             {}
             <div className="sidebar-brand">
-                <Link to="/" className="sidebar-logo-link">
+                <Link to="/" className="sidebar-logo-link flex items-center gap-2">
                     <img src={logo} alt="DevSync" className="sidebar-logo-img" />
-                    <span className="sidebar-brand-text">DevSync</span>
+                    <span className="brand-logo-text flex items-center"><img src="/devsync-wordmark.png" alt="DevSync" className="h-8 object-contain" style={{ transform: 'translateY(2px)' }} /></span>
                 </Link>
             </div>
 

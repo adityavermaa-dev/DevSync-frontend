@@ -126,7 +126,7 @@ const BuildLogs = () => {
                 <form onSubmit={handlePostLog}>
                     <input 
                         type="text" 
-                        className="buildlog-input w-full bg-white/60 dark:bg-black/20 border-none rounded-xl p-3 mb-3 text-sm font-semibold focus:ring-2 focus:ring-purple-400 outline-none feed-text-main transition-all"
+                        className="buildlog-input w-full bg-white/60 dark:bg-black/20 border-none rounded-full p-3 mb-3 text-sm font-semibold focus:ring-2 focus:ring-purple-400 outline-none feed-text-main transition-all"
                         placeholder="Log Title (e.g., Implemented WebSocket chat!)"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -134,7 +134,7 @@ const BuildLogs = () => {
                     />
                     
                     <textarea 
-                        className="buildlog-textarea w-full bg-white/60 dark:bg-black/20 border-none rounded-xl p-3 mb-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none feed-text-main min-h-[120px] resize-y transition-all"
+                        className="buildlog-textarea w-full bg-white/60 dark:bg-black/20 border-none rounded-full p-3 mb-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none feed-text-main min-h-[120px] resize-y transition-all"
                         placeholder="Write your update here... Supports Markdown! Try code blocks, lists, etc."
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
@@ -144,7 +144,7 @@ const BuildLogs = () => {
                     <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
                         <input 
                             type="text" 
-                            className="buildlog-input w-full md:w-2/3 bg-white/60 dark:bg-black/20 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none feed-text-main transition-all"
+                            className="buildlog-input w-full md:w-2/3 bg-white/60 dark:bg-black/20 border-none rounded-full p-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none feed-text-main transition-all"
                             placeholder="Tags (comma separated, e.g., react, backend, bugfix)"
                             value={tags}
                             onChange={(e) => setTags(e.target.value)}
@@ -152,7 +152,7 @@ const BuildLogs = () => {
                         <button 
                             type="submit" 
                             disabled={isPosting}
-                            className={`w-full md:w-auto px-8 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg shadow-purple-500/30 transition-all ${isPosting ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}`}
+                            className={`w-full md:w-auto px-8 py-3 rounded-full font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg shadow-purple-500/30 transition-all ${isPosting ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}`}
                         >
                             {isPosting ? 'Posting...' : 'Post Log 🚀'}
                         </button>
@@ -223,7 +223,7 @@ const BuildLogs = () => {
                                                         style={atomDark}
                                                         language={match[1]}
                                                         PreTag="div"
-                                                        className="rounded-xl overflow-hidden shadow-sm !my-4 text-sm"
+                                                        className="rounded-full overflow-hidden shadow-sm !my-4 text-sm"
                                                     />
                                                 ) : (
                                                     <code {...props} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-purple-600 dark:text-purple-400 font-mono text-[13px]">
