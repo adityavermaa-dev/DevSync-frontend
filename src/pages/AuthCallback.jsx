@@ -15,52 +15,54 @@ const AuthCallback = ({ provider = "Authentication" }) => {
 
         const completeAuth = async () => {
             try {
-                // For GitHub: the backend has already exchanged the code and set
-                // the auth cookie before redirecting here.  We just need to fetch
-                // the profile and signal the opener window.
-                const profileRes = await axios.get(`${BASE_URL}/profile/view`, {
-                    withCredentials: true,
-                });
+                const urlParams = new URLSearchParams(window.location.search);
+                const isError = urlParams.get("error");
 
-                if (!isMounted) {
-                    return;
-                }
-
-                dispatch(addUser(profileRes.data));
-                toast.success(`${provider} login successful.`);
-
-                // Notify the opener / parent tab via BroadcastChannel
+                // Notify the opener / parent tab via BroadcastChannel (for same-origin fallback)
                 const authChannel = new BroadcastChannel("devsync-auth");
-                authChannel.postMessage({ type: "LOGIN_SUCCESS" });
+                
+                if (isError) {
+                    authChannel.postMessage({ type: "LOGIN_ERROR" });
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.postMessage("devsync_github_auth_error", "*");
+                    }
+                    toast.error(`${provider} login failed or was cancelled.`);
+                } else {
+                    authChannel.postMessage({ type: "LOGIN_SUCCESS" });
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.postMessage("devsync_github_auth_success", "*");
+                    }
+                }
                 authChannel.close();
 
-                // Send a message to the opener window if it exists (works across origins)
+                // Close popup
                 if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage("devsync_github_auth_success", "*");
                     window.close();
                     return;
                 }
-
-                // Fallback check for window name (handle typo and legacy name)
                 if (window.name === "devsync_github_auth" || window.name === "devsync-github-auth") {
                     window.close();
                     return;
                 }
 
-                // Fallback: not a popup, navigate to home
-                navigate("/", { replace: true });
-            } catch {
-                if (!isMounted) {
-                    return;
+                // Fallback: not a popup, navigate to home or login
+                if (isError) {
+                    navigate("/login", { replace: true });
+                } else {
+                    // Only fetch profile if we are the main window
+                    const profileRes = await axios.get(`${BASE_URL}/profile/view`, {
+                        withCredentials: true,
+                    });
+                    if (isMounted) {
+                        dispatch(addUser(profileRes.data));
+                        toast.success(`${provider} login successful.`);
+                        navigate("/", { replace: true });
+                    }
                 }
-
-                toast.error(
-                    `${provider} login could not be completed. Please try again.`
-                );
-                navigate("/login", {
-                    replace: true,
-                    state: { openModal: true },
-                });
+            } catch (err) {
+                if (!isMounted) return;
+                toast.error(`${provider} login could not be completed.`);
+                navigate("/login", { replace: true });
             }
         };
 
