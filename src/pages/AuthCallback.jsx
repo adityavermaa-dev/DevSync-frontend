@@ -34,13 +34,15 @@ const AuthCallback = ({ provider = "Authentication" }) => {
                 authChannel.postMessage({ type: "LOGIN_SUCCESS" });
                 authChannel.close();
 
-                // If we were opened as a popup, close ourselves
+                // Send a message to the opener window if it exists (works across origins)
                 if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage("devsync_github_auth_success", "*");
                     window.close();
                     return;
                 }
 
-                if (window.name === "devsync-github-auth") {
+                // Fallback check for window name (handle typo and legacy name)
+                if (window.name === "devsync_github_auth" || window.name === "devsync-github-auth") {
                     window.close();
                     return;
                 }

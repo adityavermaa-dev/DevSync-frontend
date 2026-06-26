@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthLayout, OAuthButton } from '@/features/auth';
 import { Stack, Button, Text } from '@/design-system';
-import { Link } from 'react-router-dom';
-import { authApi } from '@/api/auth.api';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addUser } from '@/redux/userSlice';
+import { BASE_URL } from '@/constants/commonData';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,29 +17,122 @@ export const LoginPage = () => {
   const [loadingText, setLoadingText] = useState('');
   const [error, setError] = useState('');
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useSelector(store => store.user);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const isEmailVerificationRequiredMessage = (value) => {
+    const text = String(value || '').toLowerCase();
+    return text.includes('verify') && text.includes('email');
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     try {
-      await authApi.login({ email, password });
-      window.location.href = '/dashboard'; 
+      await axios.post(BASE_URL + "/login", { email: email.trim(), password }, { withCredentials: true });
+      const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
+      dispatch(addUser(profileRes.data));
+      toast.success('Welcome back!');
+      navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to login');
+      const msg = err?.response?.data?.message || err?.response?.data || (err?.response?.status === 401 ? "Invalid email or password" : "Something went wrong.");
+      const errorMsg = typeof msg === "string" ? msg : "Something went wrong.";
+
+      if (isEmailVerificationRequiredMessage(errorMsg)) {
+        toast.error(errorMsg);
+        navigate('/signup-success', { state: { email: email.trim() } });
+        return;
+      }
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGithubLogin = async () => {
-    setOauthLoading(true);
-    setLoadingText('Connecting your GitHub...');
+  const handleGoogleLogin = async (credentialResponse) => {
     try {
-      await authApi.github();
-    } catch {
-      setError('GitHub login failed');
+      setOauthLoading(true);
+      setLoadingText('Connecting Google...');
+      await axios.post(BASE_URL + "/auth/google/callback", { credential: credentialResponse.credential }, { withCredentials: true });
+      const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
+      dispatch(addUser(profileRes.data));
+      toast.success('Welcome back!');
+      navigate("/");
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.response?.data || "Google login failed.";
+      const errorMsg = typeof msg === "string" ? msg : "Google login failed.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
       setOauthLoading(false);
     }
+  };
+
+  const handleGithubLogin = () => {
+    setOauthLoading(true);
+    setLoadingText('Connecting GitHub...');
+    setError("");
+
+    const width = 500;
+    const height = 600;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    
+    const popup = window.open(
+      `${BASE_URL}/auth/github`,
+      "devsync_github_auth",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+
+    if (!popup) {
+      toast.error("Please allow popups for GitHub login");
+      setOauthLoading(false);
+      return;
+    }
+
+    const messageListener = async (event) => {
+      if (event.data === "devsync_github_auth_success") {
+        window.removeEventListener("message", messageListener);
+        try {
+          const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
+          dispatch(addUser(profileRes.data));
+          toast.success('GitHub login successful!');
+          navigate("/");
+        } catch (err) {
+          setError("Failed to fetch profile after GitHub login");
+          toast.error("Failed to fetch profile after GitHub login");
+        } finally {
+          setOauthLoading(false);
+        }
+      } else if (event.data === "devsync_github_auth_error") {
+        window.removeEventListener("message", messageListener);
+        setError("GitHub authentication failed");
+        toast.error("GitHub authentication failed");
+        setOauthLoading(false);
+      }
+    };
+
+    window.addEventListener("message", messageListener);
+
+    const popupWatcher = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(popupWatcher);
+        setTimeout(() => {
+          window.removeEventListener("message", messageListener);
+          setOauthLoading(false);
+        }, 500);
+      }
+    }, 500);
   };
 
   return (
@@ -43,10 +141,25 @@ export const LoginPage = () => {
         <OAuthButton 
           provider="github" 
           onClick={handleGithubLogin} 
-          isLoading={oauthLoading} 
+          isLoading={oauthLoading && loadingText.includes('GitHub')} 
           loadingText={loadingText} 
         />
         
+        <div className="w-full">
+          <GoogleLogin 
+            onSuccess={handleGoogleLogin} 
+            onError={() => {
+              setError("Google login failed");
+              toast.error("Google login failed");
+            }}
+            size="large"
+            width="100%"
+            shape="rectangular"
+            text="continue_with"
+            theme="outline"
+          />
+        </div>
+
         <div className="flex items-center space-x-4 py-2">
           <div className="flex-1 h-px bg-[var(--border-subtle)]"></div>
           <Text variant="small" className="text-[var(--text-muted)] font-medium">OR</Text>

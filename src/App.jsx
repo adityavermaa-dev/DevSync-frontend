@@ -6,7 +6,9 @@ import appStore from "./redux/appStore"
 import { ENABLE_PREMIUM } from "./constants/commonData";
 import ThemeProvider from "./components/ThemeProvider"
 import Body from "./Body"
-import Login from "./pages/Login"
+
+import { LoginPage } from "./pages/Auth/LoginPage"
+import { SignupPage } from "./pages/Auth/SignupPage"
 
 
 const About = lazy(() => import("./pages/About"));
@@ -34,10 +36,12 @@ const CreateProject = lazy(() => import("./pages/CreateProject"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const BuildLogs = lazy(() => import("./pages/BuildLogs"));
-const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Onboarding = lazy(() => import("./pages/Onboarding/ProfileSetup").then(module => ({ default: module.ProfileSetup })));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const VerifyEmailHandler = lazy(() => import("./pages/VerifyEmailHandler"));
 
+
+import { LandingPage } from "./pages/Landing/LandingPage";
 
 function App() {
 
@@ -52,7 +56,9 @@ function App() {
               </div>
             }>
               <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
               <Route path="/auth/google/callback" element={<AuthCallback provider="Google" />} />
               <Route path="/auth/github/callback" element={<AuthCallback provider="GitHub" />} />
               <Route path="/about" element={<About />} />
@@ -65,8 +71,9 @@ function App() {
               <Route path="/verification-failed" element={<VerificationFailed />} />
               <Route path="/verification-error" element={<VerificationFailed />} />
               <Route path="/signup-success" element={<SignupSuccess />} />
-              <Route path="/" element={<Body />}>
-                <Route path="/" element={<Feed />} />
+              
+              <Route element={<Body />}>
+                <Route path="/feed" element={<Feed />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/connections" element={<Connections />} />
                 <Route path="/user/:userId" element={<UserProfile />} />

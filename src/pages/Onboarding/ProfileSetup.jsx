@@ -9,8 +9,26 @@ import axios from 'axios';
 import { BASE_URL } from '@/constants/commonData';
 import toast from 'react-hot-toast';
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
+const PREDEFINED_SKILLS = [
+  'HTML', 'CSS', 'JavaScript', 'TypeScript',
+  'React', 'Next.js', 'Redux', 'Tailwind CSS',
+  'Node.js', 'Express.js', 'REST API', 'GraphQL',
+  'Python', 'Django', 'Flask',
+  'Java', 'Spring Boot',
+  'PHP', 'Laravel',
+  'Ruby on Rails',
+  'Go', 'Rust', 'C++',
+  'MongoDB', 'PostgreSQL', 'MySQL', 'Redis',
+  'Docker', 'Kubernetes', 'AWS', 'Azure', 'Google Cloud',
+  'CI/CD', 'Nginx',
+  'Machine Learning', 'Deep Learning',
+  'TensorFlow', 'PyTorch',
+  'Git', 'GitHub', 'GitLab',
+  'Linux', 'Bash', 'Postman',
+  'Figma', 'UI Design', 'UX Research'
+];
 const INTEREST_OPTIONS = [
   'Backend', 'Frontend', 'AI / ML', 'Mobile', 
   'UI/UX', 'DevOps', 'Web3', 'Open Source'
@@ -35,6 +53,7 @@ export const ProfileSetup = () => {
     graduationYear: '1st Year',
     timezone: 'IST (UTC+5:30)',
     interests: [],
+    skills: [],
     devSyncGoal: ''
   });
 
@@ -53,6 +72,21 @@ export const ProfileSetup = () => {
           return prev;
         }
         return { ...prev, interests: [...prev.interests, interest] };
+      }
+    });
+  };
+
+  const toggleSkill = (skill) => {
+    setFormData(prev => {
+      const isSelected = prev.skills.includes(skill);
+      if (isSelected) {
+        return { ...prev, skills: prev.skills.filter(s => s !== skill) };
+      } else {
+        if (prev.skills.length >= 10) {
+          toast.error("You can select up to 10 skills.");
+          return prev;
+        }
+        return { ...prev, skills: [...prev.skills, skill] };
       }
     });
   };
@@ -81,6 +115,7 @@ export const ProfileSetup = () => {
         graduationYear: formData.graduationYear,
         timezone: formData.timezone,
         interests: JSON.stringify(formData.interests), // backend expects stringified array or handles it
+        skills: JSON.stringify(formData.skills),
         devSyncGoal: formData.devSyncGoal,
         profileCompleted: true
       };
@@ -212,6 +247,35 @@ export const ProfileSetup = () => {
             {step === 4 && (
               <motion.div 
                 key="step4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 flex flex-col justify-center"
+              >
+                <Heading level={2} className="mb-2">What are your skills?</Heading>
+                <Text className="text-[var(--text-secondary)] mb-8">Select up to 10 technical skills you possess.</Text>
+                
+                <div className="flex flex-wrap gap-2 max-h-[250px] overflow-y-auto pb-4 pr-2 custom-scrollbar">
+                  {PREDEFINED_SKILLS.map(skill => (
+                    <button 
+                      key={skill} 
+                      onClick={() => toggleSkill(skill)}
+                      className={`px-4 py-2 rounded-xl border font-medium transition-colors ${
+                        formData.skills.includes(skill)
+                          ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                          : 'border-[var(--border-subtle)] hover:border-[var(--color-primary)] text-sm bg-[var(--surface-elevated)]'
+                      }`}
+                    >
+                      {skill}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {step === 5 && (
+              <motion.div 
+                key="step5"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
