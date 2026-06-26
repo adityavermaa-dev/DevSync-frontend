@@ -12,7 +12,8 @@ import {
   StudentJourneyTimeline,
   SocialProof, 
   WaitlistSection, 
-  LandingFooter
+  LandingFooter,
+  InformalCulture
 } from '@/features/landing';
 
 import { useSelector } from 'react-redux';
@@ -38,6 +39,7 @@ export const LandingPage = () => {
       <HowItWorks />
       <ProductDemoSection />
       <BuiltForStudents />
+      <InformalCulture />
       <SocialProof />
       <WaitlistSection />
       <LandingFooter />

@@ -11,3 +11,4 @@ export * from './components/HowItWorks';
 export * from './components/WaitlistSection';
 export * from './components/LandingFooter';
 export * from './components/LiveNetworkToast';
+export * from './components/InformalCulture';
