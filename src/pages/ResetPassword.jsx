@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { BASE_URL } from '../constants/commonData';
-import logo from '../assests/images/logo.svg';
-import './Login.css';
+import { AuthLayout } from '@/features/auth';
+import { Stack, Button, Text } from '@/design-system';
+import { CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 const ResetPassword = () => {
-    
     const { token } = useParams();
     const navigate = useNavigate();
-    
     
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -21,7 +20,6 @@ const ResetPassword = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [passwordReset, setPasswordReset] = useState(false);
 
-    
     useEffect(() => {
         if (!token) {
             setApiError("Invalid or missing reset token.");
@@ -59,9 +57,9 @@ const ResetPassword = () => {
         if (apiError) setApiError("");
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e?.preventDefault();
         if (!validate()) return;
-        
         
         if (!token) {
             setApiError("Invalid reset token.");
@@ -72,7 +70,6 @@ const ResetPassword = () => {
         setApiError("");
 
         try {
-            
             const response = await axios.post(
                 BASE_URL + `/reset-password/${token}`,
                 { password },
@@ -82,13 +79,9 @@ const ResetPassword = () => {
             toast.success(response.data.message || "Password reset successfully");
             setPasswordReset(true);
             
-            
             setTimeout(() => navigate("/login"), 2000);
         } catch (error) {
-            const msg =
-                error?.response?.data?.message ||
-                error?.response?.data ||
-                "Failed to reset password. The link may have expired.";
+            const msg = error?.response?.data?.message || error?.response?.data || "Failed to reset password. The link may have expired.";
             const errorMsg = typeof msg === "string" ? msg : "Failed to reset password.";
             setApiError(errorMsg);
             toast.error(errorMsg);
@@ -97,119 +90,80 @@ const ResetPassword = () => {
         }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-            handleSubmit();
-        }
-    };
+    if (passwordReset) {
+        return (
+            <AuthLayout title="Reset Success" subtitle="Your password has been successfully reset. Redirecting to login...">
+                <Stack spacing="lg" className="mt-8 items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
+                        <CheckCircle2 className="w-8 h-8 text-green-500" />
+                    </div>
+                </Stack>
+            </AuthLayout>
+        );
+    }
 
     return (
-        <div className="landing-page">
-            <div className="landing-bg-circle circle-blue" />
-            <div className="landing-bg-circle circle-pink" />
-            <div className="landing-bg-circle circle-yellow" />
-
-            <nav className="landing-navbar-container">
-                <div className="landing-logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/login')}>
-                    <img src={logo} alt="DevSync logo" />
-                    <span className="brand-logo-text flex items-center"><img src="/devsync-wordmark.png" alt="DevSync" className="h-8 object-contain" style={{ transform: 'translateY(2px)' }} /></span>
-                </div>
-            </nav>
-
-            <main className="landing-hero" style={{ justifyContent: 'center', paddingTop: '0' }}>
-                <div className="auth-modal" style={{ animation: 'modalSlideUp 0.4s ease-out', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.05)' }}>
-                    <header className="auth-header">
-                        <h2 className="auth-title">Reset Password</h2>
-                    </header>
-
-                    {apiError && (
-                        <div className="auth-error-toast" role="alert">
-                            <span>{apiError}</span>
-                        </div>
-                    )}
-
-                    {passwordReset ? (
-                        <div style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '64px', height: '64px', color: '#10b981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <h2 className="auth-title" style={{ marginBottom: '0.5rem' }}>Reset Success</h2>
-                            <p className="auth-subtitle" style={{ marginBottom: '1.5rem', color: '#6b7280' }}>
-                                Your password has been successfully reset. Redirecting to login...
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="auth-form-fields">
-                            <p className="auth-subtitle" style={{ textAlign: 'center', marginTop: '-1rem', marginBottom: '0.5rem' }}>
-                                Enter a new password for your account.
-                            </p>
-
-                            <div className="auth-field">
-                                <label>New Password</label>
-                                <div style={{ position: 'relative' }}>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Enter new password"
-                                        className={errors.password ? 'input-error' : ''}
-                                        value={password}
-                                        onChange={handlePasswordChange}
-                                        onKeyDown={handleKeyDown}
-                                        style={{ width: '100%' }}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}
-                                    >
-                                        {showPassword ? '🙈' : '👁️'}
-                                    </button>
-                                </div>
-                                {errors.password && <span className="field-error">{errors.password}</span>}
-                            </div>
-
-                            <div className="auth-field">
-                                <label>Confirm Password</label>
-                                <div style={{ position: 'relative' }}>
-                                    <input
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        placeholder="Confirm your password"
-                                        className={errors.confirmPassword ? 'input-error' : ''}
-                                        value={confirmPassword}
-                                        onChange={handleConfirmPasswordChange}
-                                        onKeyDown={handleKeyDown}
-                                        style={{ width: '100%' }}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}
-                                    >
-                                        {showConfirmPassword ? '🙈' : '👁️'}
-                                    </button>
-                                </div>
-                                {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
-                            </div>
-
-                            <button className="auth-submit-btn" onClick={handleSubmit} disabled={isLoading} style={{ width: '100%', marginTop: '0.5rem' }}>
-                                {isLoading && <span className="auth-spinner"></span>}
-                                {isLoading ? "Resetting..." : "Reset Password"}
-                            </button>
-
-                            <button 
-                                onClick={() => navigate("/login")}
-                                style={{ background: 'none', border: 'none', color: '#6b7280', fontSize: '0.9rem', cursor: 'pointer', fontFamily: 'inherit', fontWeight: '500', transition: 'color 0.2s', width: '100%' }}
-                                onMouseEnter={(e) => e.target.style.color = '#111827'}
-                                onMouseLeave={(e) => e.target.style.color = '#6b7280'}
+        <AuthLayout title="Reset Password" subtitle="Enter a new password for your account.">
+            <Stack spacing="lg" className="mt-8">
+                {apiError && (
+                    <div className="p-3 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                        {apiError}
+                    </div>
+                )}
+                
+                <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+                    <div className="flex flex-col space-y-1.5">
+                        <label className="text-sm font-medium">New Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter new password"
+                                className={`w-full h-11 px-3 pr-10 rounded-lg border bg-[var(--surface-elevated)] outline-none transition-colors ${errors.password ? 'border-red-500 focus:border-red-500' : 'border-[var(--border-subtle)] focus:border-[var(--color-primary)]'}`}
+                                value={password}
+                                onChange={handlePasswordChange}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                             >
-                                Back to Login
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                         </div>
-                    )}
-                </div>
-            </main>
-        </div>
+                        {errors.password && <span className="text-xs text-red-500 mt-1">{errors.password}</span>}
+                    </div>
+
+                    <div className="flex flex-col space-y-1.5">
+                        <label className="text-sm font-medium">Confirm Password</label>
+                        <div className="relative">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Confirm your password"
+                                className={`w-full h-11 px-3 pr-10 rounded-lg border bg-[var(--surface-elevated)] outline-none transition-colors ${errors.confirmPassword ? 'border-red-500 focus:border-red-500' : 'border-[var(--border-subtle)] focus:border-[var(--color-primary)]'}`}
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                            >
+                                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                        </div>
+                        {errors.confirmPassword && <span className="text-xs text-red-500 mt-1">{errors.confirmPassword}</span>}
+                    </div>
+
+                    <Button type="submit" variant="primary" className="h-11 mt-2" disabled={isLoading || !token}>
+                        {isLoading ? "Resetting..." : "Reset Password"}
+                    </Button>
+                </form>
+
+                <Text className="text-center text-sm text-[var(--text-secondary)] mt-4">
+                    Remember your password? <Link to="/login" className="text-[var(--color-primary)] font-medium hover:underline">Back to Login</Link>
+                </Text>
+            </Stack>
+        </AuthLayout>
     );
 };
 
