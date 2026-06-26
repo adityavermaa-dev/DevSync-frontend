@@ -99,7 +99,6 @@ function AppContent() {
                 <Route path="/refund" element={<RefundPolicy />} />
                 <Route path="/contact" element={<ContactUs />} />
                 <Route path="/upload" element={<VideoUpload />} />
-                <Route path="/feed" element={<VideoFeed />} />
                 <Route path="/premium" element={ENABLE_PREMIUM && Premium ? <Premium /> : <Navigate to="/" replace />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/chat/:targetUserId" element={<Chat />} />
