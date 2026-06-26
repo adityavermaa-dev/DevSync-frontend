@@ -134,57 +134,7 @@ export const SignupPage = () => {
     setOauthLoading(true);
     setLoadingText('Connecting GitHub...');
     setError("");
-
-    const width = 500;
-    const height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-    
-    const popup = window.open(
-      `${BASE_URL}/auth/github`,
-      "devsync_github_auth",
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
-
-    if (!popup) {
-      toast.error("Please allow popups for GitHub signup");
-      setOauthLoading(false);
-      return;
-    }
-
-    const messageListener = async (event) => {
-      if (event.data === "devsync_github_auth_success") {
-        window.removeEventListener("message", messageListener);
-        try {
-          const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
-          dispatch(addUser(profileRes.data));
-          toast.success('GitHub signup successful!');
-          navigate("/");
-        } catch (err) {
-          setError("Failed to fetch profile after GitHub signup");
-          toast.error("Failed to fetch profile after GitHub signup");
-        } finally {
-          setOauthLoading(false);
-        }
-      } else if (event.data === "devsync_github_auth_error") {
-        window.removeEventListener("message", messageListener);
-        setError("GitHub authentication failed");
-        toast.error("GitHub authentication failed");
-        setOauthLoading(false);
-      }
-    };
-
-    window.addEventListener("message", messageListener);
-
-    const popupWatcher = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(popupWatcher);
-        setTimeout(() => {
-          window.removeEventListener("message", messageListener);
-          setOauthLoading(false);
-        }, 500);
-      }
-    }, 500);
+    window.location.href = `${BASE_URL}/auth/github`;
   };
 
   return (
