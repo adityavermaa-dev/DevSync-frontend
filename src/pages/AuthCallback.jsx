@@ -17,6 +17,11 @@ const AuthCallback = ({ provider = "Authentication" }) => {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const isError = urlParams.get("error");
+                const hasSensitiveParams = ["token", "code", "state"].some((key) => urlParams.has(key));
+
+                if (hasSensitiveParams) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
 
                 // Notify the opener / parent tab via BroadcastChannel (for same-origin fallback)
                 const authChannel = new BroadcastChannel("devsync-auth");
