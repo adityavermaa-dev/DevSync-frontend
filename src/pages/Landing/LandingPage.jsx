@@ -33,13 +33,13 @@ export const LandingPage = () => {
       <HeroNetworkAnimation />
       <LandingNavbar />
       <HeroSection />
+      <InformalCulture />
       <WhyWeBuiltIt />
       <StudentJourneyTimeline />
       <InteractiveRecommendation />
       <HowItWorks />
       <ProductDemoSection />
       <BuiltForStudents />
-      <InformalCulture />
       <SocialProof />
       <WaitlistSection />
       <LandingFooter />
