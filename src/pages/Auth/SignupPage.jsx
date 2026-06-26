@@ -119,7 +119,7 @@ export const SignupPage = () => {
       const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
       dispatch(addUser(profileRes.data));
       toast.success('Welcome!');
-      navigate("/");
+      navigate("/feed");
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data || "Google signup failed.";
       const errorMsg = typeof msg === "string" ? msg : "Google signup failed.";

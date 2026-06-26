@@ -43,19 +43,35 @@ const VerifyEmailHandler = lazy(() => import("./pages/VerifyEmailHandler"));
 
 import { LandingPage } from "./pages/Landing/LandingPage";
 
-function App() {
+import { useDispatch, useSelector } from 'react-redux';
+import { addUser } from './redux/userSlice';
+import axios from 'axios';
+import { BASE_URL } from './constants/commonData';
+
+function AppContent() {
+  const dispatch = useDispatch();
+  const user = useSelector(store => store.user);
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      if (user) return;
+      try {
+        const res = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
+        dispatch(addUser(res.data));
+      } catch (error) {
+        // Not logged in, that's fine for public routes
+      }
+    };
+    fetchUser();
+  }, [dispatch, user]);
 
   return (
-    <>
-      <Provider store={appStore}>
-        <ThemeProvider>
-          <BrowserRouter basename="/">
-            <Suspense fallback={
-              <div className="flex h-screen w-full items-center justify-center bg-[#f9fafb] dark:bg-[#0D0D12]">
-                <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-              </div>
-            }>
-              <Routes>
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-[#f9fafb] dark:bg-[#0D0D12]">
+        <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+      </div>
+    }>
+      <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
@@ -98,32 +114,40 @@ function App() {
               </Route>
               <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </ThemeProvider>
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '12px',
-              fontSize: '0.88rem',
-              padding: '12px 18px',
-            },
-            success: {
-              iconTheme: { primary: '#34d399', secondary: 'var(--bg-card)' },
-            },
-            error: {
-              iconTheme: { primary: '#f87171', secondary: 'var(--bg-card)' },
-            },
-          }}
-        />
-      </Provider>
-    </>
-  )
+    </Suspense>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Provider store={appStore}>
+      <ThemeProvider>
+        <BrowserRouter basename="/">
+          <AppContent />
+        </BrowserRouter>
+      </ThemeProvider>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            fontSize: '0.88rem',
+            padding: '12px 18px',
+          },
+          success: {
+            iconTheme: { primary: '#34d399', secondary: 'var(--bg-card)' },
+          },
+          error: {
+            iconTheme: { primary: '#f87171', secondary: 'var(--bg-card)' },
+          },
+        }}
+      />
+    </Provider>
+  );
+}
+
+export default App;
