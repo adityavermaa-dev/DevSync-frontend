@@ -15,7 +15,18 @@ import {
   LandingFooter
 } from '@/features/landing';
 
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 export const LandingPage = () => {
+  const user = useSelector(store => store.user);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (user) {
+      navigate('/feed');
+    }
+  }, [user, navigate]);
   return (
     <Page className="bg-[var(--surface-primary)]">
       <HeroNetworkAnimation />

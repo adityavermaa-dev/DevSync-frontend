@@ -56,7 +56,7 @@ const AuthCallback = ({ provider = "Authentication" }) => {
                     if (isMounted) {
                         dispatch(addUser(profileRes.data));
                         toast.success(`${provider} login successful.`);
-                        navigate("/", { replace: true });
+                        navigate("/feed", { replace: true });
                     }
                 }
             } catch (err) {

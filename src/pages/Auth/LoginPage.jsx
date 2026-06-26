@@ -24,7 +24,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/feed");
     }
   }, [user, navigate]);
 
@@ -42,7 +42,7 @@ export const LoginPage = () => {
       const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
       dispatch(addUser(profileRes.data));
       toast.success('Welcome back!');
-      navigate("/");
+      navigate("/feed");
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data || (err?.response?.status === 401 ? "Invalid email or password" : "Something went wrong.");
       const errorMsg = typeof msg === "string" ? msg : "Something went wrong.";
@@ -67,7 +67,7 @@ export const LoginPage = () => {
       const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
       dispatch(addUser(profileRes.data));
       toast.success('Welcome back!');
-      navigate("/");
+      navigate("/feed");
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data || "Google login failed.";
       const errorMsg = typeof msg === "string" ? msg : "Google login failed.";
