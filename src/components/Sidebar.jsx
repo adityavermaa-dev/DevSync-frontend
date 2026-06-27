@@ -38,12 +38,12 @@ const Sidebar = () => {
     };
 
     const navLinks = [
-        { to: '/', label: 'Feed', icon: feedIcon },
+        { to: '/feed', label: 'Feed', icon: feedIcon },
         { to: '/connections', label: 'Matches', icon: connectionsIcon },
         { to: '/projects', label: 'Projects', icon: projectsIcon },
         { to: '/requests', label: 'Requests', icon: requestsIcon },
         { to: '/chat', label: 'Chat', icon: chatIcon },
-        { to: '/feed', label: 'Reels', icon: reelsIcon },
+        { to: '/reels', label: 'Reels', icon: reelsIcon },
         { to: '/updates', label: 'Updates', icon: updatesIcon },
         { to: '/upload', label: 'Upload', icon: uploadIcon },
         { to: '/notifications', label: 'Alerts', icon: notificationsIcon, badge: unreadCount },

@@ -63,7 +63,7 @@ const ForgotPassword = () => {
     if (emailSent) {
         return (
             <AuthLayout title="Check Your Email" subtitle="If an account exists with this email, you'll receive a password reset link shortly.">
-                <Stack spacing="lg" className="mt-8 items-center text-center">
+                <Stack spacing="lg" className="items-center text-center">
                     <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
                         <CheckCircle2 className="w-8 h-8 text-green-500" />
                     </div>
@@ -77,7 +77,7 @@ const ForgotPassword = () => {
 
     return (
         <AuthLayout title="Forgot Password?" subtitle="Enter your email address and we'll send you a link to reset your password.">
-            <Stack spacing="lg" className="mt-8">
+            <Stack spacing="lg">
                 {apiError && (
                     <div className="p-3 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                         {apiError}
@@ -89,7 +89,7 @@ const ForgotPassword = () => {
                         <input
                             type="email"
                             placeholder="your@email.com"
-                            className={`h-11 px-3 rounded-lg border bg-[var(--surface-elevated)] outline-none transition-colors ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-[var(--border-subtle)] focus:border-[var(--color-primary)]'}`}
+                            className="w-full h-11 px-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] focus:border-[var(--color-primary)] outline-none"
                             value={email}
                             onChange={handleEmailChange}
                             required

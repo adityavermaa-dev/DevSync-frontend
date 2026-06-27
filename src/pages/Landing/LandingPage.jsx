@@ -25,7 +25,7 @@ export const LandingPage = () => {
 
   React.useEffect(() => {
     if (user) {
-      navigate('/feed');
+      navigate('/feed', { replace: true });
     }
   }, [user, navigate]);
   return (

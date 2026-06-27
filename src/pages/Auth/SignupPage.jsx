@@ -73,7 +73,7 @@ export const SignupPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/feed");
+      navigate("/feed", { replace: true });
     }
   }, [user, navigate]);
 
@@ -113,13 +113,17 @@ export const SignupPage = () => {
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
+      if (!credentialResponse?.credential) {
+        throw new Error("Google did not return a credential.");
+      }
+
       setOauthLoading(true);
       setLoadingText('Connecting Google...');
       await axios.post(BASE_URL + "/auth/google/callback", { credential: credentialResponse.credential }, { withCredentials: true });
       const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
       dispatch(addUser(profileRes.data));
       toast.success('Welcome!');
-      navigate("/feed");
+      navigate("/feed", { replace: true });
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data || "Google signup failed.";
       const errorMsg = typeof msg === "string" ? msg : "Google signup failed.";
@@ -160,6 +164,7 @@ export const SignupPage = () => {
               setError("Google signup failed");
               toast.error("Google signup failed");
             }}
+            ux_mode="popup"
             size="large"
             width="100%"
             shape="rectangular"

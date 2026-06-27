@@ -93,7 +93,7 @@ const ResetPassword = () => {
     if (passwordReset) {
         return (
             <AuthLayout title="Reset Success" subtitle="Your password has been successfully reset. Redirecting to login...">
-                <Stack spacing="lg" className="mt-8 items-center text-center">
+                <Stack spacing="lg" className="items-center text-center">
                     <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
                         <CheckCircle2 className="w-8 h-8 text-green-500" />
                     </div>
@@ -104,7 +104,7 @@ const ResetPassword = () => {
 
     return (
         <AuthLayout title="Reset Password" subtitle="Enter a new password for your account.">
-            <Stack spacing="lg" className="mt-8">
+            <Stack spacing="lg">
                 {apiError && (
                     <div className="p-3 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                         {apiError}
@@ -118,7 +118,7 @@ const ResetPassword = () => {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter new password"
-                                className={`w-full h-11 px-3 pr-10 rounded-lg border bg-[var(--surface-elevated)] outline-none transition-colors ${errors.password ? 'border-red-500 focus:border-red-500' : 'border-[var(--border-subtle)] focus:border-[var(--color-primary)]'}`}
+                                className="w-full h-11 px-3 pr-10 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] focus:border-[var(--color-primary)] outline-none"
                                 value={password}
                                 onChange={handlePasswordChange}
                             />
@@ -139,7 +139,7 @@ const ResetPassword = () => {
                             <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm your password"
-                                className={`w-full h-11 px-3 pr-10 rounded-lg border bg-[var(--surface-elevated)] outline-none transition-colors ${errors.confirmPassword ? 'border-red-500 focus:border-red-500' : 'border-[var(--border-subtle)] focus:border-[var(--color-primary)]'}`}
+                                className="w-full h-11 px-3 pr-10 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] focus:border-[var(--color-primary)] outline-none"
                                 value={confirmPassword}
                                 onChange={handleConfirmPasswordChange}
                             />

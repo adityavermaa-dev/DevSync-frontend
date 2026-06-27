@@ -24,7 +24,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/feed");
+      navigate("/feed", { replace: true });
     }
   }, [user, navigate]);
 
@@ -42,7 +42,7 @@ export const LoginPage = () => {
       const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
       dispatch(addUser(profileRes.data));
       toast.success('Welcome back!');
-      navigate("/feed");
+      navigate("/feed", { replace: true });
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data || (err?.response?.status === 401 ? "Invalid email or password" : "Something went wrong.");
       const errorMsg = typeof msg === "string" ? msg : "Something went wrong.";
@@ -61,13 +61,17 @@ export const LoginPage = () => {
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
+      if (!credentialResponse?.credential) {
+        throw new Error("Google did not return a credential.");
+      }
+
       setOauthLoading(true);
       setLoadingText('Connecting Google...');
       await axios.post(BASE_URL + "/auth/google/callback", { credential: credentialResponse.credential }, { withCredentials: true });
       const profileRes = await axios.get(BASE_URL + "/profile/view", { withCredentials: true });
       dispatch(addUser(profileRes.data));
       toast.success('Welcome back!');
-      navigate("/feed");
+      navigate("/feed", { replace: true });
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data || "Google login failed.";
       const errorMsg = typeof msg === "string" ? msg : "Google login failed.";
@@ -102,6 +106,7 @@ export const LoginPage = () => {
               setError("Google login failed");
               toast.error("Google login failed");
             }}
+            ux_mode="popup"
             size="large"
             width="100%"
             shape="rectangular"
