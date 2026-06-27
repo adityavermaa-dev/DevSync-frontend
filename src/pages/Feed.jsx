@@ -9,6 +9,7 @@ import { addRequests, removeRequest } from '../redux/requestSlice';
 import UserCard from '../components/UserCard';
 import AnimatedEmoji from '../components/AnimatedEmoji';
 import defaultAvatar from '../assests/images/default-user-image.png';
+import { Page, Container, Card, Stack, Heading, Text, Badge, Avatar, Button } from '@/design-system';
 import './Feed.css';
 import toast from 'react-hot-toast';
 
@@ -291,28 +292,48 @@ const Feed = () => {
     }, []);
 
     
+    const displayFeed = React.useMemo(() => {
+        if (!feed) return [];
+        return feed;
+    }, [feed]);
+
+    useEffect(() => {
+        if (feed && feed.length > 0 && recommendations?.matchedDevelopers?.length > 0) {
+            const alreadyMerged = feed.some(u => u.matchScore !== undefined);
+            if (!alreadyMerged) {
+                const matchMap = new Map();
+                recommendations.matchedDevelopers.forEach(dev => matchMap.set(dev._id, dev.matchScore));
+                
+                const mergedFeed = [...feed].map(user => ({
+                    ...user,
+                    matchScore: matchMap.get(user._id)
+                })).sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+                
+                dispatch(addFeed(mergedFeed));
+            }
+        }
+    }, [feed, recommendations, dispatch]);
+
     const renderFeedState = () => {
         if (loading) {
             return (
-                <div className="feed-page w-full flex flex-col items-center">
-                    <div className="feed-loading">
-                        <div className="feed-spinner" />
-                    </div>
+                <div className="w-full flex flex-col items-center justify-center min-h-[500px]">
+                    <div className="feed-spinner" />
                 </div>
             );
         }
 
         if (!feed || feed.length === 0) {
             return (
-                <div className="feed-page w-full flex flex-col items-center">
-                    <div className="feed-empty w-full">
-                        <div className="feed-empty-avatar">
+                <div className="w-full flex flex-col items-center justify-center min-h-[500px]">
+                    <div className="feed-empty w-full text-center">
+                        <div className="feed-empty-avatar mx-auto mb-6">
                             <AnimatedEmoji mousePos={{x: 0, y: 0}} />
                         </div>
-                        <h2 className="feed-empty-title">All Caught Up!</h2>
-                        <p className="feed-empty-text">
+                        <Heading level={2} className="mb-2">All Caught Up!</Heading>
+                        <Text className="text-[var(--text-secondary)]">
                             You&apos;ve seen everyone for now. Check back later for new connections!
-                        </p>
+                        </Text>
                     </div>
                 </div>
             );
@@ -322,37 +343,36 @@ const Feed = () => {
         const nextUser = feed[1] || null;
 
         return (
-            <div className="feed-page w-full flex flex-col items-center">
-                <div className="w-full max-w-2xl mb-6 text-center relative z-10 flex flex-col items-center mt-2">
-                    <p className="feed-overline">Developer Discovery</p>
-                    <h1 className="text-4xl md:text-5xl font-bold feed-text-main tracking-tight mb-3" style={{ fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.02em' }}>
+            <div className="w-full flex flex-col items-center">
+                <div className="w-full max-w-2xl mb-8 text-center flex flex-col items-center">
+                    <Badge variant="primary" className="mb-4">Developer Discovery</Badge>
+                    <Heading level={1} className="text-4xl md:text-5xl font-bold tracking-tight mb-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
                         Swipe. Match. Build.
-                    </h1>
-                    <p className="text-sm md:text-base feed-text-faint font-medium max-w-xl px-4 leading-relaxed">
+                    </Heading>
+                    <Text className="text-[var(--text-secondary)] max-w-xl mx-auto text-lg mb-6">
                         Discover developers who fit your stack and start real collaborations.
-                    </p>
-                    <div className="feed-hero-stats">
-                        <span className="feed-hero-chip">{connections?.length || 0} connections</span>
-                        <span className="feed-hero-chip">{requests?.length || 0} pending requests</span>
-                        <span className="feed-hero-chip">{recommendations?.matchedDevelopers?.length || 0} top matches</span>
-                    </div>
+                    </Text>
                 </div>
 
                 <div
-                    className="tinder-stage"
+                    className="tinder-stage relative w-full flex justify-center"
                     style={{
-                        backgroundImage: `linear-gradient(160deg, rgba(8, 18, 32, 0.5), rgba(8, 18, 32, 0.2)), url('${getUserPhotoUrl(currentUser)}')`
+                        backgroundImage: `radial-gradient(circle at center, var(--border-subtle) 1px, transparent 1px)`, 
+                        backgroundSize: '24px 24px',
+                        backgroundColor: 'var(--surface-sunken)',
+                        borderRadius: '24px',
+                        border: '1px solid var(--border-subtle)'
                     }}
                 >
-                    <div className="feed-deck m-auto">
+                    <div className="feed-deck m-auto relative h-[600px] flex items-center justify-center" style={{ width: '100%', maxWidth: '380px' }}>
                         {nextUser && (
-                            <div className="feed-card-behind">
+                            <div className="feed-card-behind absolute scale-95 opacity-50 z-0">
                                 <UserCard user={nextUser} />
                             </div>
                         )}
 
                         <div
-                            className="feed-card-wrap"
+                            className="feed-card-wrap absolute z-10 w-full"
                             key={currentUser._id}
                             ref={cardRef}
                             onMouseDown={handleStart}
@@ -368,16 +388,16 @@ const Feed = () => {
                             <UserCard
                                 user={currentUser}
                                 actions={
-                                    <div className="feed-actions">
+                                    <div className="flex justify-center gap-6 py-2">
                                         <button
-                                            className="feed-action-btn feed-btn-pass"
+                                            className="w-14 h-14 rounded-full flex items-center justify-center bg-[var(--surface-elevated)] border-2 border-[var(--border-subtle)] text-red-400 hover:bg-red-500/10 hover:border-red-500 hover:text-red-500 transition-all shadow-md"
                                             onClick={(e) => { e.stopPropagation(); flyOff('left'); }}
                                             title="Pass"
                                         >
                                             {passIcon}
                                         </button>
                                         <button
-                                            className="feed-action-btn feed-btn-like"
+                                            className="w-14 h-14 rounded-full flex items-center justify-center bg-[var(--surface-elevated)] border-2 border-[var(--border-subtle)] text-green-400 hover:bg-green-500/10 hover:border-green-500 hover:text-green-500 transition-all shadow-md"
                                             onClick={(e) => { e.stopPropagation(); flyOff('right'); }}
                                             title="Interested"
                                         >
@@ -389,9 +409,9 @@ const Feed = () => {
                         </div>
                     </div>
 
-                    <div className="tinder-stage-hints">
-                        <span>Swipe left to pass</span>
-                        <span>Swipe right to connect</span>
+                    <div className="absolute bottom-6 w-full text-center text-[var(--text-muted)] text-sm font-medium flex justify-between px-12 pointer-events-none">
+                        <span>← Swipe left to pass</span>
+                        <span>Swipe right to connect →</span>
                     </div>
                 </div>
             </div>
@@ -399,107 +419,121 @@ const Feed = () => {
     };
 
     return (
-        <div className="tinder-home">
-            <main className="tinder-main">
-                {renderFeedState()}
-
-                <section className="tinder-matches">
-                    <div className="tinder-matches-head">
-                        <h3>Top Matches</h3>
-                        <span>AI</span>
-                    </div>
-                    {(!recommendations?.matchedDevelopers?.length && !recommendations?.matchedProjects?.length) ? (
-                        <p className="tinder-empty-text">No matches yet. Add more skills for better suggestions.</p>
-                    ) : (
-                        <div className="tinder-match-row custom-scrollbar">
-                            {recommendations?.matchedDevelopers?.slice(0, 6).map(dev => (
-                                <button
-                                    key={`dev-${dev?._id}`}
-                                    type="button"
-                                    className="tinder-pill"
-                                    onClick={() => navigate(`/user/${dev?._id}`, { state: { user: dev } })}
-                                >
-                                    <img src={getUserPhotoUrl(dev)} alt={dev?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
-                                    <div>
-                                        <p>{dev?.firstName}</p>
-                                        <small>{dev?.matchScore || 100}%</small>
-                                    </div>
-                                </button>
-                            ))}
-                            {recommendations?.matchedProjects?.slice(0, 3).map(proj => (
-                                <button
-                                    key={`proj-${proj._id}`}
-                                    type="button"
-                                    className="tinder-pill tinder-pill-project"
-                                    onClick={() => navigate(`/projects/${proj._id}`)}
-                                >
-                                    <div className="tinder-pill-badge">{proj.title.charAt(0).toUpperCase()}</div>
-                                    <div>
-                                        <p>{proj.title}</p>
-                                        <small>Project</small>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </section>
-
-                <section className="tinder-lists">
-                    <div className="tinder-list-card">
-                        <div className="tinder-list-head">
-                            <h3>Your Network</h3>
-                            <span>{connections?.length || 0}</span>
-                        </div>
-                        <div className="tinder-list-body custom-scrollbar">
-                            {(!connections || connections.length === 0) ? (
-                                <p className="tinder-empty-text">No connections yet. Swipe right to connect.</p>
-                            ) : (
-                                connections.slice(0, 6).map(user => (
-                                    <div key={user?._id} className="tinder-list-item" onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
-                                        <img src={getUserPhotoUrl(user)} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
-                                        <div>
-                                            <p>{user?.firstName} {user?.lastName}</p>
-                                            <small>{user?.skills?.[0] || 'Developer'}</small>
-                                        </div>
-                                        <Link to={`/chat/${user?._id}`} onClick={(e) => e.stopPropagation()}>Chat</Link>
-                                    </div>
-                                ))
-                            )}
-                        </div>
+        <Page className="bg-[var(--surface-primary)]">
+            <Container size="xl" className="py-6 md:py-10">
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+                    {/* Main Feed Section */}
+                    <div className="w-full lg:w-2/3">
+                        {renderFeedState()}
                     </div>
 
-                    <div className="tinder-list-card">
-                        <div className="tinder-list-head">
-                            <h3>Requests</h3>
-                            <span>{requests?.length || 0}</span>
-                        </div>
-                        <div className="tinder-list-body custom-scrollbar">
-                            {(!requests || requests.length === 0) ? (
-                                <p className="tinder-empty-text">No pending requests.</p>
-                            ) : (
-                                requests.slice(0, 6).map(req => {
-                                    const user = req?.fromUserId || req;
-                                    const isRemoving = removingReqId === req?._id;
-                                    return (
-                                        <div key={req?._id} className={`tinder-list-item ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ transitionDuration: '300ms' }} onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
-                                            <img src={getUserPhotoUrl(user)} alt={user?.firstName} onError={(e) => { e.target.src = defaultAvatar; }} />
-                                            <div>
-                                                <p>{user?.firstName} {user?.lastName}</p>
-                                                <small>{user?.skills?.[0] || 'Developer'}</small>
+                    {/* Sidebar Section */}
+                    <div className="w-full lg:w-1/3 flex flex-col gap-6">
+                        {/* Top Matches */}
+                        <Card variant="elevated" className="overflow-hidden border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
+                            <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                                <Heading level={3} className="text-lg">Top Matches</Heading>
+                                <Badge variant="primary" className="text-xs bg-blue-500/10 text-blue-500 border-blue-500/20">AI</Badge>
+                            </div>
+                            
+                            <div className="p-4 flex flex-col gap-3">
+                                {(!recommendations?.matchedDevelopers?.length && !recommendations?.matchedProjects?.length) ? (
+                                    <Text className="text-[var(--text-muted)] text-sm text-center py-4">No matches yet. Add more skills for better suggestions.</Text>
+                                ) : (
+                                    <>
+                                        {recommendations?.matchedDevelopers?.slice(0, 6).map(dev => (
+                                            <div 
+                                                key={`dev-${dev?._id}`}
+                                                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--surface-elevated)] cursor-pointer transition-colors"
+                                                onClick={() => navigate(`/user/${dev?._id}`, { state: { user: dev } })}
+                                            >
+                                                <Avatar src={getUserPhotoUrl(dev)} alt={dev?.firstName} size="md" />
+                                                <div className="flex-1 min-w-0">
+                                                    <Text className="font-medium truncate">{dev?.firstName}</Text>
+                                                    <Text variant="small" className="text-green-500 font-bold">{dev?.matchScore || 100}% Match</Text>
+                                                </div>
                                             </div>
-                                            <div className="tinder-list-actions" onClick={(e) => e.stopPropagation()}>
-                                                <button type="button" onClick={(e) => handleReviewRequest('rejected', req?._id, e)}>×</button>
-                                                <button type="button" onClick={(e) => handleReviewRequest('accepted', req?._id, e)}>✓</button>
+                                        ))}
+                                        {recommendations?.matchedProjects?.slice(0, 3).map(proj => (
+                                            <div 
+                                                key={`proj-${proj._id}`}
+                                                className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--surface-elevated)] cursor-pointer transition-colors"
+                                                onClick={() => navigate(`/projects/${proj._id}`)}
+                                            >
+                                                <div className="w-10 h-10 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-lg">
+                                                    {proj.title.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <Text className="font-medium truncate">{proj.title}</Text>
+                                                    <Text variant="small" className="text-[var(--text-muted)]">Project</Text>
+                                                </div>
                                             </div>
+                                        ))}
+                                    </>
+                                )}
+                            </div>
+                        </Card>
+
+                        {/* Your Network */}
+                        <Card variant="elevated" className="overflow-hidden border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
+                            <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                                <Heading level={3} className="text-lg">Your Network</Heading>
+                                <Badge variant="neutral">{connections?.length || 0}</Badge>
+                            </div>
+                            
+                            <div className="p-4 flex flex-col gap-3">
+                                {(!connections || connections.length === 0) ? (
+                                    <Text className="text-[var(--text-muted)] text-sm text-center py-4">No connections yet. Swipe right to connect.</Text>
+                                ) : (
+                                    connections.slice(0, 5).map(user => (
+                                        <div key={user?._id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--surface-elevated)] cursor-pointer transition-colors" onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
+                                            <Avatar src={getUserPhotoUrl(user)} alt={user?.firstName} size="md" />
+                                            <div className="flex-1 min-w-0">
+                                                <Text className="font-medium truncate">{user?.firstName} {user?.lastName}</Text>
+                                                <Text variant="small" className="text-[var(--text-muted)] truncate">{user?.skills?.[0] || 'Developer'}</Text>
+                                            </div>
+                                            <Button variant="outline" size="sm" className="h-8 px-3 text-xs" onClick={(e) => { e.stopPropagation(); navigate(`/chat/${user?._id}`); }}>Chat</Button>
                                         </div>
-                                    );
-                                })
-                            )}
-                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </Card>
+
+                        {/* Requests */}
+                        <Card variant="elevated" className="overflow-hidden border-[var(--border-subtle)] bg-[var(--surface-sunken)]">
+                            <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                                <Heading level={3} className="text-lg">Requests</Heading>
+                                <Badge variant="neutral">{requests?.length || 0}</Badge>
+                            </div>
+                            
+                            <div className="p-4 flex flex-col gap-3">
+                                {(!requests || requests.length === 0) ? (
+                                    <Text className="text-[var(--text-muted)] text-sm text-center py-4">No pending requests.</Text>
+                                ) : (
+                                    requests.slice(0, 5).map(req => {
+                                        const user = req?.fromUserId || req;
+                                        const isRemoving = removingReqId === req?._id;
+                                        return (
+                                            <div key={req?._id} className={`flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--surface-elevated)] cursor-pointer transition-all duration-300 ${isRemoving ? 'opacity-0 scale-95' : 'opacity-100'}`} onClick={() => navigate(`/user/${user?._id}`, { state: { user } })}>
+                                                <Avatar src={getUserPhotoUrl(user)} alt={user?.firstName} size="md" />
+                                                <div className="flex-1 min-w-0">
+                                                    <Text className="font-medium truncate">{user?.firstName} {user?.lastName}</Text>
+                                                    <Text variant="small" className="text-[var(--text-muted)] truncate">{user?.skills?.[0] || 'Developer'}</Text>
+                                                </div>
+                                                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                                                    <button type="button" className="w-7 h-7 rounded-full flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20" onClick={(e) => handleReviewRequest('rejected', req?._id, e)}>✕</button>
+                                                    <button type="button" className="w-7 h-7 rounded-full flex items-center justify-center bg-green-500/10 text-green-500 hover:bg-green-500/20" onClick={(e) => handleReviewRequest('accepted', req?._id, e)}>✓</button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </Card>
                     </div>
-                </section>
-            </main>
-        </div>
+                </div>
+            </Container>
+        </Page>
     );
 }
 

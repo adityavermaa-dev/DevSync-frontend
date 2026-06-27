@@ -39,6 +39,9 @@ const BuildLogs = lazy(() => import("./pages/BuildLogs"));
 const Onboarding = lazy(() => import("./pages/Onboarding/ProfileSetup").then(module => ({ default: module.ProfileSetup })));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const VerifyEmailHandler = lazy(() => import("./pages/VerifyEmailHandler"));
+const Hackathons = lazy(() => import("./pages/Hackathons"));
+const HackathonDetails = lazy(() => import("./pages/HackathonDetails"));
+const TeamWorkspace = lazy(() => import("./pages/TeamWorkspace"));
 
 
 import { LandingPage } from "./pages/Landing/LandingPage";
@@ -110,6 +113,9 @@ function AppContent() {
                 <Route path="/build-logs" element={<BuildLogs />} />
                 <Route path="/reels" element={<VideoFeed />} />
                 <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/hackathons" element={<Hackathons />} />
+                <Route path="/hackathons/:id" element={<HackathonDetails />} />
+                <Route path="/workspace/:teamId" element={<TeamWorkspace />} />
               </Route>
               <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>

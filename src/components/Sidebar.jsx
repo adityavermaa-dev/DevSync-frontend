@@ -40,6 +40,7 @@ const Sidebar = () => {
     const navLinks = [
         { to: '/feed', label: 'Feed', icon: feedIcon },
         { to: '/connections', label: 'Matches', icon: connectionsIcon },
+        { to: '/hackathons', label: 'Hackathons', icon: hackathonsIcon },
         { to: '/projects', label: 'Projects', icon: projectsIcon },
         { to: '/requests', label: 'Requests', icon: requestsIcon },
         { to: '/chat', label: 'Chat', icon: chatIcon },
@@ -131,6 +132,10 @@ const connectionsIcon = (
 
 const projectsIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" /></svg>
+);
+
+const hackathonsIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.673 4.673M15.124 11.374l-4.707 4.707M11.42 15.17l-4.673 4.673M15.124 11.374L12.5 8.75m2.624 2.624L18.75 8.75m0 0a2.652 2.652 0 00-3.75-3.75L12.5 7.5m2.624 2.624-2.624 2.624" /></svg>
 );
 
 const requestsIcon = (
