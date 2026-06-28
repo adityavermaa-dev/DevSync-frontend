@@ -4,10 +4,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { BASE_URL } from '../constants/commonData';
 import { addUser } from '../redux/userSlice';
-import './Profile.css';
 import toast from 'react-hot-toast';
 import { extractGithubUsername, fetchGithubContributionStats, persistGithubUsername } from '../utils/githubAPI';
 import ContributionGraph from '../components/ContributionGraph';
+import { Page, Container, Card, Heading, Text, Badge, Button, Avatar, Grid, Input, Textarea, Select } from '@/design-system';
+import { Edit2, Folder, Activity, Video, Upload, Heart, Star, Play, Trash2, X } from 'lucide-react';
+
+const Github = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+);
+const GitFork = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"></path><path d="M12 12v3"></path></svg>
+);
 
 const intentLabels = {
     cofounder: '🚀 Looking for Co-Founder',
@@ -106,6 +114,28 @@ const normalizeUserPayload = (payload) => {
     };
 };
 
+const getEmbedUrl = (url) => {
+    if (!url) return null;
+    let embedUrl = url;
+    try {
+        if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
+            const videoId = url.includes('youtu.be/') ? url.split('youtu.be/')[1].split('?')[0] : new URLSearchParams(new URL(url).search).get('v');
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (url.includes('youtube.com/embed/')) {
+            embedUrl = url;
+        } else if (url.includes('vimeo.com/')) {
+            const videoId = url.split('vimeo.com/')[1].split('?')[0].split('/')[0];
+            embedUrl = `https://player.vimeo.com/video/${videoId}`;
+        } else if (url.includes('loom.com/share/')) {
+            const videoId = url.split('loom.com/share/')[1].split('?')[0];
+            embedUrl = `https://www.loom.com/embed/${videoId}`;
+        }
+    } catch (e) {
+        console.error('Invalid URL', e);
+    }
+    return embedUrl;
+};
+
 const Profile = () => {
     const user = useSelector(store => store.user);
     const dispatch = useDispatch();
@@ -114,6 +144,10 @@ const Profile = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [_saving, setSaving] = useState(false);
     const [newSkill, setNewSkill] = useState('');
+
+    const [showSpotlightModal, setShowSpotlightModal] = useState(false);
+    const [spotlightUrlInput, setSpotlightUrlInput] = useState('');
+    const [savingSpotlight, setSavingSpotlight] = useState(false);
 
     const [form, setForm] = useState({
         firstName: '', lastName: '', age: '', gender: '', about: '', skills: [], intent: '', githubUrl: ''
@@ -124,21 +158,12 @@ const Profile = () => {
     const [coverPhotoFile, setCoverPhotoFile] = useState(null);
     const [coverPhotoPreview, setCoverPhotoPreview] = useState('');
 
-    
-    const [activeTab, setActiveTab] = useState('my_videos'); 
-    const [myVideos, setMyVideos] = useState([]);
-    const [likedVideos, setLikedVideos] = useState([]);
+    const [activeTab, setActiveTab] = useState('projects'); 
     const [myProjects, setMyProjects] = useState([]);
     const [githubRepos, setGithubRepos] = useState([]);
     const [githubLanguageMix, setGithubLanguageMix] = useState([]);
     const [githubStats, setGithubStats] = useState(null);
     const [loadingData, setLoadingData] = useState(false);
-
-    
-    const [videoToDelete, setVideoToDelete] = useState(null);
-    const [deletingVideo, setDeletingVideo] = useState(false);
-
-    const hasAnyVideos = myVideos.length > 0 || likedVideos.length > 0;
 
     useEffect(() => {
         if (user) {
@@ -158,18 +183,8 @@ const Profile = () => {
     const fetchProfileData = useCallback(async () => {
         setLoadingData(true);
         try {
-            const [myRes, likedRes, projRes] = await Promise.all([
-                axios.get(BASE_URL + '/my-videos', { withCredentials: true }).catch(() => ({ data: [] })),
-                axios.get(BASE_URL + '/liked-videos', { withCredentials: true }).catch(() => ({ data: [] })),
-                axios.get(BASE_URL + '/projects?owner=' + user._id, { withCredentials: true }).catch(() => ({ data: { projects: [] } }))
-            ]);
-
-            const myVideoList = normalizeList(myRes?.data, ['videos', 'myVideos', 'items']);
-            const likedVideoList = normalizeList(likedRes?.data, ['videos', 'likedVideos', 'items']);
+            const projRes = await axios.get(BASE_URL + '/projects?owner=' + user._id, { withCredentials: true }).catch(() => ({ data: { projects: [] } }));
             const projectList = normalizeList(projRes?.data, ['projects', 'items']);
-
-            setMyVideos(myVideoList);
-            setLikedVideos(likedVideoList);
             setMyProjects(projectList.filter((project) => isUserPartOfProject(project, String(user?._id || ''))));
         } catch (error) {
             console.error(error);
@@ -184,12 +199,6 @@ const Profile = () => {
             fetchProfileData();
         }
     }, [user, isEditing, fetchProfileData]);
-
-    useEffect(() => {
-        if (!hasAnyVideos && (activeTab === 'my_videos' || activeTab === 'liked_videos')) {
-            setActiveTab('projects');
-        }
-    }, [activeTab, hasAnyVideos]);
 
     useEffect(() => {
         if (!user || isEditing) return;
@@ -363,396 +372,496 @@ const Profile = () => {
         } finally { setSaving(false); }
     };
 
-    const handleDeleteVideoConfirm = async () => {
-        if (!videoToDelete) return;
-        setDeletingVideo(true);
+    const handleSaveSpotlight = async () => {
+        setSavingSpotlight(true);
         try {
-            await axios.delete(`${BASE_URL}/${videoToDelete._id}`, { withCredentials: true });
-            toast.success("Video deleted");
-            setMyVideos(prev => prev.filter(v => v._id !== videoToDelete._id));
-            setVideoToDelete(null);
+            await axios.patch(BASE_URL + '/profile/edit', { spotlightVideoUrl: spotlightUrlInput }, { withCredentials: true });
+            dispatch(addUser({ ...user, spotlightVideoUrl: spotlightUrlInput }));
+            toast.success("Spotlight video updated");
+            setShowSpotlightModal(false);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to delete video");
+            toast.error("Failed to update spotlight video");
         } finally {
-            setDeletingVideo(false);
+            setSavingSpotlight(false);
         }
     };
 
     if (!user) {
-        return <div className="profile-page"><div className="profile-loading"><span className="profile-spinner" /></div></div>;
+        return (
+            <Page className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+            </Page>
+        );
     }
 
-    const currentVideos = activeTab === 'my_videos' ? myVideos : likedVideos;
     const githubUsername = extractGithubUsername(user);
     const githubProfileUrl = githubUsername ? `https://github.com/${githubUsername}` : '';
     const userPhotoUrl = getUserPhotoUrl(user);
     const userCoverPhotoUrl = getUserCoverPhotoUrl(user);
 
-    
     if (!isEditing) {
         return (
-            <div className="profile-page">
-                <div className="profile-card-view">
-                    {}
-                    <div
-                        className="profile-hero"
-                        style={(userCoverPhotoUrl || coverPhotoPreview)
-                            ? {
+            <Page>
+                <Container size="xl" className="py-8 space-y-8">
+                    {/* Cover & Avatar & Header info */}
+                    <div className="relative rounded-2xl overflow-hidden bg-[var(--surface-primary)] border border-[var(--border-subtle)] shadow-sm">
+                        {/* Cover Image */}
+                        <div 
+                            className="h-48 w-full bg-black/5"
+                            style={(userCoverPhotoUrl || coverPhotoPreview) ? {
                                 backgroundImage: `url(${coverPhotoPreview || userCoverPhotoUrl})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
-                            }
-                            : undefined
-                        }
-                    >
-                        <div className="profile-header-actions">
-                            <button className="profile-edit-btn" onClick={() => setIsEditing(true)}>
-                                {editIcon}
+                            } : undefined}
+                        />
+                        {/* Edit Button overlay */}
+                        <div className="absolute top-4 right-4">
+                            <Button variant="secondary" size="sm" onClick={() => setIsEditing(true)} leftIcon={<Edit2 className="w-4 h-4" />}>
                                 Edit Profile
-                            </button>
+                            </Button>
                         </div>
-                    </div>
-
-                    {}
-                    <div className="profile-info-section">
-                        <div className="profile-avatar-wrap">
-                            <img
-                                src={userPhotoUrl || `https://ui-avatars.com/api/?background=e5e7eb&color=374151&bold=true&size=200&name=${user.firstName}`}
-                                alt={user.firstName}
-                                className="profile-avatar-img"
-                                onError={(e) => { e.target.src = `https://ui-avatars.com/api/?background=e5e7eb&color=374151&bold=true&size=200&name=${user.firstName}`; }}
-                            />
-                        </div>
-                        <h1 className="profile-name">{user.firstName} {user.lastName}</h1>
-                        {user.about && <p className="profile-bio">{user.about}</p>}
-
-                        {githubProfileUrl && (
-                            <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer" className="profile-github-link">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                                GitHub
-                            </a>
-                        )}
                         
-                        <div className="profile-badges">
-                            {user.age && (
-                                <span className="profile-badge">
-                                    {user.age} yrs
-                                </span>
-                            )}
-                            {user.gender && (
-                                <span className="profile-badge">
-                                    {user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}
-                                </span>
-                            )}
-                        </div>
-
-                        {user.intent && (
-                            <div className="profile-intent-badge-wrap">
-                                <span className={`profile-intent-badge intent-${user.intent}`}>
-                                    {intentLabels[user.intent] || user.intent}
-                                </span>
+                        {/* Avatar & Basic Info */}
+                        <div className="px-6 sm:px-8 pb-8 flex flex-col sm:flex-row gap-6 relative">
+                            <div className="-mt-16 relative">
+                                <Avatar 
+                                    src={userPhotoUrl || `https://ui-avatars.com/api/?background=e5e7eb&color=374151&bold=true&size=200&name=${user.firstName}`}
+                                    alt={user.firstName}
+                                    size="2xl"
+                                    className="border-4 border-[var(--surface-primary)] shadow-md bg-[var(--surface-primary)]"
+                                    style={{ width: '128px', height: '128px' }}
+                                />
                             </div>
-                        )}
+                            <div className="flex-1 pt-2">
+                                <Heading level={2} className="text-2xl font-semibold text-[var(--text-primary)]">
+                                    {user.firstName} {user.lastName}
+                                </Heading>
+                                {user.about && (
+                                    <Text className="mt-2 text-[var(--text-secondary)] max-w-3xl leading-relaxed">
+                                        {user.about}
+                                    </Text>
+                                )}
+                                
+                                <div className="flex flex-wrap items-center gap-3 mt-4">
+                                    {githubProfileUrl && (
+                                        <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                                            <Github className="w-4 h-4 mr-1.5" />
+                                            GitHub
+                                        </a>
+                                    )}
+                                    {user.age && <Badge variant="default">{user.age} yrs</Badge>}
+                                    {user.gender && <Badge variant="default">{user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}</Badge>}
+                                    {user.intent && <Badge variant="accent">{intentLabels[user.intent] || user.intent}</Badge>}
+                                </div>
 
-                        {user.skills?.length > 0 && (
-                            <div className="profile-skills-wrap">
-                                {user.skills.map((skill, i) => (
-                                    <span key={i} className="profile-skill-pill">{skill}</span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {}
-                    <div className="profile-tabs">
-                        <button 
-                            className={`profile-tab ${activeTab === 'projects' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('projects')}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-                            </svg>
-                            Projects
-                        </button>
-                        <button 
-                            className={`profile-tab ${activeTab === 'github' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('github')}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                            GitHub
-                        </button>
-                        <button
-                            className={`profile-tab ${activeTab === 'activity' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('activity')}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h3l2.25-6 4.5 12 2.25-6h4.5" />
-                            </svg>
-                            Activity
-                        </button>
-                        {hasAnyVideos && (
-                            <>
-                                <button 
-                                    className={`profile-tab ${activeTab === 'my_videos' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('my_videos')}
-                                >
-                                    {videoGridIcon}
-                                    My Videos
-                                </button>
-                                <button 
-                                    className={`profile-tab ${activeTab === 'liked_videos' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('liked_videos')}
-                                >
-                                    {heartSolidIcon}
-                                    Liked
-                                </button>
-                            </>
-                        )}
-                    </div>
-
-                    {}
-                    <div className="profile-content-wrap">
-                        {loadingData ? (
-                            <div className="profile-loading"><span className="profile-spinner" style={{borderColor: 'rgba(0,0,0,0.1)', borderTopColor: '#8b5cf6'}} /></div>
-                        ) : activeTab === 'projects' ? (
-                            <div className="profile-projects-list">
-                                {myProjects.length > 0 ? (
-                                    <div className="profile-projects-grid">
-                                        {myProjects.map(proj => (
-                                            <div key={proj._id} className="profile-proj-card" onClick={() => navigate(`/projects/${proj._id}`)}>
-                                                <h4>{proj.title}</h4>
-                                                <p className="proj-status">{proj.status}</p>
-                                                <div className="proj-techs">
-                                                    {proj.techStack?.slice(0, 3).map((t, i) => <span key={i}>{t}</span>)}
-                                                </div>
-                                            </div>
+                                {user.skills?.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-4">
+                                        {user.skills.map((skill, i) => (
+                                            <Badge key={i} variant="skill">{skill}</Badge>
                                         ))}
                                     </div>
-                                ) : (
-                                    <div className="profile-empty-state">
-                                        <div style={{opacity: 0.5, transform: 'scale(1.5)', marginBottom: '10px'}}>🚀</div>
-                                        <h3>No projects yet</h3>
-                                        <p>Create a project to collaborate with others.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Developer Spotlight Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <Heading level={3} className="text-xl font-semibold text-[var(--text-primary)]">Developer Spotlight</Heading>
+                        </div>
+                        <Card className="p-6 border-[var(--border-subtle)]">
+                            {user.spotlightVideoUrl ? (
+                                <div className="aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden relative bg-black shadow-sm group">
+                                    <iframe
+                                        src={getEmbedUrl(user.spotlightVideoUrl)}
+                                        title="Developer Spotlight"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="absolute inset-0 w-full h-full border-0"
+                                    ></iframe>
+                                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button variant="secondary" size="sm" onClick={() => {
+                                            setSpotlightUrlInput(user.spotlightVideoUrl || '');
+                                            setShowSpotlightModal(true);
+                                        }}>
+                                            Edit Video
+                                        </Button>
                                     </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-[var(--border-subtle)] rounded-xl bg-[var(--surface-primary)]">
+                                    <div className="text-4xl mb-4 opacity-40">🎬</div>
+                                    <Heading level={4} className="text-lg font-medium text-[var(--text-primary)] mb-2">Add a Spotlight Video</Heading>
+                                    <Text className="text-[var(--text-secondary)] max-w-md mb-6">
+                                        Introduce yourself, showcase a project, or share your developer journey with a YouTube, Vimeo, or Loom video.
+                                    </Text>
+                                    <Button variant="primary" onClick={() => {
+                                        setSpotlightUrlInput('');
+                                        setShowSpotlightModal(true);
+                                    }}>
+                                        Add Spotlight Video
+                                    </Button>
+                                </div>
+                            )}
+                        </Card>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="flex overflow-x-auto gap-2 border-b border-[var(--border-subtle)] pb-px no-scrollbar">
+                        {[
+                            { id: 'projects', icon: Folder, label: 'Projects' },
+                            { id: 'github', icon: Github, label: 'GitHub' },
+                            { id: 'activity', icon: Activity, label: 'Activity' },
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                                    activeTab === tab.id 
+                                        ? 'border-[var(--color-primary)] text-[var(--color-primary)]' 
+                                        : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)]'
+                                }`}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="pt-2 min-h-[400px]">
+                        {loadingData ? (
+                            <div className="flex justify-center py-20">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+                            </div>
+                        ) : activeTab === 'projects' ? (
+                            <div className="space-y-4">
+                                {myProjects.length > 0 ? (
+                                    <Grid cols={3} gap="md">
+                                        {myProjects.map(proj => (
+                                            <Card key={proj._id} className="p-5 cursor-pointer flex flex-col" interactive onClick={() => navigate(`/projects/${proj._id}`)}>
+                                                <Heading level={4} className="text-lg font-semibold text-[var(--text-primary)] truncate">{proj.title}</Heading>
+                                                <Text className="text-sm font-medium text-[var(--text-muted)] mt-1 capitalize">{proj.status}</Text>
+                                                <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-[var(--border-subtle)]">
+                                                    {proj.techStack?.slice(0, 3).map((t, i) => (
+                                                        <Badge key={i} variant="default" size="sm">{t}</Badge>
+                                                    ))}
+                                                    {(proj.techStack?.length > 3) && <Badge variant="default" size="sm">+{proj.techStack.length - 3}</Badge>}
+                                                </div>
+                                            </Card>
+                                        ))}
+                                    </Grid>
+                                ) : (
+                                    <Card className="flex flex-col items-center justify-center p-16 text-center border-dashed">
+                                        <div className="text-4xl mb-4 opacity-40">🚀</div>
+                                        <Heading level={3} className="text-lg font-medium text-[var(--text-primary)]">No projects yet</Heading>
+                                        <Text className="text-[var(--text-secondary)] mt-1">Create a project to collaborate with others.</Text>
+                                    </Card>
                                 )}
                             </div>
                         ) : activeTab === 'github' ? (
-                            <div className="profile-github-section">
+                            <div className="space-y-6">
                                 {!githubUsername && (
-                                    <div className="profile-empty-state" style={{ width: '100%', minHeight: 180 }}>
-                                        <div style={{ opacity: 0.5, transform: 'scale(1.4)', marginBottom: '10px' }}>🐙</div>
-                                        <h3>Add GitHub to unlock stats</h3>
-                                        <p>Add your GitHub URL in Edit Profile to see contributions, streaks, and repo insights.</p>
-                                    </div>
+                                    <Card className="flex flex-col items-center justify-center p-16 text-center border-dashed">
+                                        <div className="text-4xl mb-4 opacity-40">🐙</div>
+                                        <Heading level={3} className="text-lg font-medium text-[var(--text-primary)]">Add GitHub to unlock stats</Heading>
+                                        <Text className="text-[var(--text-secondary)] mt-1 max-w-md">Add your GitHub URL in Edit Profile to see contributions, streaks, and repo insights.</Text>
+                                    </Card>
                                 )}
+                                
                                 {githubStats && (
-                                    <div className="profile-github-legacy-grid">
-                                        <div className="profile-legacy-card">
-                                            <p className="profile-legacy-kicker">Legacy</p>
-                                            <h4 className="profile-legacy-title">Total Contributions</h4>
-                                            <div className="profile-legacy-total">{githubStats.totalContributions}</div>
-                                            <p className="profile-legacy-range">
-                                                {githubStats.activityWindow
-                                                    ? `${formatIsoDate(githubStats.activityWindow.start)} - ${formatIsoDate(githubStats.activityWindow.end)}`
-                                                    : 'No contribution data yet'}
-                                            </p>
-                                        </div>
+                                    <Grid cols={3} gap="md">
+                                        <Card className="p-6 flex flex-col justify-center border-[var(--border-subtle)] shadow-sm">
+                                            <Text className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Total Contributions</Text>
+                                            <Heading level={2} className="text-3xl font-bold text-[var(--text-primary)]">{githubStats.totalContributions}</Heading>
+                                            <Text className="text-[13px] text-[var(--text-secondary)] mt-2">
+                                                {githubStats.activityWindow ? `${formatIsoDate(githubStats.activityWindow.start)} - ${formatIsoDate(githubStats.activityWindow.end)}` : 'No contribution data yet'}
+                                            </Text>
+                                        </Card>
 
-                                        <div className="profile-legacy-card profile-legacy-card-center">
-                                            <div className="profile-streak-crown">♛</div>
-                                            <div className="profile-streak-ring-wrap">
-                                                <div className="profile-streak-ring">
-                                                    <span>{githubStats.currentStreak}</span>
-                                                </div>
+                                        <Card className="p-6 flex flex-col items-center text-center justify-center bg-black/5 dark:bg-white/5 border-0 shadow-inner">
+                                            <Text className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Current Streak</Text>
+                                            <Heading level={2} className="text-4xl font-bold text-[var(--color-primary)]">{githubStats.currentStreak}</Heading>
+                                            <Text className="text-[13px] text-[var(--text-secondary)] mt-2">
+                                                {githubStats.currentRange ? `${formatIsoDate(githubStats.currentRange.start)} - ${formatIsoDate(githubStats.currentRange.end)}` : 'No active streak'}
+                                            </Text>
+                                            <div className="mt-3 text-[13px] font-semibold text-[var(--text-secondary)]">
+                                                Longest: {githubStats.longestStreak} days
                                             </div>
-                                            <p className="profile-legacy-kicker">Current Streak</p>
-                                            <p className="profile-legacy-muted">
-                                                {githubStats.currentRange
-                                                    ? `${formatIsoDate(githubStats.currentRange.start)} - ${formatIsoDate(githubStats.currentRange.end)}`
-                                                    : 'No active streak'}
-                                            </p>
-                                            <div className="profile-longest-strip">
-                                                <strong>Longest Streak</strong>
-                                                <span>{githubStats.longestStreak}</span>
-                                            </div>
-                                        </div>
+                                        </Card>
 
-                                        <div className="profile-legacy-card">
-                                            <p className="profile-legacy-kicker">The Arsenal</p>
+                                        <Card className="p-6 border-[var(--border-subtle)] shadow-sm">
+                                            <Text className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4">Top Languages</Text>
                                             {githubLanguageMix.length > 0 ? (
-                                                <div className="profile-arsenal-list">
-                                                    {githubLanguageMix.map((language, index) => (
-                                                        <div key={language.name} className="profile-arsenal-item">
-                                                            <div className="profile-arsenal-head">
-                                                                <span>{language.name}</span>
-                                                                <strong>{language.percent}%</strong>
+                                                <div className="space-y-3">
+                                                    {githubLanguageMix.map((language) => (
+                                                        <div key={language.name}>
+                                                            <div className="flex justify-between text-[13px] mb-1.5 font-medium">
+                                                                <span className="text-[var(--text-primary)]">{language.name}</span>
+                                                                <span className="text-[var(--text-muted)]">{language.percent}%</span>
                                                             </div>
-                                                            <div className="profile-arsenal-bar-track">
-                                                                <div
-                                                                    className={`profile-arsenal-bar-fill tier-${index + 1}`}
-                                                                    style={{ width: `${Math.max(language.percent, 6)}%` }}
+                                                            <div className="w-full h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                                                                <div 
+                                                                    className="h-full bg-[var(--color-primary)] rounded-full transition-all duration-500 ease-out" 
+                                                                    style={{ width: `${Math.max(language.percent, 2)}%` }}
                                                                 />
                                                             </div>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <p className="profile-legacy-muted">No language data found.</p>
+                                                <Text className="text-sm text-[var(--text-muted)]">No language data found.</Text>
                                             )}
-                                        </div>
+                                        </Card>
+                                    </Grid>
+                                )}
+
+                                {githubRepos.length > 0 && (
+                                    <div>
+                                        <Heading level={4} className="text-[15px] font-semibold text-[var(--text-primary)] mb-4">Recent Repositories</Heading>
+                                        <Grid cols={3} gap="md">
+                                            {githubRepos.map(repo => (
+                                                <a key={repo.id} href={repo.html_url} target="_blank" rel="noopener noreferrer" className="block h-full group">
+                                                    <Card className="p-5 h-full flex flex-col group-hover:border-[var(--color-primary)] transition-colors" interactive>
+                                                        <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold truncate">
+                                                            <Github className="w-4 h-4 shrink-0 text-[var(--text-muted)] group-hover:text-[var(--color-primary)] transition-colors" />
+                                                            <span className="truncate">{repo.name}</span>
+                                                        </div>
+                                                        <Text className="text-sm text-[var(--text-secondary)] mt-2 line-clamp-2 flex-1">
+                                                            {repo.description || 'No description available.'}
+                                                        </Text>
+                                                        <div className="flex items-center gap-4 mt-5 text-[13px] font-medium text-[var(--text-muted)]">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Star className="w-3.5 h-3.5" /> {repo.stargazers_count}
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <GitFork className="w-3.5 h-3.5" /> {repo.forks_count}
+                                                            </div>
+                                                            {repo.language && (
+                                                                <div className="flex items-center gap-1.5 ml-auto">
+                                                                    <div className="w-2 h-2 rounded-full bg-[var(--color-primary)]" />
+                                                                    {repo.language}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </Card>
+                                                </a>
+                                            ))}
+                                        </Grid>
                                     </div>
                                 )}
-                                <h3 style={{ alignSelf: 'flex-start', margin: '10px 0 0', color: 'var(--dashboard-text-main)', fontFamily: "'Outfit', sans-serif" }}>Recent Repositories</h3>
-                                {githubRepos.length > 0 ? (
-                                    <div className="profile-github-repos-grid">
-                                        {githubRepos.map(repo => (
-                                            <a key={repo.id} href={repo.html_url} target="_blank" rel="noopener noreferrer" className="profile-repo-card">
-                                                <h4 className="profile-repo-name">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                                                    {repo.name}
-                                                </h4>
-                                                <p className="profile-repo-desc">{repo.description || 'No description available.'}</p>
-                                                <div className="profile-repo-meta">
-                                                    <span style={{color: '#f59e0b'}}>⭐ {repo.stargazers_count}</span>
-                                                    <span>🍴 {repo.forks_count}</span>
-                                                    {repo.language && <span className="profile-repo-lang">{repo.language}</span>}
-                                                </div>
-                                            </a>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p style={{ color: 'var(--dashboard-text-faint)' }}>No public repositories found.</p>
-                                )}
+                                
                                 {githubStats?.note && (
-                                    <p className="profile-github-stats-note">{githubStats.note}</p>
+                                    <Text className="text-sm text-[var(--text-muted)] italic">{githubStats.note}</Text>
                                 )}
                             </div>
                         ) : activeTab === 'activity' ? (
-                            <div className="profile-github-section">
+                            <Card className="p-6 border-[var(--border-subtle)] overflow-hidden">
                                 <ContributionGraph />
-                            </div>
-                        ) : (
-                            <div className="profile-video-list-wrap">
-                                {currentVideos.length > 0 ? (
-                                    <div className="profile-video-grid">
-                                        {currentVideos.map((video) => (
-                                            <div key={video._id} className="profile-video-item">
-                                                <img src={video.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"} alt="Reel thumbnail" />
-                                                
-                                                <div className="profile-video-overlay">
-                                                    <div className="profile-video-stats">
-                                                        <span className="profile-video-stat">{playIcon} {video.views || 0}</span>
-                                                        <span className="profile-video-stat">{heartIcon} {video.likesCount || 0}</span>
-                                                    </div>
-                                                </div>
-
-                                                {activeTab === 'my_videos' && (
-                                                    <div className="profile-video-actions">
-                                                        <button 
-                                                            className="profile-delete-video-btn" 
-                                                            onClick={(e) => { e.stopPropagation(); setVideoToDelete(video); }}
-                                                            title="Delete Video"
-                                                        >
-                                                            {trashIcon}
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="profile-empty-state">
-                                        <div style={{opacity: 0.5, transform: 'scale(1.5)', marginBottom: '10px'}}>{videoGridIcon}</div>
-                                        <h3>No videos found</h3>
-                                        <p>{activeTab === 'my_videos' ? "Upload your first reel to see it here!" : "Videos you like will appear here."}</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                            </Card>
+                        ) : null}
                     </div>
 
-                </div>
-
-                {}
-                {videoToDelete && (
-                    <div className="profile-modal-overlay">
-                        <div className="profile-modal">
-                            <h3>Delete Video?</h3>
-                            <p>Are you sure you want to delete this video? This action cannot be undone.</p>
-                            <div className="profile-modal-actions">
-                                <button className="profile-modal-btn profile-modal-cancel" onClick={() => setVideoToDelete(null)} disabled={deletingVideo}>
-                                    Cancel
-                                </button>
-                                <button className="profile-modal-btn profile-modal-confirm" onClick={handleDeleteVideoConfirm} disabled={deletingVideo}>
-                                    {deletingVideo ? 'Deleting...' : 'Delete'}
-                                </button>
-                            </div>
+                    {/* Developer Spotlight Modal */}
+                    {showSpotlightModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                            <Card className="w-full max-w-md p-6 animate-in fade-in zoom-in duration-200 shadow-xl border-[var(--border-subtle)] bg-[var(--surface-primary)]">
+                                <div className="flex items-center justify-between mb-4">
+                                    <Heading level={3} className="text-lg font-semibold text-[var(--text-primary)]">Developer Spotlight Video</Heading>
+                                    <Button variant="ghost" size="sm" onClick={() => setShowSpotlightModal(false)}><X className="w-5 h-5" /></Button>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[13px] font-medium text-[var(--text-primary)]">Video URL</label>
+                                        <Input 
+                                            value={spotlightUrlInput} 
+                                            onChange={(e) => setSpotlightUrlInput(e.target.value)} 
+                                            placeholder="Paste YouTube, Vimeo, or Loom URL" 
+                                        />
+                                        <Text className="text-xs text-[var(--text-muted)] mt-1">Supports YouTube, Vimeo, and Loom links.</Text>
+                                    </div>
+                                    <div className="flex justify-end gap-3 mt-6">
+                                        <Button variant="secondary" onClick={() => setShowSpotlightModal(false)} disabled={savingSpotlight}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="primary" onClick={handleSaveSpotlight} loading={savingSpotlight}>
+                                            Save Video
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </Container>
+            </Page>
         );
     }
 
-    
     return (
-        <div className="profile-page">
-            <div className="profile-edit-layout">
-                {}
-                <div className="profile-edit-header">
-                    <h2 className="profile-edit-title">Edit Profile</h2>
-                    <button className="profile-edit-close" onClick={handleCancel}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-
-                <div className="profile-edit-body">
-                    <div className="profile-field">
-                        <label className="profile-field-label">Profile Photo</label>
-                        <label className="profile-photo-upload">
-                            <input type="file" accept="image/*" onChange={handleFileChange} />
-                        </label>
+        <Page>
+            <Container size="md" className="py-8">
+                <Card className="overflow-hidden shadow-sm border-[var(--border-subtle)]">
+                    <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[var(--border-subtle)] bg-[var(--surface-primary)]">
+                        <Heading level={3} className="text-xl font-semibold text-[var(--text-primary)]">Edit Profile</Heading>
+                        <Button variant="ghost" size="sm" onClick={handleCancel}>
+                            <X className="w-5 h-5" />
+                        </Button>
                     </div>
-                </div>
-            </div>
-        </div>
+                    
+                    <div className="p-5 sm:p-8 space-y-10 bg-[var(--surface-primary)]">
+                        {/* Images */}
+                        <div className="space-y-4">
+                            <Heading level={4} className="text-sm font-bold tracking-wide text-[var(--text-primary)] uppercase">Images</Heading>
+                            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
+                                <div className="flex flex-col gap-2">
+                                    <Text className="text-xs font-medium text-[var(--text-muted)]">Profile Photo</Text>
+                                    <label className="relative cursor-pointer group">
+                                        <Avatar 
+                                            src={_photoPreview || userPhotoUrl || `https://ui-avatars.com/api/?background=e5e7eb&color=374151&bold=true&size=200&name=${form.firstName}`}
+                                            alt="Profile"
+                                            size="xl"
+                                            className="border border-[var(--border-subtle)] group-hover:opacity-75 transition-opacity"
+                                            style={{ width: '100px', height: '100px' }}
+                                        />
+                                        <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-full backdrop-blur-[2px]">
+                                            <Upload className="w-6 h-6 text-white drop-shadow-md" />
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <div className="flex flex-col gap-2 flex-1 w-full">
+                                    <Text className="text-xs font-medium text-[var(--text-muted)]">Cover Photo</Text>
+                                    <label className="relative cursor-pointer group h-[100px] w-full rounded-xl overflow-hidden border border-[var(--border-subtle)] bg-black/5 dark:bg-white/5 flex items-center justify-center">
+                                        {(coverPhotoPreview || userCoverPhotoUrl) ? (
+                                            <img src={coverPhotoPreview || userCoverPhotoUrl} alt="Cover" className="w-full h-full object-cover group-hover:opacity-75 transition-opacity" />
+                                        ) : (
+                                            <span className="text-sm font-medium text-[var(--text-muted)]">Upload cover image</span>
+                                        )}
+                                        <input type="file" accept="image/*" onChange={_handleCoverPhotoChange} className="hidden" />
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 backdrop-blur-[2px]">
+                                            <Upload className="w-6 h-6 text-white drop-shadow-md" />
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Basic Info */}
+                        <div className="space-y-4">
+                            <Heading level={4} className="text-sm font-bold tracking-wide text-[var(--text-primary)] uppercase">Basic Info</Heading>
+                            <Grid cols={2} gap="md">
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">First Name</label>
+                                    <Input name="firstName" value={form.firstName} onChange={_handleChange} placeholder="First Name" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">Last Name</label>
+                                    <Input name="lastName" value={form.lastName} onChange={_handleChange} placeholder="Last Name" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">Age</label>
+                                    <Input type="number" name="age" value={form.age} onChange={_handleChange} placeholder="Age" />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">Gender</label>
+                                    <Select name="gender" value={form.gender} onChange={_handleChange}>
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </Select>
+                                </div>
+                            </Grid>
+                        </div>
+
+                        {/* About & Links */}
+                        <div className="space-y-4">
+                            <Heading level={4} className="text-sm font-bold tracking-wide text-[var(--text-primary)] uppercase">About & Links</Heading>
+                            <div className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">Bio</label>
+                                    <Textarea 
+                                        name="about" 
+                                        value={form.about} 
+                                        onChange={_handleChange} 
+                                        placeholder="Tell us about yourself..." 
+                                        rows={4} 
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">GitHub Username or URL</label>
+                                    <Input 
+                                        name="githubUrl" 
+                                        value={form.githubUrl} 
+                                        onChange={_handleChange} 
+                                        placeholder="e.g. torvalds or https://github.com/torvalds" 
+                                        leftIcon={<Github className="w-4 h-4" />}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Career Info */}
+                        <div className="space-y-4">
+                            <Heading level={4} className="text-sm font-bold tracking-wide text-[var(--text-primary)] uppercase">Career Info</Heading>
+                            <div className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">Intent</label>
+                                    <Select name="intent" value={form.intent} onChange={_handleChange}>
+                                        <option value="">What are you looking for?</option>
+                                        {Object.entries(intentLabels).map(([key, label]) => (
+                                            <option key={key} value={key}>{label}</option>
+                                        ))}
+                                    </Select>
+                                </div>
+                                
+                                <div className="space-y-1.5">
+                                    <label className="text-[13px] font-medium text-[var(--text-primary)]">Skills</label>
+                                    <div className="flex gap-2">
+                                        <Input 
+                                            value={newSkill}
+                                            onChange={(e) => setNewSkill(e.target.value)}
+                                            onKeyDown={_handleSkillKeyDown}
+                                            placeholder="Add a skill (e.g. React, Node.js)"
+                                        />
+                                        <Button type="button" onClick={handleAddSkill} variant="secondary" fullWidth={false}>Add</Button>
+                                    </div>
+                                    {form.skills.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-3 p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-[var(--border-subtle)] min-h-[48px]">
+                                            {form.skills.map((skill) => (
+                                                <Badge key={skill} variant="skill" className="flex items-center gap-1 pl-2.5 pr-1.5 py-1 text-[13px]">
+                                                    {skill}
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => _handleRemoveSkill(skill)}
+                                                        className="text-[var(--text-muted)] hover:text-red-500 focus:outline-none transition-colors rounded-full p-0.5 ml-1 bg-black/5 dark:bg-white/5 hover:bg-red-500/10"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 p-5 sm:p-6 border-t border-[var(--border-subtle)] bg-[var(--surface-elevated)]">
+                        <Button variant="ghost" onClick={handleCancel} disabled={_saving}>
+                            Cancel
+                        </Button>
+                        <Button variant="primary" onClick={_handleSave} loading={_saving}>
+                            Save Changes
+                        </Button>
+                    </div>
+                </Card>
+            </Container>
+        </Page>
     );
 };
-const editIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
-    </svg>
-);
-
-const videoGridIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-    </svg>
-);
-
-const heartIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-    </svg>
-);
-
-const heartSolidIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-    </svg>
-);
-
-const playIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-        <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
-    </svg>
-);
-
-const trashIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-    </svg>
-);
 
 export default Profile;

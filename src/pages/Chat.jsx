@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
-import "./Chat.css";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -546,8 +545,11 @@ const Chat = () => {
     const isGroup = chat.isGroup || chat.participants?.length > 2;
     
     
+    const isTeam = !!chat.teamId;
+    
     if (sidebarTab === "direct" && isGroup) return false;
-    if (sidebarTab === "projects" && !isGroup) return false;
+    if (sidebarTab === "teams" && (!isGroup || !isTeam)) return false;
+    if (sidebarTab === "projects" && (!isGroup || isTeam)) return false;
 
     
     if (isGroup) {
@@ -572,41 +574,47 @@ const Chat = () => {
     groupedMessages.push({ type: "message", message: m, key: m._id });
   });
 
-  if (!user) return <div className="chat-page"><div className="chat-loading">Loading...</div></div>;
+  if (!user) return <div className="flex h-full w-full items-center justify-center bg-[var(--bg-primary)]"><div className="text-[var(--text-secondary)]">Loading...</div></div>;
 
   return (
     <>
-    <div className="chat-page">
-      <div className={`chat-shell ${!activeChatId ? 'no-active' : ''}`}>
+    <div className="fixed top-0 left-0 right-0 bottom-[60px] md:bottom-0 md:left-[240px] flex overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] z-10">
+      <div className="flex w-full h-full">
 
-        {}
-        <aside className="chat-sidebar">
-          <div className="chat-sidebar-header">
-            <h2 className="chat-sidebar-title">Messages</h2>
-            <span className="chat-sidebar-count">{chats.length}</span>
+        {/* Sidebar */}
+        <aside className="w-80 flex-shrink-0 flex flex-col bg-[var(--bg-secondary)] border-r border-[var(--border-color)]">
+          <div className="p-4 flex items-center justify-between border-b border-[var(--border-color)]">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Messages</h2>
+            <span className="text-xs bg-[var(--border-color)] text-[var(--text-secondary)] px-2 py-0.5 rounded-full">{chats.length}</span>
           </div>
 
-          <div className="chat-sidebar-tabs">
+          <div className="flex p-2 gap-1 border-b border-[var(--border-color)] bg-[var(--bg-secondary)]">
             <button 
-              className={`chat-sidebar-tab ${sidebarTab === 'direct' ? 'active' : ''}`}
+              className={`flex-1 py-1.5 text-sm font-medium rounded-md text-center transition-colors ${sidebarTab === 'direct' ? 'bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)]'}`}
               onClick={() => setSidebarTab('direct')}
             >
               Direct
             </button>
             <button 
-              className={`chat-sidebar-tab ${sidebarTab === 'projects' ? 'active' : ''}`}
+              className={`flex-1 py-1.5 text-sm font-medium rounded-md text-center transition-colors ${sidebarTab === 'teams' ? 'bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)]'}`}
+              onClick={() => setSidebarTab('teams')}
+            >
+              Teams
+            </button>
+            <button 
+              className={`flex-1 py-1.5 text-sm font-medium rounded-md text-center transition-colors ${sidebarTab === 'projects' ? 'bg-[var(--bg-primary)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)]'}`}
               onClick={() => setSidebarTab('projects')}
             >
               Projects
             </button>
           </div>
 
-          <div className="chat-search">
-            <svg className="chat-search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-            <input className="chat-search-input" placeholder="Search conversations..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <div className="p-3 border-b border-[var(--border-color)] relative flex items-center bg-[var(--bg-secondary)]">
+            <svg className="w-4 h-4 absolute left-5 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            <input className="w-full pl-9 pr-3 py-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-primary)] transition-colors" placeholder="Search conversations..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
 
-          <div className="chat-conversations" ref={conversationsRef}>
+          <div className="flex-1 overflow-y-auto" ref={conversationsRef}>
             {filteredChats.map((chat) => {
               const chatIsGroup = chat.isGroup || chat.participants?.length > 2;
               const other = chatIsGroup ? null : chat.participants.find((p) => p._id !== currentUserId);
@@ -617,72 +625,72 @@ const Chat = () => {
                 : `${other?.firstName || ''} ${other?.lastName?.[0] ? `${other.lastName[0]}.` : ''}`;
 
               return (
-                <button key={chat._id} className={`chat-convo ${isActive ? "active" : ""}`} onClick={() => { setActiveChatId(chat._id); setShowMembersPanel(false); }}>
-                  <div className="chat-convo-avatar">
-                    <img src={avatarUrl} alt="" className="chat-avatar" onError={(e) => { e.target.src = defaultAvatar; }} />
-                    {!chatIsGroup && <span className="chat-online-dot" />}
+                <button key={chat._id} className={`w-full flex items-start gap-3 p-3 border-b border-[var(--border-color)] transition-colors text-left ${isActive ? 'bg-[var(--bg-primary)] border-l-2 border-l-[var(--color-primary)]' : 'hover:bg-[var(--bg-primary)]'}`} onClick={() => { setActiveChatId(chat._id); setShowMembersPanel(false); }}>
+                  <div className="relative w-10 h-10 flex-shrink-0">
+                    <img src={avatarUrl} alt="" className="w-full h-full rounded-full object-cover border border-[var(--border-color)]" onError={(e) => { e.target.src = defaultAvatar; }} />
+                    {!chatIsGroup && <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[var(--bg-secondary)] rounded-full" />}
                   </div>
-                  <div className="chat-convo-info">
-                    <div className="chat-convo-top">
-                      <span className="chat-convo-name">{chatDisplayName}</span>
-                      {chatIsGroup && <span className="chat-convo-group-badge">Group</span>}
-                      <span className="chat-convo-time">{chat.lastMessage ? formatTime(chat.lastMessage.createdAt) : ''}</span>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <span className="font-medium text-sm text-[var(--text-primary)] truncate">{chatDisplayName}</span>
+                      {chatIsGroup && <span className="text-[10px] bg-[var(--border-color)] text-[var(--text-secondary)] px-1.5 py-0.5 rounded ml-2">Group</span>}
+                      <span className="text-[11px] text-[var(--text-secondary)] flex-shrink-0">{chat.lastMessage ? formatTime(chat.lastMessage.createdAt) : ''}</span>
                     </div>
-                    <p className="chat-convo-snippet">{chat.lastMessage?.text || "Start a conversation..."}</p>
+                    <p className="text-xs text-[var(--text-secondary)] truncate">{chat.lastMessage?.text || "Start a conversation..."}</p>
                   </div>
                 </button>
               );
             })}
 
             {filteredChats.length === 0 && (
-              <div className="chat-empty-sidebar">
+              <div className="p-6 text-center text-sm text-[var(--text-secondary)]">
                 <p>No conversations yet</p>
               </div>
             )}
           </div>
         </aside>
 
-        {}
-        <section className="chat-thread">
+        {/* Main Thread */}
+        <section className="flex-1 flex flex-col min-w-0 bg-[var(--bg-primary)]">
           {activeChatId && (peer || isGroupChat) ? (
             <>
-              {}
-              <div className="chat-thread-header">
+              {/* Header */}
+              <div className="h-16 flex-shrink-0 px-6 flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
                 {isGroupChat ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <div className="chat-group-header-info">
-                      <div className="chat-group-avatar-stack">
+                    <div className="flex items-center gap-4">
+                      <div className="flex -space-x-2">
                         {groupMembers.slice(0, 3).map((member) => (
-                          <img key={member._id} src={member.photoUrl || defaultAvatar} alt="" onError={(e) => { e.target.src = defaultAvatar; }} />
+                          <img key={member._id} src={member.photoUrl || defaultAvatar} alt="" className="w-8 h-8 rounded-full border-2 border-[var(--bg-primary)] object-cover" onError={(e) => { e.target.src = defaultAvatar; }} />
                         ))}
                       </div>
                       <div>
-                        <h3 className="chat-group-name">{groupName}</h3>
-                        <span className="chat-group-meta">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+                        <h3 className="font-semibold text-[var(--text-primary)] text-sm">{groupName}</h3>
+                        <span className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
                           {groupMembers.length} members
                         </span>
                       </div>
                     </div>
                     <button
-                      className={`chat-members-toggle ${showMembersPanel ? 'active' : ''}`}
+                      className={`p-2 rounded-md transition-colors ${showMembersPanel ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'}`}
                       onClick={() => setShowMembersPanel(!showMembersPanel)}
                       title="Members"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
                     </button>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                  <div className="chat-peer-info">
-                    <img src={peer?.photoUrl || defaultAvatar} alt="" className="chat-peer-avatar" onError={(e) => { e.target.src = defaultAvatar; }} />
+                  <div className="flex items-center gap-3">
+                    <img src={peer?.photoUrl || defaultAvatar} alt="" className="w-10 h-10 rounded-full object-cover border border-[var(--border-color)]" onError={(e) => { e.target.src = defaultAvatar; }} />
                     <div>
-                      <h3 className="chat-peer-name">{peer.firstName} {peer.lastName}</h3>
-                      <span className="chat-peer-status">
-                        <span className={`chat-status-dot ${isPeerTyping ? "typing" : "online"}`} />
+                      <h3 className="font-semibold text-[var(--text-primary)] text-sm">{peer.firstName} {peer.lastName}</h3>
+                      <span className="text-xs text-[var(--text-secondary)] flex items-center gap-1.5 mt-0.5">
+                        <span className={`w-2 h-2 rounded-full ${isPeerTyping ? "bg-[var(--color-primary)] animate-pulse" : "bg-green-500"}`} />
                         {isPeerTyping ? (
-                          <span className="chat-typing-indicator">
-                            <span></span><span></span><span></span>
+                          <span className="flex gap-0.5 items-center">
+                            <span className="w-1 h-1 bg-[var(--color-primary)] rounded-full animate-bounce"></span><span className="w-1 h-1 bg-[var(--color-primary)] rounded-full animate-bounce" style={{animationDelay: "0.1s"}}></span><span className="w-1 h-1 bg-[var(--color-primary)] rounded-full animate-bounce" style={{animationDelay: "0.2s"}}></span>
                           </span>
                         ) : (
                           "Online"
@@ -690,9 +698,9 @@ const Chat = () => {
                       </span>
 
                       {peerGithubUsername && (
-                        <div className="chat-github-mini">
+                        <div className="flex items-center gap-2 mt-1 text-xs text-[var(--text-secondary)]">
                           <a
-                            className="chat-github-link"
+                            className="hover:text-[var(--color-primary)] transition-colors"
                             href={`https://github.com/${peerGithubUsername}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -700,13 +708,13 @@ const Chat = () => {
                             @{peerGithubUsername}
                           </a>
                           {githubLoading ? (
-                            <span className="chat-github-muted">Loading GitHub…</span>
+                            <span className="opacity-70">Loading GitHub…</span>
                           ) : githubError ? (
-                            <span className="chat-github-muted">{githubError}</span>
+                            <span className="opacity-70">{githubError}</span>
                           ) : githubEvents.length > 0 ? (
-                            <div className="chat-github-events">
+                            <div className="flex gap-2">
                               {githubEvents.slice(0, 2).map((ev) => (
-                                <div key={ev.id} className="chat-github-event" title={summarizeGithubEvent(ev)}>
+                                <div key={ev.id} className="bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded border border-[var(--border-color)] truncate max-w-[120px]" title={summarizeGithubEvent(ev)}>
                                   {summarizeGithubEvent(ev)}
                                 </div>
                               ))}
@@ -714,11 +722,11 @@ const Chat = () => {
                           ) : null}
 
                           {!githubLoading && !githubError && githubRepos.length > 0 && (
-                            <div className="chat-github-repos">
+                            <div className="flex gap-2">
                               {githubRepos.slice(0, 2).map((repo) => (
                                 <a
                                   key={repo.id}
-                                  className="chat-github-repo"
+                                  className="hover:text-[var(--color-primary)] underline decoration-[var(--border-color)] underline-offset-2 transition-colors truncate max-w-[100px]"
                                   href={repo.html_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -734,31 +742,30 @@ const Chat = () => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
-                    <button onClick={initiateCall} title="Voice Call" style={{ background: 'var(--dashboard-glass-border)', border: '1px solid var(--dashboard-glass-border-translucent)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--dashboard-text-main)', transition: 'all 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform='scale(1)'}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="20" height="20"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.273-3.973-6.869-6.869l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
+                    <button onClick={initiateCall} title="Voice Call" style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)'; e.currentTarget.style.borderColor='var(--text-secondary)'; }} onMouseOut={(e) => { e.currentTarget.style.color='var(--text-secondary)'; e.currentTarget.style.borderColor='var(--border-color)'; }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="18" height="18"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.273-3.973-6.869-6.869l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
                     </button>
-                    <button onClick={initiateCall} title="Video Call" style={{ background: 'var(--dashboard-glass-border)', border: '1px solid var(--dashboard-glass-border-translucent)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--dashboard-text-main)', transition: 'all 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform='scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform='scale(1)'}>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="20" height="20"><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                    <button onClick={initiateCall} title="Video Call" style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'all 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.color='var(--text-primary)'; e.currentTarget.style.borderColor='var(--text-secondary)'; }} onMouseOut={(e) => { e.currentTarget.style.color='var(--text-secondary)'; e.currentTarget.style.borderColor='var(--border-color)'; }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="18" height="18"><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                     </button>
                   </div>
                 </div>
                 )}
               </div>
 
-              {}
-              <div className={isGroupChat ? 'chat-thread-with-panel' : ''} style={isGroupChat ? { display: 'flex', flex: 1, minHeight: 0 } : { display: 'contents' }}>
-                <div className={isGroupChat ? 'chat-thread-main' : ''} style={isGroupChat ? {} : { display: 'contents' }}>
-                  {}
-                  <div className="chat-messages" ref={messagesContainerRef}>
+              {/* Thread Content */}
+              <div className={isGroupChat ? 'flex-1 flex min-h-0' : ''} style={isGroupChat ? {} : { display: 'contents' }}>
+                <div className={isGroupChat ? 'flex-1 flex flex-col min-w-0' : ''} style={isGroupChat ? {} : { display: 'contents' }}>
+                  {/* Messages */}
+                  <div className="flex-1 overflow-y-auto p-6 space-y-6" ref={messagesContainerRef}>
                     {groupedMessages.map((item) => {
                       if (item.type === "divider") {
-                        return <div key={item.key} className="chat-day-divider"><span>{item.day}</span></div>;
+                        return <div key={item.key} className="flex justify-center my-6"><span className="text-xs text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full border border-[var(--border-color)]">{item.day}</span></div>;
                       }
 
                       const m = item.message;
                       const isMine = m.senderId === currentUserId || m.senderId?._id === currentUserId;
 
-                      
                       let senderAvatar, senderName;
                       if (isGroupChat) {
                         const senderId = typeof m.senderId === 'object' ? m.senderId?._id : m.senderId;
@@ -773,37 +780,36 @@ const Chat = () => {
                       }
 
                       return (
-                        <div key={item.key} className={`chat-msg ${isMine ? "me" : "them"}`}>
+                        <div key={item.key} className={`flex max-w-[85%] gap-2 ${isMine ? "ml-auto flex-row-reverse" : ""}`}>
                           {!isMine && (
-                            <img src={senderAvatar} alt="" className="chat-msg-avatar" onError={(e) => { e.target.src = defaultAvatar; }} />
+                            <img src={senderAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-[var(--border-color)] mt-auto" onError={(e) => { e.target.src = defaultAvatar; }} />
                           )}
 
-                          <div className="chat-msg-content">
-                            {}
+                          <div className="flex flex-col gap-1 relative group">
                             {isGroupChat && senderName && (
-                              <span className="chat-msg-sender-name">{senderName}</span>
+                              <span className="text-[11px] text-[var(--text-secondary)] ml-1">{senderName}</span>
                             )}
 
                             {editingId === m._id ? (
-                              <div className="chat-edit-zone">
-                                <textarea className="chat-edit-input" value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(m._id); } if (e.key === 'Escape') cancelEdit(); }} autoFocus rows={2} />
-                                <div className="chat-edit-actions">
-                                  <button className="chat-edit-save" onClick={() => saveEdit(m._id)}>Save</button>
-                                  <button className="chat-edit-cancel" onClick={cancelEdit}>Cancel</button>
+                              <div className="flex flex-col gap-2 w-full max-w-md">
+                                <textarea className="w-full p-2 bg-[var(--bg-primary)] border border-[var(--color-primary)] rounded-md text-sm text-[var(--text-primary)] outline-none resize-none" value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(m._id); } if (e.key === 'Escape') cancelEdit(); }} autoFocus rows={2} />
+                                <div className="flex gap-2 justify-end">
+                                  <button className="text-xs bg-[var(--color-primary)] text-white px-3 py-1.5 rounded-md hover:brightness-110 transition-all" onClick={() => saveEdit(m._id)}>Save</button>
+                                  <button className="text-xs bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] px-3 py-1.5 rounded-md hover:bg-[var(--border-color)] transition-all" onClick={cancelEdit}>Cancel</button>
                                 </div>
                               </div>
                             ) : deleteConfirmId === m._id ? (
-                              <div className="chat-delete-confirm">
-                                <p>Delete this message?</p>
-                                <div className="chat-delete-actions">
-                                  <button className="chat-delete-yes" onClick={() => executeDelete(m._id)}>Delete</button>
-                                  <button className="chat-delete-no" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
+                              <div className="flex flex-col gap-2 bg-[var(--bg-secondary)] p-3 rounded-lg border border-[var(--border-color)]">
+                                <p className="text-sm text-[var(--text-primary)]">Delete this message?</p>
+                                <div className="flex gap-2">
+                                  <button className="text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20 px-3 py-1.5 rounded-md transition-all" onClick={() => executeDelete(m._id)}>Delete</button>
+                                  <button className="text-xs bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] px-3 py-1.5 rounded-md hover:bg-[var(--border-color)] transition-all" onClick={() => setDeleteConfirmId(null)}>Cancel</button>
                                 </div>
                               </div>
                             ) : (
                               <>
-                                <div className={`chat-bubble ${isMine ? 'me' : 'them'}`}>
-                                  <div className="chat-bubble-text chat-markdown">
+                                <div className={`px-4 py-2.5 rounded-2xl text-sm relative ${isMine ? "bg-[var(--color-primary)] text-white rounded-tr-sm" : "bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-tl-sm"}`}>
+                                  <div className="whitespace-pre-wrap break-words leading-relaxed prose prose-sm dark:prose-invert max-w-none">
                                     <ReactMarkdown
                                       remarkPlugins={[remarkGfm]}
                                       components={{
@@ -815,53 +821,53 @@ const Chat = () => {
                                           if (isBlock) {
                                             const lang = match ? match[1] : 'code';
                                             return (
-                                              <div className="chat-code-block-wrap">
-                                                <div className="chat-code-header">
-                                                  <span className="chat-code-lang">{lang}</span>
-                                                  <button className="chat-code-copy" onClick={() => { navigator.clipboard.writeText(codeString); toast.success('Copied!'); }}>Copy</button>
+                                              <div className="my-2 rounded-xl overflow-hidden border border-[var(--border-color)] bg-[#282c34]">
+                                                <div className="flex items-center justify-between px-3 py-1.5 bg-black/20 border-b border-white/10">
+                                                  <span className="text-[10px] text-gray-400 font-mono uppercase">{lang}</span>
+                                                  <button className="text-[10px] text-gray-400 hover:text-white transition-colors" onClick={() => { navigator.clipboard.writeText(codeString); toast.success('Copied!'); }}>Copy</button>
                                                 </div>
-                                                <SyntaxHighlighter style={oneDark} language={match ? match[1] : 'javascript'} PreTag="div" customStyle={{ margin: 0, borderRadius: '0 0 12px 12px', fontSize: '0.85rem' }} {...props}>
+                                                <SyntaxHighlighter style={oneDark} language={match ? match[1] : 'javascript'} PreTag="div" customStyle={{ margin: 0, borderRadius: '0 0 12px 12px', fontSize: '0.85rem', background: 'transparent' }} {...props}>
                                                   {codeString}
                                                 </SyntaxHighlighter>
                                               </div>
                                             );
                                           }
-                                          return <code className="chat-inline-code" {...props}>{children}</code>;
+                                          return <code className="font-mono text-[13px] bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded text-inherit" {...props}>{children}</code>;
                                         },
                                         a({ href, children }) {
-                                          return <a href={href} target="_blank" rel="noopener noreferrer" className="chat-md-link">{children}</a>;
+                                          return <a href={href} target="_blank" rel="noopener noreferrer" className="underline hover:text-opacity-80">{children}</a>;
                                         }
                                       }}
                                     >
                                       {m.text}
                                     </ReactMarkdown>
                                   </div>
-                                  {m.edited && <span className="chat-edited-tag">(edited)</span>}
+                                  {m.edited && <span className="text-[10px] opacity-60 ml-2 italic">(edited)</span>}
                                 </div>
-                                <div className="chat-msg-meta">
-                                  <span className="chat-msg-time">{formatTime(m.createdAt)}</span>
+                                <div className="flex items-center gap-2 mt-1 text-[11px] text-[var(--text-secondary)]">
+                                  <span>{formatTime(m.createdAt)}</span>
                                   {isMine && m._optimisticPending && (
-                                    <span className="chat-msg-status">Sending…</span>
+                                    <span>Sending…</span>
                                   )}
                                   {isMine && m._optimisticFailed && (
-                                    <button className="chat-msg-retry" onClick={() => retrySend(m)} type="button">
+                                    <button className="text-red-500 hover:underline cursor-pointer" onClick={() => retrySend(m)} type="button">
                                       Failed • Retry
                                     </button>
                                   )}
                                   {isMine && !m._optimisticPending && !m._optimisticFailed && lastSeenMessageId && m._id === lastSeenMessageId && m._id === lastOutgoingMessageId && (
-                                    <span className="chat-msg-status">Seen</span>
+                                    <span>Seen</span>
                                   )}
                                 </div>
                               </>
                             )}
 
-                            {}
+                            {/* Hover Actions */}
                             {isMine && !editingId && !deleteConfirmId && !m._optimisticPending && !m._optimisticFailed && (
-                              <div className="chat-msg-hover-actions">
-                                <button className="chat-hover-btn" onClick={() => startEdit(m)} title="Edit">
+                              <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md shadow-sm p-1">
+                                <button className="p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)] rounded" onClick={() => startEdit(m)} title="Edit">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" /></svg>
                                 </button>
-                                <button className="chat-hover-btn chat-hover-btn-danger" onClick={() => confirmDelete(m._id)} title="Delete">
+                                <button className="p-1 text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-500/10 rounded" onClick={() => confirmDelete(m._id)} title="Delete">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                                 </button>
                               </div>
@@ -872,37 +878,37 @@ const Chat = () => {
                     })}
                   </div>
 
-                  {}
-                  <div className="chat-composer">
-                    <div className="chat-input-wrap">
-                      <textarea ref={inputRef} className="chat-input" value={text} onChange={handleComposerChange} onKeyDown={handleKeyDown} placeholder={isGroupChat ? `Message ${groupName}...` : "Type a message..."} rows={1} />
+                  {/* Composer */}
+                  <div className="p-4 border-t border-[var(--border-color)] bg-[var(--bg-primary)] flex items-end gap-3">
+                    <div className="flex-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl relative focus-within:border-[var(--color-primary)] transition-colors">
+                      <textarea ref={inputRef} className="w-full bg-transparent text-sm text-[var(--text-primary)] p-3 outline-none resize-none max-h-32 min-h-[44px]" value={text} onChange={handleComposerChange} onKeyDown={handleKeyDown} placeholder={isGroupChat ? `Message ${groupName}...` : "Type a message..."} rows={1} />
                     </div>
-                    <button className="chat-send-btn" onClick={sendMessage} disabled={!text.trim()}>
+                    <button className="w-11 h-11 flex-shrink-0 bg-[var(--color-primary)] text-white rounded-xl flex items-center justify-center hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed" onClick={sendMessage} disabled={!text.trim()}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
                     </button>
                   </div>
                 </div>
 
-                {}
+                {/* Group Members Panel */}
                 {isGroupChat && showMembersPanel && (
-                  <div className="chat-members-panel">
-                    <div className="chat-members-panel-header">
+                  <div className="w-64 flex-shrink-0 flex flex-col bg-[var(--bg-secondary)] border-l border-[var(--border-color)] overflow-y-auto">
+                    <div className="p-4 border-b border-[var(--border-color)] text-sm font-semibold text-[var(--text-primary)]">
                       <h4>Members · {groupMembers.length}</h4>
                     </div>
-                    <div className="chat-members-list">
+                    <div className="flex flex-col p-2 gap-1">
                       {groupMembers.map((member) => (
-                        <div key={member._id} className="chat-member-item">
+                        <div key={member._id} className="flex items-center gap-3 p-2 hover:bg-[var(--bg-primary)] rounded-md transition-colors">
                           <img
                             src={member.photoUrl || defaultAvatar}
                             alt=""
-                            className="chat-member-avatar"
+                            className="w-8 h-8 rounded-full object-cover border border-[var(--border-color)]"
                             onError={(e) => { e.target.src = defaultAvatar; }}
                           />
-                          <span className="chat-member-name">
+                          <span className="text-sm text-[var(--text-primary)] truncate flex-1">
                             {member.firstName} {member.lastName}
                           </span>
                           {member._id === currentUserId && (
-                            <span className="chat-member-role">You</span>
+                            <span className="text-[10px] bg-[var(--bg-primary)] text-[var(--text-secondary)] px-1.5 py-0.5 rounded border border-[var(--border-color)]">You</span>
                           )}
                         </div>
                       ))}
@@ -912,17 +918,18 @@ const Chat = () => {
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full w-full bg-white/30 dark:bg-black/10 backdrop-blur-xl border-l border-white/40 dark:border-gray-800 text-center p-12">
-              <div className="w-32 h-32 bg-linear-to-tr from-purple-200 to-blue-200 dark:from-purple-900/40 dark:to-blue-900/40 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-inner animate-float transform rotate-3">
-                <span className="text-6xl" style={{ filter: 'drop-shadow(0 8px 8px rgba(0,0,0,0.1))' }}>💬</span>
+            <div className="flex flex-col items-center justify-center h-full w-full bg-[var(--bg-primary)] text-center p-12">
+              <div className="w-24 h-24 bg-[var(--bg-secondary)] rounded-3xl flex items-center justify-center mb-6 border border-[var(--border-color)]">
+                <svg className="w-10 h-10 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
               </div>
-              <h3 className="text-3xl font-extrabold feed-text-main mb-3" style={{ fontFamily: "'Outfit', sans-serif" }}>Your Conversations</h3>
-              <p className="text-gray-500 font-medium max-w-sm mb-8 text-[15px] leading-relaxed">Select a chat from the sidebar to start messaging, or browse the Hub to find new teams and projects.</p>
+              <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Your Conversations</h3>
+              <p className="text-[var(--text-secondary)] text-sm max-w-sm mb-6">Select a chat from the sidebar to start messaging, or browse projects to find new teams.</p>
               <button 
                 onClick={() => navigate('/projects')}
-                className="px-8 py-3.5 rounded-full font-bold text-white bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-lg shadow-purple-500/20 hover:scale-105 transition-all flex items-center gap-3"
+                className="px-6 py-2.5 rounded-lg font-medium text-white bg-[var(--color-primary)] hover:brightness-110 transition-all flex items-center gap-2"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" /></svg>
                 Explore Projects
               </button>
             </div>

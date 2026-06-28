@@ -12,18 +12,18 @@ export const Card = React.forwardRef(({
   const Tag = as;
   
   const elevationStyles = {
-    '1': 'bg-[var(--bg-card)] border border-[var(--border-color)] shadow-sm',
-    '2': 'bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-md',
-    '3': 'bg-[var(--bg-tertiary)] border border-[var(--border-hover)] shadow-lg',
+    '1': 'bg-[var(--surface-primary)] border border-[var(--border-subtle)]',
+    '2': 'bg-[var(--surface-elevated)] border border-[var(--border-subtle)]',
+    '3': 'bg-[var(--surface-elevated)] border border-[var(--border-strong)]',
   };
 
   return (
     <Tag
       ref={ref}
       className={cn(
-        'rounded-2xl overflow-hidden',
+        'rounded-[var(--radius-card)] overflow-hidden',
         elevationStyles[elevation],
-        interactive && 'transition-all duration-200 ease-out hover:border-[var(--color-primary-muted)] hover:-translate-y-0.5 cursor-pointer hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
+        interactive && 'transition-colors duration-150 ease-out hover:border-[var(--border-hover)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
         className
       )}
       {...props}

@@ -17,12 +17,12 @@ export const Button = React.forwardRef(({
 }, ref) => {
   const Tag = as;
   
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 ease-out rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none';
+  const baseStyles = 'inline-flex items-center justify-center font-medium transition-colors duration-150 ease-out rounded-[var(--radius-btn)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantStyles = {
-    primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus-visible:ring-[var(--color-primary)] shadow-sm hover:shadow-md hover:-translate-y-0.5',
-    secondary: 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] hover:border-[var(--color-primary-muted)] hover:bg-[var(--bg-tertiary)] focus-visible:ring-[var(--color-primary)]',
-    danger: 'bg-[var(--color-danger)] text-white hover:opacity-90 focus-visible:ring-[var(--color-danger)] shadow-sm hover:shadow-md hover:-translate-y-0.5',
+    primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus-visible:ring-[var(--color-primary)]',
+    secondary: 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] hover:border-[var(--border-hover)] hover:bg-[var(--bg-tertiary)] focus-visible:ring-[var(--color-primary)]',
+    danger: 'bg-[var(--color-danger)] text-white hover:opacity-90 focus-visible:ring-[var(--color-danger)]',
     ghost: 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] focus-visible:ring-[var(--color-primary)]',
   };
 

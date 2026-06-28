@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { projectAPI } from '../utils/projectAPI';
 import { setProjects, setLoadingProjects } from '../redux/projectSlice';
+import { Skeleton } from '@/design-system';
 import './Projects.css';
 
 const Projects = () => {
@@ -43,9 +44,35 @@ const Projects = () => {
   if (loading && projects.length === 0) {
     return (
       <div className="projects-page">
-        <div className="projects-loading">
-          <span className="profile-spinner" />
-          <p>Loading projects...</p>
+        <div className="projects-container">
+          <div className="mb-8">
+            <Skeleton className="h-10 w-64 mb-2" />
+            <Skeleton className="h-5 w-96" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="bg-[var(--surface-primary)] border border-[var(--border-subtle)] rounded-[var(--radius-card)] p-6 h-[260px] flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-5/6 mb-4" />
+                <div className="flex gap-2 mb-auto mt-2">
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-14 rounded-full" />
+                </div>
+                <div className="flex justify-between items-center pt-4 mt-4 border-t border-[var(--border-subtle)]">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

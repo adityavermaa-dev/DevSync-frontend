@@ -10,7 +10,6 @@ import { removeRequests } from '../redux/requestSlice';
 import { removeReels } from '../redux/reelsSlice';
 import logo from '../assests/images/logo.svg';
 import userIcon from '../assests/images/default-user-image.png';
-import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
 import toast from 'react-hot-toast';
 
@@ -38,17 +37,17 @@ const Sidebar = () => {
     };
 
     const navLinks = [
-        { to: '/feed', label: 'Feed', icon: feedIcon },
-        { to: '/connections', label: 'Matches', icon: connectionsIcon },
+        { to: '/discover', label: 'Discover', icon: feedIcon },
         { to: '/hackathons', label: 'Hackathons', icon: hackathonsIcon },
+        { to: '/my-teams', label: 'My Teams', icon: connectionsIcon },
+        { to: '/build-logs', label: 'Build Journal', icon: updatesIcon },
         { to: '/projects', label: 'Projects', icon: projectsIcon },
-        { to: '/requests', label: 'Requests', icon: requestsIcon },
+        { to: '/profile', label: 'Profile', icon: uploadIcon },
+    ];
+
+    const secondaryLinks = [
         { to: '/chat', label: 'Chat', icon: chatIcon },
-        { to: '/reels', label: 'Reels', icon: reelsIcon },
-        { to: '/updates', label: 'Updates', icon: updatesIcon },
-        { to: '/upload', label: 'Upload', icon: uploadIcon },
         { to: '/notifications', label: 'Alerts', icon: notificationsIcon, badge: unreadCount },
-        ...(ENABLE_PREMIUM ? [{ to: '/premium', label: 'Premium', icon: premiumIcon }] : []),
     ];
 
     const isActive = (path) => location.pathname === path;
@@ -93,17 +92,27 @@ const Sidebar = () => {
                         <span className="sidebar-label-text">{label}</span>
                     </Link>
                 ))}
+
+                <div className="sidebar-divider" />
+
+                {secondaryLinks.map(({ to, label, icon, badge }) => (
+                    <Link
+                        key={to}
+                        to={to}
+                        className={`sidebar-link-item ${isActive(to) ? 'active' : ''}`}
+                        title={label}
+                    >
+                        <span className="sidebar-icon-wrap">
+                            {icon}
+                            {badge > 0 && <span className="sidebar-badge">{badge > 9 ? '9+' : badge}</span>}
+                        </span>
+                        <span className="sidebar-label-text">{label}</span>
+                    </Link>
+                ))}
             </div>
 
             {}
             <div className="sidebar-bottom-actions">
-                <div className="sidebar-theme-wrap">
-                    <ThemeToggle />
-                    <span className="sidebar-label-text font-semibold ml-2">Theme</span>
-                </div>
-                
-                <div className="sidebar-divider" />
-
                 <Link to="/profile" className="sidebar-profile-link" title="Profile">
                     <img src={photoUrl} alt={firstName} className="sidebar-avatar-img" />
                     <div className="sidebar-profile-info flex-1 min-w-0">

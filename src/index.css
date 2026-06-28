@@ -26,10 +26,10 @@
   --font-inter: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
-  --radius-btn: 12px;
-  --radius-input: 12px;
-  --radius-card: 16px;
-  --radius-img: 20px;
+  --radius-btn: 6px;
+  --radius-input: 6px;
+  --radius-card: 8px;
+  --radius-img: 8px;
 }
 
 @layer base {
@@ -44,6 +44,17 @@
     --text-muted: #71717A;
     --border-subtle: rgba(255, 255, 255, 0.08);
     --border-strong: rgba(255, 255, 255, 0.15);
+    
+    /* Legacy aliases */
+    --bg-primary: #09090B;
+    --bg-secondary: #111113;
+    --bg-tertiary: #18181B;
+    --bg-card: #111113;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    --color-primary-muted: rgba(139, 92, 246, 0.2);
+    --color-primary-hover: #7c3aed;
+    --color-danger: #ef4444;
   }
 
   html, body {

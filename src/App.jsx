@@ -14,7 +14,7 @@ import { SignupPage } from "./pages/Auth/SignupPage"
 const About = lazy(() => import("./pages/About"));
 const Community = lazy(() => import("./pages/Community"));
 const Profile = lazy(() => import("./pages/Profile"));
-const Feed = lazy(() => import("./pages/Feed"));
+const Discover = lazy(() => import("./pages/Discover"));
 const Connections = lazy(() => import("./pages/connections"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Requests = lazy(() => import("./pages/Requests"));
@@ -22,8 +22,6 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
-const VideoUpload = lazy(() => import("./components/VideoUpload"));
-const VideoFeed = lazy(() => import("./components/VideoFeed"));
 const Premium = ENABLE_PREMIUM ? lazy(() => import("./pages/Premium")) : null;
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -32,7 +30,6 @@ const VerificationFailed = lazy(() => import("./pages/VerificationFailed"));
 const SignupSuccess = lazy(() => import("./pages/SignupSuccess"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Projects = lazy(() => import("./pages/Projects"));
-const CreateProject = lazy(() => import("./pages/CreateProject"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const BuildLogs = lazy(() => import("./pages/BuildLogs"));
@@ -42,6 +39,7 @@ const VerifyEmailHandler = lazy(() => import("./pages/VerifyEmailHandler"));
 const Hackathons = lazy(() => import("./pages/Hackathons"));
 const HackathonDetails = lazy(() => import("./pages/HackathonDetails"));
 const TeamWorkspace = lazy(() => import("./pages/TeamWorkspace"));
+const MyTeams = lazy(() => import("./pages/MyTeams"));
 
 
 import { LandingPage } from "./pages/Landing/LandingPage";
@@ -92,7 +90,8 @@ function AppContent() {
               <Route path="/signup-success" element={<SignupSuccess />} />
               
               <Route element={<Body />}>
-                <Route path="/feed" element={<Feed />} />
+                <Route path="/discover" element={<Discover />} />
+                <Route path="/my-teams" element={<MyTeams />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/connections" element={<Connections />} />
                 <Route path="/user/:userId" element={<UserProfile />} />
@@ -101,22 +100,21 @@ function AppContent() {
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/refund" element={<RefundPolicy />} />
                 <Route path="/contact" element={<ContactUs />} />
-                <Route path="/upload" element={<VideoUpload />} />
                 <Route path="/premium" element={ENABLE_PREMIUM && Premium ? <Premium /> : <Navigate to="/" replace />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/chat/:targetUserId" element={<Chat />} />
                 <Route path="/projects" element={<Projects />} />
-                <Route path="/projects/new" element={<CreateProject />} />
                 <Route path="/projects/:projectId" element={<ProjectDetail />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/updates" element={<BuildLogs />} />
                 <Route path="/build-logs" element={<BuildLogs />} />
-                <Route path="/reels" element={<VideoFeed />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/hackathons" element={<Hackathons />} />
                 <Route path="/hackathons/:id" element={<HackathonDetails />} />
                 <Route path="/workspace/:teamId" element={<TeamWorkspace />} />
               </Route>
+              <Route path="/feed" element={<Navigate to="/discover" replace />} />
+              <Route path="/updates" element={<Navigate to="/build-logs" replace />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
     </Suspense>

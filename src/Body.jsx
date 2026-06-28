@@ -52,6 +52,7 @@ const Body = () => {
     }, [fetchUser])
 
     const isOnboarding = location.pathname === '/onboarding';
+    const isChat = location.pathname.startsWith('/chat');
 
     return (
         <>
@@ -70,11 +71,11 @@ const Body = () => {
                     <div className="landing-bg-circle circle-yellow" />
                 </div>
 
-                <div className={`relative z-10 flex flex-col grow w-full transition-all duration-300 ${user && !isOnboarding ? 'md:pl-20' : ''}`}>
-                    <main className={`grow w-full pt-4 px-4 ${user && !isOnboarding ? 'pb-0 md:pb-0' : ''}`}>
+                <div className={`relative z-10 flex flex-col grow w-full transition-all duration-300 ${user && !isOnboarding ? 'md:pl-[240px]' : ''}`}>
+                    <main className={`grow w-full ${isChat ? '' : 'pt-4 px-4'} ${user && !isOnboarding && !isChat ? 'pb-20 md:pb-0' : ''}`}>
                         <Outlet />
                     </main>
-                    <Footer />
+                    {!isChat && <Footer />}
                 </div>
             </div>
         </>

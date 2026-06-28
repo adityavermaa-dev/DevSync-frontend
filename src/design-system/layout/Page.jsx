@@ -7,14 +7,14 @@ export const Page = ({
   ...props 
 }) => {
   return (
-    <main 
+    <div 
       className={cn(
-        'min-h-screen bg-[var(--bg-primary)] pt-16 pb-24 lg:pb-8 flex flex-col',
+        'w-full flex flex-col min-h-full pb-4',
         className
       )} 
       {...props}
     >
       {children}
-    </main>
+    </div>
   );
 };
